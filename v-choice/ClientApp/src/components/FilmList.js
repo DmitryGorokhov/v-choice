@@ -12,6 +12,12 @@ const styles = (theme) => ({
 		margin: theme.spacing(1),
 		fontSize: '20px'
 	},
+	tools: {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'centre',
+		margin: theme.spacing(0, 2),
+	}
 });
 
 class FilmList extends Component {
@@ -26,20 +32,15 @@ class FilmList extends Component {
 	}
 
 	async fetchFilmsData(fetchURL) {
-		const response = fetch(fetchURL)
+		fetch(fetchURL)
 			.then(response => response.json())
 			.then(result => this.setState({ films: result }));
-		// const data = response.json();
-		// this.setState({ films: data, loading: false });
 	}
 
 	async fetchGenresData(fetchURL) {
-		const response = fetch(fetchURL)
+		fetch(fetchURL)
 			.then(response => response.json())
 			.then(result => this.setState({ genres: result, loading: false }));
-		// const response = fetch(fetchURL);
-		// const data = response.json();
-		// this.setState({ genres: data });
 	}
 
 	addCreatedFilm = (film) => {
@@ -66,7 +67,12 @@ class FilmList extends Component {
 	render() {
 		return (
 			<Box>
-				<AddFilmDialog foo={this.addCreatedFilm} genres={this.state.genres} />
+				<Box className={this.props.classes.tools}>
+					<Typography variant="subtitle1">
+						Инструменты
+					</Typography>
+					<AddFilmDialog foo={this.addCreatedFilm} genres={this.state.genres} />
+				</Box>
 				<Box>
 					{
 						this.state.loading
