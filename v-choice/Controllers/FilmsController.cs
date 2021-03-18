@@ -60,6 +60,19 @@ namespace v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (film.Genres.Count != 0)
+            {
+                foreach (var genre in film.Genres)
+                {
+                    var g = _context.Genre.FirstOrDefault(e => e.Id == genre.Id);
+                    if (g != null)
+                    {
+                        g.Films.Add(film);
+                        _context.Genre.Update(g);
+                    }
+                }
+            }
+            film.Genres = new HashSet<Genre>();
             _context.Film.Add(film);
             await _context.SaveChangesAsync();
 
@@ -81,6 +94,7 @@ namespace v_choice.Controllers
             item.Title = film.Title;
             item.Year = film.Year;
             item.Description = film.Description;
+            item.Genres = film.Genres;
 
             _context.Film.Update(item);
             await _context.SaveChangesAsync();
