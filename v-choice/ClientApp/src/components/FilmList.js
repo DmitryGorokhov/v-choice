@@ -21,20 +21,25 @@ class FilmList extends Component {
 	}
 
 	componentDidMount() {
-		this.fetchFilmsData('api/films');
 		this.fetchGenresData('api/genres');
+		this.fetchFilmsData('api/films');
 	}
 
 	async fetchFilmsData(fetchURL) {
-		const response = await fetch(fetchURL);
-		const data = await response.json();
-		this.setState({ films: data, loading: false });
+		const response = fetch(fetchURL)
+			.then(response => response.json())
+			.then(result => this.setState({ films: result }));
+		// const data = response.json();
+		// this.setState({ films: data, loading: false });
 	}
 
 	async fetchGenresData(fetchURL) {
-		const response = await fetch(fetchURL);
-		const data = await response.json();
-		this.setState({ genres: data });
+		const response = fetch(fetchURL)
+			.then(response => response.json())
+			.then(result => this.setState({ genres: result, loading: false }));
+		// const response = fetch(fetchURL);
+		// const data = response.json();
+		// this.setState({ genres: data });
 	}
 
 	addCreatedFilm = (film) => {
@@ -48,6 +53,16 @@ class FilmList extends Component {
 		this.setState({ films: this.state.films });
 	}
 
+	updateFilm = (film) => {
+		let index = this.state.films.map(f => {
+			if (f.Id === film.Id) {
+				return (this.state.films.indexOf(f));
+			}
+		})
+		this.state.films[index] = film;
+		this.setState({ films: this.state.films });
+	}
+
 	render() {
 		return (
 			<Box>
@@ -57,13 +72,17 @@ class FilmList extends Component {
 						this.state.loading
 							? <Typography className={this.props.classes.loading}>
 								Загрузка...
-						</Typography >
+							</Typography >
 							: <List>
 								{
 									this.state.films.map(film => {
 										return (
 											<ListItem className={this.props.classes.filmListItem} key={film.Id}>
-												<FilmCard film={film} onDelete={this.removeFilm} />
+												<FilmCard film={film}
+													onDelete={this.removeFilm}
+													onUpdate={this.updateFilm}
+													genres={this.state.genres}
+												/>
 											</ListItem>
 										)
 									})

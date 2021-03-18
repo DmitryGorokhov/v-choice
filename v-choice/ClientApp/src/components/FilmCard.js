@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Box, Button, Card, Typography } from '@material-ui/core'
 import { withStyles } from "@material-ui/core/styles";
 import DeleteFilm from './DeleteFilm';
-
+import UpdateFilmDialog from './UpdateFilmDialog';
 
 const styles = (theme) => ({
 	btns: {
@@ -83,9 +83,7 @@ class FilmCard extends Component {
 							</Typography>
 					}
 					<Box className={this.classes.btns}>
-						<Button variant="outlined" color="primary">
-							Изменить
-						</Button>
+						<UpdateFilmDialog film={this.film} foo={this.props.onUpdate} genres={this.props.genres} />
 						<DeleteFilm film={this.film} btnStyle={this.classes.btnDelete} foo={this.props.onDelete} />
 					</Box>
 				</Box>
