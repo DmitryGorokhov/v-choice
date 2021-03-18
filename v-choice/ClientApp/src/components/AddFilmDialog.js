@@ -9,8 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function FormDialog(props) {
 	const [open, setOpen] = React.useState(false);
-	let films = props.films;
-	let updateFilmsList = props.foo;
+	let onAddFilm = props.foo;
 
 	let film = {
 		Title: '',
@@ -36,7 +35,7 @@ export default function FormDialog(props) {
 			body: JSON.stringify(film)
 		})
 			.then(response => response.json())
-			.then(result => updateFilmsList(result));
+			.then(result => onAddFilm(result));
 		setOpen(false);
 	};
 

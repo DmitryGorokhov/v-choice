@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { Box, Button, Card, Typography } from '@material-ui/core'
 import { withStyles } from "@material-ui/core/styles";
+import DeleteFilm from './DeleteFilm';
+
 
 const styles = (theme) => ({
 	btns: {
-		display: 'inline-block',
+		display: 'flex',
 	},
 	btnDelete: {
 		marginLeft: theme.spacing(2)
@@ -45,46 +47,46 @@ const styles = (theme) => ({
 });
 
 class FilmCard extends Component {
+	film = this.props.film;
+	classes = this.props.classes;
+
 	render() {
 		return (
-			<Card className={this.props.classes.filmCard}>
-				<Box className={this.props.classes.cardItem && this.props.classes.cardVerticalSection}>
-					<Typography variant='h4' className={this.props.classes.filmTitle}>
-						{this.props.film.Title}
+			<Card className={this.classes.filmCard}>
+				<Box className={this.classes.cardItem && this.classes.cardVerticalSection}>
+					<Typography variant='h4' className={this.classes.filmTitle}>
+						{this.film.Title}
 					</Typography>
-					<Typography className={this.props.classes.filmYear}>
-						{this.props.film.Year}
+					<Typography className={this.classes.filmYear}>
+						{this.film.Year}
 					</Typography>
 				</Box>
-				<Typography className={this.props.classes.cardItem && this.props.classes.filmDescription}>
-					{this.props.film.Description}
+				<Typography className={this.classes.cardItem && this.classes.filmDescription}>
+					{this.film.Description}
 				</Typography>
-				<Box className={this.props.classes.cardItem && this.props.classes.cardVerticalSection}>
+				<Box className={this.classes.cardItem && this.classes.cardVerticalSection}>
 					{
-						this.props.film.Genres.lenght !== 0
-							? <Box className={this.props.classes.genresBox}>
+						this.film.Genres.lenght !== 0
+							? <Box className={this.classes.genresBox}>
 								{
-									this.props.film.Genres.map(genre => {
+									this.film.Genres.map(genre => {
 										return (
-											<Typography className={this.props.classes.filmGenre}>
+											<Typography className={this.classes.filmGenre}>
 												{genre.Value}
 											</Typography>
 										)
 									})
 								}
 							</Box>
-							: <Typography className={this.props.classes.filmGenre}>
+							: <Typography className={this.classes.filmGenre}>
 								Жанры не выбраны
 							</Typography>
 					}
-					<Box className={this.props.classes.btns}>
+					<Box className={this.classes.btns}>
 						<Button variant="outlined" color="primary">
 							Изменить
 						</Button>
-						<Button variant="outlined" color="secondary"
-							className={this.props.classes.btnDelete}>
-							Удалить
-						</Button>
+						<DeleteFilm film={this.film} btnStyle={this.classes.btnDelete} foo={this.props.onDelete} />
 					</Box>
 				</Box>
 			</Card >
