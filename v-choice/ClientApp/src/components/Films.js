@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Button, makeStyles, createStyles, Typography } from '@material-ui/core'
+import { Box, makeStyles, createStyles, Typography } from '@material-ui/core'
 import FilmList from './FilmList'
 
 const useStyles = makeStyles((theme) => createStyles({
@@ -20,11 +20,8 @@ function Films() {
 				<Typography variant="h2">
 					Фильмы
 				</Typography>
-				<Button color="primary">
-					Добавить новый
-				</Button>
 			</Box>
-			<FilmList type='all' />
+			<FilmList />
 		</Box>
 	)
 }

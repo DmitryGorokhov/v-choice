@@ -31,6 +31,9 @@ const styles = (theme) => ({
 		color: '#993333',
 		marginRight: theme.spacing(1)
 	},
+	filmTitle: {
+		textIndent: theme.spacing(5)
+	},
 	filmYear: {
 		fontWeight: 'bold',
 		fontSize: '16px'
@@ -46,7 +49,7 @@ class FilmCard extends Component {
 		return (
 			<Card className={this.props.classes.filmCard}>
 				<Box className={this.props.classes.cardItem && this.props.classes.cardVerticalSection}>
-					<Typography variant='h4'>
+					<Typography variant='h4' className={this.props.classes.filmTitle}>
 						{this.props.film.Title}
 					</Typography>
 					<Typography className={this.props.classes.filmYear}>

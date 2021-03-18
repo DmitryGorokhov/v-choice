@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Box, List, ListItem, Typography } from '@material-ui/core'
 import { withStyles } from "@material-ui/core/styles";
 import FilmCard from './FilmCard'
+import AddFilmDialog from './AddFilmDialog'
 
 const styles = (theme) => ({
 	filmListItem: {
@@ -21,10 +22,8 @@ class FilmList extends Component {
 	}
 
 	componentDidMount() {
-		if (this.props.type === 'all') {
-			let fetchURL = 'api/films';
-			this.fetchFilmsData(fetchURL);
-		}
+		let fetchURL = 'api/films';
+		this.fetchFilmsData(fetchURL);
 	}
 
 	async fetchFilmsData(fetchURL) {
@@ -33,26 +32,34 @@ class FilmList extends Component {
 		this.setState({ films: data, loading: false });
 	}
 
+	addCreatedFilm = (film) => {
+		this.state.films.push(film);
+		this.setState({ films: this.state.films });
+	}
+
 	render() {
 		return (
 			<Box>
-				{
-					this.state.loading
-						? <Typography className={this.props.classes.loading}>
-							Загрузка...
+				<AddFilmDialog films={this.state.films} foo={this.addCreatedFilm} />
+				<Box>
+					{
+						this.state.loading
+							? <Typography className={this.props.classes.loading}>
+								Загрузка...
 						</Typography >
-						: <List>
-							{
-								this.state.films.map(film => {
-									return (
-										<ListItem className={this.props.classes.filmListItem} key={film.Id}>
-											<FilmCard film={film} />
-										</ListItem>
-									)
-								})
-							}
-						</List>
-				}
+							: <List>
+								{
+									this.state.films.map(film => {
+										return (
+											<ListItem className={this.props.classes.filmListItem} key={film.Id}>
+												<FilmCard film={film} />
+											</ListItem>
+										)
+									})
+								}
+							</List>
+					}
+				</Box>
 			</Box>
 		)
 	}
