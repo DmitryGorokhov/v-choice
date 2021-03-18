@@ -6,16 +6,47 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import { Box, createStyles, makeStyles, Typography } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => createStyles({
+	flex: {
+		display: 'flex',
+		justifyContent: 'space-between'
+	},
+	inputTitle: {
+		width: theme.spacing(40)
+	},
+	inputYear: {
+		width: theme.spacing(10)
+	},
+	item: {
+		margin: theme.spacing(2, 0)
+	},
+}));
 
 export default function FormDialog(props) {
+	const classes = useStyles();
+
 	const [open, setOpen] = React.useState(false);
 	let onAddFilm = props.foo;
+	let genres = props.genres;
 
 	let film = {
 		Title: '',
 		Description: '',
-		Year: ''
+		Year: '',
+		Genres: []
 	}
+
+	const getAllUnchecked = () => {
+		let arr = [];
+		genres.map(g => { arr.push(false) });
+		return (arr);
+	};
+
+	const [checked, setChecked] = React.useState(getAllUnchecked());
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -36,6 +67,7 @@ export default function FormDialog(props) {
 		})
 			.then(response => response.json())
 			.then(result => onAddFilm(result));
+		setChecked(getAllUnchecked());
 		setOpen(false);
 	};
 
@@ -51,6 +83,14 @@ export default function FormDialog(props) {
 		film.Description = event.target.value;
 	};
 
+	const handleChange = (event) => {
+		checked[event.target.name] = !checked[event.target.name];
+		setChecked(checked);
+		checked[event.target.name]
+			? film.Genres.push(genres[event.target.name])
+			: film.Genres.splice(film.Genres.indexOf(genres[event.target.name]), 1);
+	};
+
 	return (
 		<div>
 			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
@@ -63,29 +103,56 @@ export default function FormDialog(props) {
 					<DialogContentText>
 						Заполните информацию о фильме
           			</DialogContentText>
-					<TextField
-						autoFocus
-						margin="dense"
-						id="title"
-						label="Название"
-						type="input"
-						onChange={handleChangeTitle}
-					/>
-					<TextField
-						margin="dense"
-						id="year"
-						label="Год"
-						type="number"
-						onChange={handleChangeYear}
-					/>
+					<Box className={classes.item && classes.flex}>
+						<TextField
+							autoFocus
+							margin="dense"
+							id="title"
+							label="Название"
+							type="input"
+							className={classes.inputTitle}
+							onChange={handleChangeTitle}
+						/>
+						<TextField
+							margin="dense"
+							id="year"
+							label="Год"
+							type="number"
+							className={classes.inputYear}
+							onChange={handleChangeYear}
+						/>
+					</Box>
+
 					<TextField
 						margin="dense"
 						id="description"
 						label="Описание"
 						type="input"
+						className={classes.item}
 						onChange={handleChangeDescription}
 						fullWidth
 					/>
+					<Box className={classes.item}>
+						<Typography>Жанры</Typography>
+						{
+							genres.map(g => {
+								let index = genres.indexOf(g);
+								return (
+									<FormControlLabel
+										control={
+											<Checkbox
+												checked={checked[index]}
+												onChange={handleChange}
+												name={`${index}`}
+												color="primary"
+											/>
+										}
+										label={g.Value}
+									/>
+								);
+							})
+						}
+					</Box>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} color="primary">

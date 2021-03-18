@@ -12,24 +12,29 @@ const styles = (theme) => ({
 		margin: theme.spacing(1),
 		fontSize: '20px'
 	},
-
 });
 
 class FilmList extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { films: [], loading: true };
+		this.state = { genres: [], films: [], loading: true };
 	}
 
 	componentDidMount() {
-		let fetchURL = 'api/films';
-		this.fetchFilmsData(fetchURL);
+		this.fetchFilmsData('api/films');
+		this.fetchGenresData('api/genres');
 	}
 
 	async fetchFilmsData(fetchURL) {
 		const response = await fetch(fetchURL);
 		const data = await response.json();
 		this.setState({ films: data, loading: false });
+	}
+
+	async fetchGenresData(fetchURL) {
+		const response = await fetch(fetchURL);
+		const data = await response.json();
+		this.setState({ genres: data });
 	}
 
 	addCreatedFilm = (film) => {
@@ -46,7 +51,7 @@ class FilmList extends Component {
 	render() {
 		return (
 			<Box>
-				<AddFilmDialog foo={this.addCreatedFilm} />
+				<AddFilmDialog foo={this.addCreatedFilm} genres={this.state.genres} />
 				<Box>
 					{
 						this.state.loading
