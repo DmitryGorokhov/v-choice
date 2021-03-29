@@ -10,7 +10,7 @@ namespace v_choice.Models
         public Film() : base()
         {
             Comments = new HashSet<Comment>();
-            Viewers = new HashSet<Viewer>();
+            Users = new HashSet<User>();
             Genres = new HashSet<Genre>();
         }
 
@@ -20,7 +20,7 @@ namespace v_choice.Models
         public string Description { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
-        public virtual ICollection<Viewer> Viewers { get; set; }
+        public virtual ICollection<User> Users { get; set; }
         public virtual ICollection<Genre> Genres { get; set; }
     }
 }

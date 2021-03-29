@@ -42,7 +42,9 @@ export default function FormDialog(props) {
 
 	const getAllUnchecked = () => {
 		let arr = [];
-		genres.map(g => { arr.push(false) });
+		genres.forEach(element => {
+			arr.push(false)
+		});
 		return (arr);
 	};
 
@@ -135,10 +137,10 @@ export default function FormDialog(props) {
 					<Box className={classes.item}>
 						<Typography>Жанры</Typography>
 						{
-							genres.map(g => {
-								let index = genres.indexOf(g);
+							genres.map((g, index) => {
 								return (
 									<FormControlLabel
+										key={index}
 										control={
 											<Checkbox
 												checked={checked[index]}

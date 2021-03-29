@@ -55,13 +55,14 @@ class FilmList extends Component {
 	}
 
 	updateFilm = (film) => {
-		let index = this.state.films.map(f => {
+		let index = this.state.films.foreach(f => {
 			if (f.Id === film.Id) {
 				return (this.state.films.indexOf(f));
 			}
 		})
-		this.state.films[index] = film;
-		this.setState({ films: this.state.films });
+		let arr = this.state.films;
+		arr[index] = film;
+		this.setState({ films: arr });
 	}
 
 	render() {

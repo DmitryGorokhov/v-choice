@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +26,8 @@ namespace v_choice
         {
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<DBContext>(opt => opt.UseSqlServer(connection));
+
+            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
 
             services.AddControllersWithViews();
 
@@ -62,6 +63,7 @@ namespace v_choice
                 app.UseHsts();
             }
 
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

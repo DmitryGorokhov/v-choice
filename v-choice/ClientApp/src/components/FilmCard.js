@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Box, Button, Card, Typography } from '@material-ui/core'
+import { Box, Card, Typography } from '@material-ui/core'
 import { withStyles } from "@material-ui/core/styles";
 import DeleteFilm from './DeleteFilm';
 import UpdateFilmDialog from './UpdateFilmDialog';
@@ -25,7 +25,8 @@ const styles = (theme) => ({
 	},
 	filmDescription: {
 		fontSize: '18px',
-		lineHeight: "150%"
+		lineHeight: "150%",
+		marginBottom: theme.spacing(2)
 	},
 	filmGenre: {
 		display: 'inline-block',
@@ -34,7 +35,8 @@ const styles = (theme) => ({
 		marginRight: theme.spacing(1)
 	},
 	filmTitle: {
-		textIndent: theme.spacing(5)
+		textIndent: theme.spacing(5),
+		marginBottom: theme.spacing(2)
 	},
 	filmYear: {
 		fontWeight: 'bold',
@@ -69,9 +71,9 @@ class FilmCard extends Component {
 						this.film.Genres.lenght !== 0
 							? <Box className={this.classes.genresBox}>
 								{
-									this.film.Genres.map(genre => {
+									this.film.Genres.map((genre, index) => {
 										return (
-											<Typography className={this.classes.filmGenre}>
+											<Typography key={index} className={this.classes.filmGenre}>
 												{genre.Value}
 											</Typography>
 										)

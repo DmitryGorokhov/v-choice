@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, makeStyles, createStyles, Typography } from '@material-ui/core'
+import { Box, makeStyles, createStyles, Typography, Container } from '@material-ui/core'
 import FilmList from './FilmList'
 
 const useStyles = makeStyles((theme) => createStyles({
@@ -15,14 +15,14 @@ function Films() {
 	const classes = useStyles();
 
 	return (
-		<Box>
+		<Container>
 			<Box className={classes.headerContainer}>
 				<Typography variant="h2">
 					Фильмы
 				</Typography>
 			</Box>
 			<FilmList />
-		</Box>
+		</Container>
 	)
 }
 

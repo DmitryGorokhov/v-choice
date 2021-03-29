@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace v_choice.Models
 {
-    public class DBContext: DbContext
+    public partial class DBContext: IdentityDbContext<User>
     {
         #region Constructor
         public DBContext(DbContextOptions<DBContext> options)
@@ -18,10 +15,11 @@ namespace v_choice.Models
         public virtual DbSet<Comment> Comment { get; set; }
         public virtual DbSet<Genre> Genre { get; set; }
         public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<Viewer> Viewer { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Genre>(entity =>
             {
                 entity.HasMany(e => e.Films)
@@ -42,10 +40,10 @@ namespace v_choice.Models
                 .HasForeignKey(e => e.AuthorId);
             });
 
-            modelBuilder.Entity<Viewer>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.HasMany(e => e.Favorites)
-                .WithMany(e => e.Viewers);
+                .WithMany(e => e.Users);
             });
         }
 
