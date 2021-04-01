@@ -68,7 +68,7 @@ class FilmCard extends Component {
 				</Typography>
 				<Box className={this.classes.cardItem && this.classes.cardVerticalSection}>
 					{
-						this.film.Genres.lenght !== 0
+						(this.film.Genres !== undefined) && (this.film.Genres.lenght !== 0)
 							? <Box className={this.classes.genresBox}>
 								{
 									this.film.Genres.map((genre, index) => {
@@ -85,8 +85,8 @@ class FilmCard extends Component {
 							</Typography>
 					}
 					<Box className={this.classes.btns}>
-						<UpdateFilmDialog film={this.film} foo={this.props.onUpdate} genres={this.props.genres} />
-						<DeleteFilm film={this.film} btnStyle={this.classes.btnDelete} foo={this.props.onDelete} />
+						<UpdateFilmDialog film={this.film} />
+						<DeleteFilm film={this.film} btnStyle={this.classes.btnDelete} />
 					</Box>
 				</Box>
 			</Card >

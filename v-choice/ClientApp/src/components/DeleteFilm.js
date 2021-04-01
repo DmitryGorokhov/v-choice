@@ -5,13 +5,16 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogContentText,
-	DialogTitle
+	DialogTitle,
 } from '@material-ui/core';
+import MyAlerter from './MyAlerter'
 
 function DeleteFilm(props) {
 	const [open, setOpen] = React.useState(false);
+	const [error, setError] = React.useState(null);
+	const [msg, setMsg] = React.useState(null);
+
 	let film = props.film;
-	let onDeleteFilm = props.foo;
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -23,11 +26,18 @@ function DeleteFilm(props) {
 
 	const handleSubmit = () => {
 		const postURL = `api/films/${film.Id}`;
+		console.log(postURL);
 		fetch(postURL, {
 			method: 'DELETE'
-		});
-		onDeleteFilm(film);
-		setOpen(false);
+		})
+			.then(response => {
+				if (response.status === 401) {
+					setError("Недостаточно прав для выполнения операции");
+				}
+				if (response.status === 204) {
+					setMsg("Фильм успешно удален")
+				}
+			});
 	};
 
 	return (
@@ -41,6 +51,7 @@ function DeleteFilm(props) {
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Удалить фильм</DialogTitle>
 				<DialogContent>
+					<MyAlerter msg={msg} error={error} />
 					<DialogContentText>
 						Вы действительно хотите удалить фильм {film.Title}?
 					</DialogContentText>

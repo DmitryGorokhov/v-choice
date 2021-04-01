@@ -10,7 +10,7 @@ using v_choice.Models;
 namespace v_choice.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210322090533_Initial")]
+    [Migration("20210401104434_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

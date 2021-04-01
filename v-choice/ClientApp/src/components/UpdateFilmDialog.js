@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Box, createStyles, makeStyles, Typography } from '@material-ui/core';
+import MyAlerter from './MyAlerter';
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -25,31 +26,14 @@ const useStyles = makeStyles((theme) => createStyles({
 }));
 
 export default function UpdateFilmDialog(props) {
-	let onUpdateFilm = props.foo;
-	let genres = props.genres;
-	let film = props.film;
-
 	const classes = useStyles();
 	const [open, setOpen] = React.useState(false);
-	const [title, setTitle] = React.useState(film.Title);
-	const [year, setYear] = React.useState(film.Year);
-	const [description, setDescription] = React.useState(film.Description);
+	const [title, setTitle] = React.useState(props.film.Title);
+	const [year, setYear] = React.useState(props.film.Year);
+	const [description, setDescription] = React.useState(props.film.Description);
 
-	const checkCurrentGenres = () => {
-		let arr = [];
-		let ids = [];
-		film.Genres.map(g => {
-			ids.push(g.Id);
-		})
-		genres.map(g => {
-			(ids.indexOf(g.Id) !== -1)
-				? arr.push(true)
-				: arr.push(false);
-		});
-		return (arr);
-	};
-
-	const [checked, setChecked] = React.useState(checkCurrentGenres());
+	const [error, setError] = React.useState(null);
+	const [msg, setMsg] = React.useState(null);
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -60,20 +44,27 @@ export default function UpdateFilmDialog(props) {
 	};
 
 	const handleSubmit = () => {
-		film.Title = title;
-		film.Year = year;
-		film.Description = description;
-		const postURL = `api/films/${film.Id}`;
+		let film = {
+			Title: title || props.film.Title,
+			Description: description || props.film.Description,
+			Year: year || props.film.Year,
+		}
+		const postURL = `api/films/${props.film.Id}`;
 		fetch(postURL, {
 			method: 'PUT',
 			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify(film)
 		})
-			.then(response => response.json());
-		onUpdateFilm(film);
-		setOpen(false);
+			.then(response => {
+				if (response.status === 401) {
+					setError("Недостаточно прав для выполнения операции");
+				}
+				if (response.status === 204) {
+					setMsg("Фильм успешно изменен")
+				}
+			});
 	};
 
 	const handleChangeTitle = (event) => {
@@ -88,8 +79,6 @@ export default function UpdateFilmDialog(props) {
 		setDescription(event.target.value);
 	};
 
-
-
 	return (
 		<div>
 			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
@@ -99,6 +88,7 @@ export default function UpdateFilmDialog(props) {
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Изменить информацию о фильме</DialogTitle>
 				<DialogContent>
+					<MyAlerter msg={msg} error={error} />
 					<DialogContentText>
 						Заполните информацию о фильме
           			</DialogContentText>

@@ -9,6 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Box, createStyles, makeStyles, Typography } from '@material-ui/core';
+import MyAlerter from './MyAlerter';
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -30,7 +31,9 @@ export default function FormDialog(props) {
 	const classes = useStyles();
 
 	const [open, setOpen] = React.useState(false);
-	let onAddFilm = props.foo;
+	const [error, setError] = React.useState(null);
+	const [msg, setMsg] = React.useState(null);
+
 	let genres = props.genres;
 
 	let film = {
@@ -67,10 +70,14 @@ export default function FormDialog(props) {
 			},
 			body: JSON.stringify(film)
 		})
-			.then(response => response.json())
-			.then(result => onAddFilm(result));
-		setChecked(getAllUnchecked());
-		setOpen(false);
+			.then(response => {
+				if (response.status === 401) {
+					setError("Недостаточно прав для выполнения операции");
+				}
+				if (response.status === 201) {
+					setMsg("Фильм успешно создан")
+				}
+			});
 	};
 
 	const handleChangeTitle = (event) => {
@@ -102,6 +109,7 @@ export default function FormDialog(props) {
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Добавить новый фильм</DialogTitle>
 				<DialogContent>
+					<MyAlerter msg={msg} error={error} />
 					<DialogContentText>
 						Заполните информацию о фильме
           			</DialogContentText>

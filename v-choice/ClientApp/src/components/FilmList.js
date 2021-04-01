@@ -43,28 +43,6 @@ class FilmList extends Component {
 			.then(result => this.setState({ genres: result, loading: false }));
 	}
 
-	addCreatedFilm = (film) => {
-		this.state.films.push(film);
-		this.setState({ films: this.state.films });
-	}
-
-	removeFilm = (film) => {
-		let index = this.state.films.indexOf(film);
-		if (index !== -1) this.state.films.splice(index, 1);
-		this.setState({ films: this.state.films });
-	}
-
-	updateFilm = (film) => {
-		let index = this.state.films.foreach(f => {
-			if (f.Id === film.Id) {
-				return (this.state.films.indexOf(f));
-			}
-		})
-		let arr = this.state.films;
-		arr[index] = film;
-		this.setState({ films: arr });
-	}
-
 	render() {
 		return (
 			<Box>
@@ -72,7 +50,7 @@ class FilmList extends Component {
 					<Typography variant="subtitle1">
 						Инструменты
 					</Typography>
-					<AddFilmDialog foo={this.addCreatedFilm} genres={this.state.genres} />
+					<AddFilmDialog genres={this.state.genres} />
 				</Box>
 				<Box>
 					{
@@ -85,11 +63,7 @@ class FilmList extends Component {
 									this.state.films.map(film => {
 										return (
 											<ListItem className={this.props.classes.filmListItem} key={film.Id}>
-												<FilmCard film={film}
-													onDelete={this.removeFilm}
-													onUpdate={this.updateFilm}
-													genres={this.state.genres}
-												/>
+												<FilmCard film={film} />
 											</ListItem>
 										)
 									})
