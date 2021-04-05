@@ -86,6 +86,17 @@ export function SignUp() {
 			user.PasswordConfirm = event.target.value;
 	};
 
+	const logoutAction = () => {
+		fetch("api/account/logoff", {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		});
+	}
+
+	logoutAction();
+
 	return (
 		<div>
 			<Container component="main" maxWidth="xs">

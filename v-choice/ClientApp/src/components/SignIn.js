@@ -92,6 +92,17 @@ export function SignIn() {
 		user.RememberMe = event.target.checked;
 	}
 
+	const logoutAction = () => {
+		fetch("api/account/logoff", {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		});
+	}
+
+	logoutAction();
+
 	return (
 		<Container component="main" maxWidth="xs">
 			<CssBaseline />
