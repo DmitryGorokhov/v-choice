@@ -119,7 +119,7 @@ namespace v_choice.Controllers
         [HttpPost]
         [Route("api/Account/isAuthenticated")]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogisAuthenticatedOff()
+        public async Task<IActionResult> LoginAuthenticatedOff()
         {
             User usr = await GetCurrentUserAsync();
             var message = usr == null ? "guest" : usr.UserName;

@@ -10,7 +10,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Alert from '@material-ui/lab/Alert';
+
+import AuthResultsAction from './AuthResultsAction';
 
 function Copyright() {
 	return (
@@ -86,17 +87,6 @@ export function SignUp() {
 			user.PasswordConfirm = event.target.value;
 	};
 
-	const logoutAction = () => {
-		fetch("api/account/logoff", {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-		});
-	}
-
-	logoutAction();
-
 	return (
 		<div>
 			<Container component="main" maxWidth="xs">
@@ -110,28 +100,7 @@ export function SignUp() {
 					<Typography component="h1" variant="h5">
 						Регистрация
        				</Typography>
-					<Box>
-						{
-							msg === null
-								? error && error.map(e => {
-									return (
-										<Alert variant="outlined" severity="warning">
-											{e}
-										</Alert>
-									);
-								})
-								: () => {
-									return (
-										<Alert variant="outlined" severity="success">
-											{msg}<br />
-											<Link href="/" variant="body2">
-												Перейти на главную страницу
-              								</Link>
-										</Alert>
-									)
-								}
-						}
-					</Box>
+					<AuthResultsAction error={error} msg={msg} />
 					<form className={classes.form} noValidate>
 						<Grid container spacing={2}>
 							<Grid item xs={12}>
