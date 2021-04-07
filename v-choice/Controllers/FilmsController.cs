@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using v_choice.Models;
+using v_choice.Interfaces;
 
 namespace v_choice.Controllers
 {
@@ -12,27 +11,17 @@ namespace v_choice.Controllers
     [ApiController]
     public class FilmsController : Controller
     {
-        private DBContext _context;
+        private IFilmRepository _films;
 
-        public FilmsController(DBContext context)
+        public FilmsController(IFilmRepository films)
         {
-            _context = context;
-            if (_context.Film.Count() == 0)
-            {
-                _context.Film.Add(new Film { 
-                    Title = "Fake Film",
-                    Year = 2021,
-                    Description = "Пустое описание",
-                });
-                    
-                _context.SaveChanges();
-            }
+            _films = films;
         }
 
         [HttpGet]
         public IEnumerable<Film> GetAll()
         {
-            return _context.Film.Include(f => f.Genres);
+            return (IEnumerable<Film>)_films.GetAllFilmsAsync();
         }
 
         [HttpGet("{id}")]
@@ -42,14 +31,11 @@ namespace v_choice.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var film = await _context.Film.SingleOrDefaultAsync(m => m.Id == id);
-
+            var film = await _films.GetFilmAsync(id);
             if (film == null)
             {
                 return NotFound();
             }
-
             return Ok(film);
         }
         [Authorize(Roles = "admin")]
@@ -60,23 +46,7 @@ namespace v_choice.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            if (film.Genres.Count != 0)
-            {
-                foreach (var genre in film.Genres)
-                {
-                    var g = _context.Genre.FirstOrDefault(e => e.Id == genre.Id);
-                    if (g != null)
-                    {
-                        g.Films.Add(film);
-                        _context.Genre.Update(g);
-                    }
-                }
-            }
-            film.Genres = new HashSet<Genre>();
-            _context.Film.Add(film);
-            await _context.SaveChangesAsync();
-
+            await _films.CreateFilmAsync(film);
             return CreatedAtAction("GetFilm", new { id = film.Id }, film);
         }
         [Authorize(Roles = "admin")]
@@ -87,17 +57,15 @@ namespace v_choice.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var item = _context.Film.Find(id);
-            if (item == null)
+            try
             {
-                return NotFound();
+                await _films.UpdateFilmAsync(id, film);
+                return NoContent();
             }
-            item.Title = film.Title;
-            item.Year = film.Year;
-            item.Description = film.Description;
-            _context.Film.Update(item);
-            await _context.SaveChangesAsync();
-            return NoContent();
+            catch (System.Exception)
+            {
+                return NoContent();
+            }
         }
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
@@ -107,14 +75,15 @@ namespace v_choice.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var item = _context.Film.Find(id);
-            if (item == null)
+            try
             {
-                return NotFound();
+                await _films.DeleteFilmAsync(id);
+                return NoContent();
             }
-            _context.Film.Remove(item);
-            await _context.SaveChangesAsync();
-            return NoContent();
+            catch (System.Exception)
+            {
+                return NoContent();
+            }
         }
     }
 }

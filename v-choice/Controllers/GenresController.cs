@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using v_choice.Models;
+using v_choice.Interfaces;
 
 namespace v_choice.Controllers
 {
@@ -11,16 +9,16 @@ namespace v_choice.Controllers
     [ApiController]
     public class GenresController : Controller
     {
-        private DBContext _context;
-        public GenresController(DBContext context)
+        private IGenreRepository _genres;
+        public GenresController(IGenreRepository genres)
         {
-            _context = context;
+            _genres = genres;
         }
 
         [HttpGet]
         public IEnumerable<Genre> GetAll()
         {
-            return _context.Genre;
+            return _genres.GetAllGenres();
         }
     }
 }

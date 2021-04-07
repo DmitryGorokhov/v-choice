@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using v_choice.Models;
-using v_choice.Data;
+using v_choice.DAL;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace v_choice

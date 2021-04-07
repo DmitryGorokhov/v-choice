@@ -10,6 +10,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
+using v_choice.DAL;
+using v_choice.DAL.Repositories;
+using v_choice.Interfaces;
 using v_choice.Models;
 
 namespace v_choice
@@ -28,6 +31,8 @@ namespace v_choice
         {
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<DBContext>(opt => opt.UseSqlServer(connection));
+            services.AddScoped<IFilmRepository, FilmRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
 
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
 

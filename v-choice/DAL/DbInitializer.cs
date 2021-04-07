@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using v_choice.Models;
 
-namespace v_choice.Data
+namespace v_choice.DAL
 {
     public class DbInitializer
     {

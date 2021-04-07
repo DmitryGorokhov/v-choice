@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using v_choice.Models;
 
-namespace v_choice.Models
+namespace v_choice.DAL
 {
     public partial class DBContext: IdentityDbContext<User>
     {
