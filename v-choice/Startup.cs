@@ -33,6 +33,7 @@ namespace v_choice
             services.AddDbContext<DBContext>(opt => opt.UseSqlServer(connection));
             services.AddScoped<IFilmRepository, FilmRepository>();
             services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
 

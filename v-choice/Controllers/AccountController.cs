@@ -2,20 +2,18 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using v_choice.Models;
-using Microsoft.AspNetCore.Identity;
+using v_choice.Interfaces;
 
 namespace v_choice.Controllers
 {
     [Produces("application/json")]
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly IUserRepository _users;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(IUserRepository users)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _users = users;
         }
 
         [HttpPost]
@@ -24,17 +22,13 @@ namespace v_choice.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new User { Email = model.Email, UserName = model.Email };
                 // Добавление нового пользователя
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _users.UserRegisterAsync(model);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "user");
-                    // установка куки
-                    await _signInManager.SignInAsync(user, false);
                     var msg = new
                     {
-                        message = "Добавлен новый пользователь: " + user.UserName
+                        message = "Добавлен новый пользователь: " + model.Email
                     };
                     return Ok(msg);
                 }
@@ -65,13 +59,11 @@ namespace v_choice.Controllers
 
         [HttpPost]
         [Route("api/Account/Login")]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var result =
-                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                var result = await _users.UserLogInAsync(model);
                 if (result.Succeeded)
                 {
                     var msg = new
@@ -104,11 +96,9 @@ namespace v_choice.Controllers
 
         [HttpPost]
         [Route("api/account/logoff")]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()
         {
-            // Удаление куки
-            await _signInManager.SignOutAsync();
+            await _users.UserSignOutAsync();
             var msg = new
             {
                 message = "Выполнен выход."
@@ -118,10 +108,9 @@ namespace v_choice.Controllers
 
         [HttpPost]
         [Route("api/Account/isAuthenticated")]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAuthenticatedOff()
         {
-            User usr = await GetCurrentUserAsync();
+            User usr = await _users.GetCurrentUserAsync(HttpContext.User);
             var message = usr == null ? "guest" : usr.UserName;
             var msg = new
             {
@@ -130,6 +119,5 @@ namespace v_choice.Controllers
             return Ok(msg);
 
         }
-        private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
     }
 }
