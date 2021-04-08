@@ -10,8 +10,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
-import AuthResultsAction from './AuthResultsAction';
+import Alert from '@material-ui/lab/Alert';
+import { Redirect } from 'react-router';
+import { NavMenu } from './NavMenu';
 
 function Copyright() {
 	return (
@@ -59,7 +60,6 @@ export function SignUp() {
 	const [msg, setMsg] = useState(null);
 
 	const handleSubmit = () => {
-		console.log(user);
 		fetch('/api/account/register', {
 			method: 'POST',
 			headers: {
@@ -87,11 +87,20 @@ export function SignUp() {
 			user.PasswordConfirm = event.target.value;
 	};
 
+	const logoutAction = () => {
+		fetch("api/account/logoff", {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		});
+	}
+
 	return (
 		<div>
+			<NavMenu />
 			<Container component="main" maxWidth="xs">
 				<CssBaseline />
-
 				<div className={classes.paper}>
 
 					<Avatar className={classes.avatar}>
@@ -100,7 +109,20 @@ export function SignUp() {
 					<Typography component="h1" variant="h5">
 						Регистрация
        				</Typography>
-					<AuthResultsAction error={error} msg={msg} />
+					<Box>
+						{
+							msg === null
+								? error !== null
+									? error.map((e, index) => {
+										return (
+											<Alert variant="outlined" severity="warning" key={index}>
+												{e}
+											</Alert>);
+									})
+									: logoutAction()
+								: <Redirect to="/" />
+						}
+					</Box>
 					<form className={classes.form} noValidate>
 						<Grid container spacing={2}>
 							<Grid item xs={12}>

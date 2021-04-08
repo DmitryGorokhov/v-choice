@@ -12,6 +12,7 @@ export default class App extends Component {
   static displayName = App.name;
 
   render() {
+
     return (
       <Layout>
         <Route exact path='/' component={Films} />

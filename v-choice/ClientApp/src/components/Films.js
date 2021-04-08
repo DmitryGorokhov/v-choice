@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, makeStyles, createStyles, Typography, Container } from '@material-ui/core'
 import FilmList from './FilmList'
+import { NavMenu } from './NavMenu';
 
 const useStyles = makeStyles((theme) => createStyles({
 	headerContainer: {
@@ -15,14 +16,17 @@ function Films() {
 	const classes = useStyles();
 
 	return (
-		<Container>
-			<Box className={classes.headerContainer}>
-				<Typography variant="h2">
-					Фильмы
+		<div>
+			<NavMenu />
+			<Container>
+				<Box className={classes.headerContainer}>
+					<Typography variant="h2">
+						Фильмы
 				</Typography>
-			</Box>
-			<FilmList />
-		</Container>
+				</Box>
+				<FilmList />
+			</Container>
+		</div>
 	)
 }
 

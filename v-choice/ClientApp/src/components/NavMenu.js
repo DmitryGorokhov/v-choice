@@ -26,7 +26,7 @@ export class NavMenu extends Component {
     this.checkUserAuth();
   }
 
-  async checkUserAuth() {
+  checkUserAuth() {
     fetch("api/account/isAuthenticated", {
       method: 'POST',
       headers: {

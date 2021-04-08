@@ -12,8 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
-import AuthResultsAction from './AuthResultsAction';
+import Alert from '@material-ui/lab/Alert';
+import { Redirect } from 'react-router';
+import { NavMenu } from './NavMenu';
 
 function Copyright() {
 	return (
@@ -93,71 +94,96 @@ export function SignIn() {
 		user.RememberMe = event.target.checked;
 	}
 
+	const logoutAction = () => {
+		fetch("api/account/logoff", {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		});
+	}
 	return (
-		<Container component="main" maxWidth="xs">
-			<CssBaseline />
-			<div className={classes.paper}>
-				<Avatar className={classes.avatar}>
-					<LockOutlinedIcon />
-				</Avatar>
-				<Typography component="h1" variant="h5">
-					Вход
+		<div>
+			<NavMenu />
+			<Container component="main" maxWidth="xs">
+
+				<CssBaseline />
+				<div className={classes.paper}>
+					<Avatar className={classes.avatar}>
+						<LockOutlinedIcon />
+					</Avatar>
+					<Typography component="h1" variant="h5">
+						Вход
         		</Typography>
-				<AuthResultsAction error={error} msg={msg} />
-				<form className={classes.form} noValidate>
-					<TextField
-						variant="outlined"
-						margin="normal"
-						required
-						fullWidth
-						onChange={handleChanged}
-						label="Email"
-						name="email"
-						autoComplete="email"
-						autoFocus
-					/>
-					<TextField
-						variant="outlined"
-						margin="normal"
-						required
-						fullWidth
-						onChange={handleChanged}
-						name="password"
-						label="Пароль"
-						type="password"
-						id="password"
-						autoComplete="current-password"
-					/>
-					<FormControlLabel
-						control={
-							<Checkbox
-								value="remember"
-								color="primary"
-								onChange={handleChecked}
-							/>}
-						label="Запомнить меня"
-					/>
-					<Button
-						fullWidth
-						variant="contained"
-						color="primary"
-						onClick={handleSubmit}
-						className={classes.submit}
-					>
-						Войти
+					<Box>
+						{
+							msg === null
+								? error !== null
+									? error.map((e, index) => {
+										return (
+											<Alert variant="outlined" severity="warning" key={index}>
+												{e}
+											</Alert>);
+									})
+									: logoutAction()
+								: <Redirect to="/" />
+						}
+					</Box>
+					<form className={classes.form} noValidate>
+						<TextField
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							onChange={handleChanged}
+							label="Email"
+							name="email"
+							autoComplete="email"
+							autoFocus
+						/>
+						<TextField
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							onChange={handleChanged}
+							name="password"
+							label="Пароль"
+							type="password"
+							id="password"
+							autoComplete="current-password"
+						/>
+						<FormControlLabel
+							control={
+								<Checkbox
+									value="remember"
+									color="primary"
+									onChange={handleChecked}
+								/>}
+							label="Запомнить меня"
+						/>
+						<Button
+							fullWidth
+							variant="contained"
+							color="primary"
+							onClick={handleSubmit}
+							className={classes.submit}
+						>
+							Войти
           			</Button>
-					<Grid container className="center">
-						<Grid item xs >
-							<Link href="/sign-up" variant="body2">
-								{"Нет учетной записи? Зарегистрируйтесь"}
-							</Link>
+						<Grid container className="center">
+							<Grid item xs >
+								<Link href="/sign-up" variant="body2">
+									{"Нет учетной записи? Зарегистрируйтесь"}
+								</Link>
+							</Grid>
 						</Grid>
-					</Grid>
-				</form>
-			</div>
-			<Box mt={8}>
-				<Copyright />
-			</Box>
-		</Container>
+					</form>
+				</div>
+				<Box mt={8}>
+					<Copyright />
+				</Box>
+			</Container>
+		</div>
 	);
 }
