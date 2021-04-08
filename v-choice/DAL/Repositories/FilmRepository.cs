@@ -35,12 +35,11 @@ namespace v_choice.DAL.Repositories
             return film;
         }
 
-        public async Task<int> DeleteFilmAsync(int id)
+        public async Task DeleteFilmAsync(int id)
         {
             var item = _context.Film.Find(id);
             _context.Film.Remove(item);
             await _context.SaveChangesAsync();
-            return 0;
         }
 
         public IEnumerable<Film> GetAllFilmsAsync()
@@ -53,7 +52,7 @@ namespace v_choice.DAL.Repositories
             return await _context.Film.SingleOrDefaultAsync(m => m.Id == id);
         }
 
-        public async Task<int> UpdateFilmAsync(int id, Film film)
+        public async Task UpdateFilmAsync(int id, Film film)
         {
             var item = _context.Film.Find(id);
             item.Title = film.Title;
@@ -61,7 +60,6 @@ namespace v_choice.DAL.Repositories
             item.Description = film.Description;
             _context.Film.Update(item);
             await _context.SaveChangesAsync();
-            return 0;
         }
     }
 }

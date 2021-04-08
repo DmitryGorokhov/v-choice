@@ -34,6 +34,7 @@ namespace v_choice
             services.AddScoped<IFilmRepository, FilmRepository>();
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICommentsRepository, CommentsRepository>();
 
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
 

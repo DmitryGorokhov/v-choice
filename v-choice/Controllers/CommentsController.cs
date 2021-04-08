@@ -1,58 +1,54 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using v_choice.Models;
-using v_choice.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using v_choice.Interfaces;
+using v_choice.Models;
 
 namespace v_choice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FilmsController : Controller
+    public class CommentsController : Controller
     {
-        private IFilmRepository _films;
-
-        public FilmsController(IFilmRepository films)
+        private readonly ICommentsRepository _comments;
+        public CommentsController(ICommentsRepository comments)
         {
-            _films = films;
-        }
-
-        [HttpGet]
-        public IEnumerable<Film> GetAll()
-        {
-            return _films.GetAllFilmsAsync();
+            _comments = comments;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetFilm([FromRoute] int id)
+        public IActionResult GetAllCommentsByFilmID([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var film = await _films.GetFilmAsync(id);
-            if (film == null)
+            var comments = _comments.GetAllCommentsAsync(id);
+            if(comments == null)
             {
                 return NotFound();
             }
-            return Ok(film);
+            return Ok(comments);
         }
-        [Authorize(Roles = "admin")]
+
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Film film)
+        public async Task<IActionResult> CreateComment([FromBody] Comment comment)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            await _films.CreateFilmAsync(film);
-            return CreatedAtAction("GetFilm", new { id = film.Id }, film);
+            await _comments.CreateCommentAsync(comment, HttpContext.User);
+            return CreatedAtAction("GetFilm", new { id = comment.Id }, comment);
         }
-        [Authorize(Roles = "admin")]
+
+        [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Film film)
+        public async Task<IActionResult> UpdateComment([FromRoute] int id, [FromBody] Comment comment)
         {
             if (!ModelState.IsValid)
             {
@@ -60,7 +56,7 @@ namespace v_choice.Controllers
             }
             try
             {
-                await _films.UpdateFilmAsync(id, film);
+                await _comments.UpdateCommentAsync(id, comment);
                 return NoContent();
             }
             catch (Exception)
@@ -68,9 +64,10 @@ namespace v_choice.Controllers
                 return NoContent();
             }
         }
-        [Authorize(Roles = "admin")]
+
+        [Authorize]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> DeleteComment([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +75,7 @@ namespace v_choice.Controllers
             }
             try
             {
-                await _films.DeleteFilmAsync(id);
+                await _comments.DeleteCommentAsync(id);
                 return NoContent();
             }
             catch (Exception)

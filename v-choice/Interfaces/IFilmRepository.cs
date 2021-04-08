@@ -9,7 +9,7 @@ namespace v_choice.Interfaces
         IEnumerable<Film> GetAllFilmsAsync();
         Task<Film> GetFilmAsync(int id);
         Task<Film> CreateFilmAsync(Film film);
-        Task<int> UpdateFilmAsync(int id, Film film);
-        Task<int> DeleteFilmAsync(int id);
+        Task UpdateFilmAsync(int id, Film film);
+        Task DeleteFilmAsync(int id);
     }
 }
