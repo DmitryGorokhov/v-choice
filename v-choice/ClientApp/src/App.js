@@ -7,6 +7,7 @@ import { SignUp } from "./components/SignUp";
 
 import './custom.css'
 import 'fontsource-roboto';
+import FilmPage from './components/FilmPage';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -18,6 +19,7 @@ export default class App extends Component {
         <Route exact path='/' component={Films} />
         <Route path='/sign-in' component={SignIn} />
         <Route path='/sign-up' component={SignUp} />
+        <Route path='/film' component={FilmPage} />
       </Layout>
     );
   }

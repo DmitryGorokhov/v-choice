@@ -1,0 +1,20 @@
+.contentContainer {
+	display: flex;
+	justify-content: space-between;
+	margin: 12px 20px;
+}
+
+.contentDate {
+	font-size: 16px;
+	opacity: 0.7;
+}
+
+.card {
+	margin: 20px;
+	padding: 8px;
+}
+
+.controlsContainer {
+	display: flex;
+	padding: 4px 20px;
+}

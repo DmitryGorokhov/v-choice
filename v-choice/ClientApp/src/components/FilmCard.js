@@ -49,6 +49,10 @@ const styles = (theme) => ({
 });
 
 class FilmCard extends Component {
+	constructor(props) {
+		super(props);
+	}
+
 	film = this.props.film;
 	classes = this.props.classes;
 
