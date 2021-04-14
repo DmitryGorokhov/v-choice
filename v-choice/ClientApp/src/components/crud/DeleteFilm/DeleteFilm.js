@@ -7,6 +7,7 @@ import {
 	DialogContentText,
 	DialogTitle,
 } from '@material-ui/core';
+
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 
 function DeleteFilm(props) {

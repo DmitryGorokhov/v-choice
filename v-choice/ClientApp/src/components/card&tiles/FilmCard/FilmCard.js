@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { Box, Card, Typography } from '@material-ui/core'
-import { withStyles } from "@material-ui/core/styles";
-import UpdateFilmDialog from './../../crud/UpdateFilmDialog/UpdateFilmDialog';
-import DeleteFilm from './../../crud/DeleteFilm/DeleteFilm';
+import { withStyles } from "@material-ui/core/styles"
+
+import UpdateFilmDialog from './../../crud/UpdateFilmDialog/UpdateFilmDialog'
+import DeleteFilm from './../../crud/DeleteFilm/DeleteFilm'
 
 const styles = (theme) => ({
 	btns: {

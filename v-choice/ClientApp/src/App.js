@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router';
+import React, { Component } from 'react'
+import { Route } from 'react-router'
 import './custom.css'
-import 'fontsource-roboto';
-import Films from './components/pages/Films/Films';
-import { SignIn } from './components/pages/SignIn/SignIn';
-import { SignUp } from './components/pages/SignUp/SignUp';
-import FilmPage from './components/pages/FilmPage/FilmPage';
-import { Layout } from './components/atoms/Layout/Layout';
+import 'fontsource-roboto'
 
+import Films from './components/pages/Films/Films'
+import { SignIn } from './components/pages/SignIn/SignIn'
+import { SignUp } from './components/pages/SignUp/SignUp'
+import FilmPage from './components/pages/FilmPage/FilmPage'
+import { Layout } from './components/atoms/Layout/Layout'
 
 export default class App extends Component {
   static displayName = App.name;

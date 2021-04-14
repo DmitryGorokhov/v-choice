@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles"
 import { List, ListItem, Typography } from '@material-ui/core'
-import CommentTile from '../../card&tiles/CommentTile/CommentTile';
-import CommentArea from '../../atoms/CommentArea/CommentArea';
+
+import CommentTile from '../../card&tiles/CommentTile/CommentTile'
+import CommentArea from '../../atoms/CommentArea/CommentArea'
 
 const styles = (theme) => ({
 	listItem: {

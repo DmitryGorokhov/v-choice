@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { useParams } from "react-router-dom"
 import { Typography } from '@material-ui/core'
+
 import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
-import { CommentsList } from '../../moleculas/CommentsList/CommentsList';
+import { CommentsList } from '../../moleculas/CommentsList/CommentsList'
 
 function FilmPage() {
 	let { slug } = useParams();
