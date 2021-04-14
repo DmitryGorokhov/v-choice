@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, makeStyles, createStyles, Typography, Container } from '@material-ui/core'
-import FilmList from './FilmList'
-import { NavMenu } from './NavMenu';
+import FilmList from '../../moleculas/FilmList/FilmList'
+import { NavMenu } from '../../atoms/NavMenu/NavMenu';
 
 const useStyles = makeStyles((theme) => createStyles({
 	headerContainer: {

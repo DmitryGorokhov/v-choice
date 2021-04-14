@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import Films from './components/Films';
-import { SignIn } from "./components/SignIn";
-import { SignUp } from "./components/SignUp";
-
 import './custom.css'
 import 'fontsource-roboto';
-import FilmPage from './components/FilmPage';
+import Films from './components/pages/Films/Films';
+import { SignIn } from './components/pages/SignIn/SignIn';
+import { SignUp } from './components/pages/SignUp/SignUp';
+import FilmPage from './components/pages/FilmPage/FilmPage';
+import { Layout } from './components/atoms/Layout/Layout';
+
 
 export default class App extends Component {
   static displayName = App.name;
 
   render() {
-
     return (
       <Layout>
         <Route exact path='/' component={Films} />

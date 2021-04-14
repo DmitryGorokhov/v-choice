@@ -7,7 +7,7 @@ import {
 	DialogContentText,
 	DialogTitle,
 } from '@material-ui/core';
-import MyAlerter from './MyAlerter'
+import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 
 function DeleteFilm(props) {
 	const [open, setOpen] = React.useState(false);

@@ -6,10 +6,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { Box, createStyles, makeStyles, Typography } from '@material-ui/core';
-import MyAlerter from './MyAlerter';
+import { Box, createStyles, makeStyles } from '@material-ui/core';
+import MyAlerter from '../../atoms/MyAlerter/MyAlerter';
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -27,31 +25,15 @@ const useStyles = makeStyles((theme) => createStyles({
 	},
 }));
 
-export default function FormDialog(props) {
+export default function UpdateFilmDialog(props) {
 	const classes = useStyles();
-
 	const [open, setOpen] = React.useState(false);
+	const [title, setTitle] = React.useState(props.film.Title);
+	const [year, setYear] = React.useState(props.film.Year);
+	const [description, setDescription] = React.useState(props.film.Description);
+
 	const [error, setError] = React.useState(null);
 	const [msg, setMsg] = React.useState(null);
-
-	let genres = props.genres;
-
-	let film = {
-		Title: '',
-		Description: '',
-		Year: '',
-		Genres: []
-	}
-
-	const getAllUnchecked = () => {
-		let arr = [];
-		genres.forEach(element => {
-			arr.push(false)
-		});
-		return (arr);
-	};
-
-	const [checked, setChecked] = React.useState(getAllUnchecked());
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -62,11 +44,16 @@ export default function FormDialog(props) {
 	};
 
 	const handleSubmit = () => {
-		const postURL = 'api/films';
+		let film = {
+			Title: title || props.film.Title,
+			Description: description || props.film.Description,
+			Year: year || props.film.Year,
+		}
+		const postURL = `api/films/${props.film.Id}`;
 		fetch(postURL, {
-			method: 'POST',
+			method: 'PUT',
 			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify(film)
 		})
@@ -74,40 +61,32 @@ export default function FormDialog(props) {
 				if (response.status === 401) {
 					setError("Недостаточно прав для выполнения операции");
 				}
-				if (response.status === 201) {
-					setMsg("Фильм успешно создан")
+				if (response.status === 204) {
+					setMsg("Фильм успешно изменен")
 				}
 			});
 	};
 
 	const handleChangeTitle = (event) => {
-		film.Title = event.target.value;
+		setTitle(event.target.value);
 	};
 
 	const handleChangeYear = (event) => {
-		film.Year = event.target.value;
+		setYear(event.target.value);
 	};
 
 	const handleChangeDescription = (event) => {
-		film.Description = event.target.value;
-	};
-
-	const handleChange = (event) => {
-		checked[event.target.name] = !checked[event.target.name];
-		setChecked(checked);
-		checked[event.target.name]
-			? film.Genres.push(genres[event.target.name])
-			: film.Genres.splice(film.Genres.indexOf(genres[event.target.name]), 1);
+		setDescription(event.target.value);
 	};
 
 	return (
 		<div>
 			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
-				Добавить новый
+				Изменить
       		</Button>
 
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-				<DialogTitle id="form-dialog-title">Добавить новый фильм</DialogTitle>
+				<DialogTitle id="form-dialog-title">Изменить информацию о фильме</DialogTitle>
 				<DialogContent>
 					<MyAlerter msg={msg} error={error} />
 					<DialogContentText>
@@ -120,6 +99,7 @@ export default function FormDialog(props) {
 							id="title"
 							label="Название"
 							type="input"
+							value={title}
 							className={classes.inputTitle}
 							onChange={handleChangeTitle}
 						/>
@@ -128,6 +108,7 @@ export default function FormDialog(props) {
 							id="year"
 							label="Год"
 							type="number"
+							value={year}
 							className={classes.inputYear}
 							onChange={handleChangeYear}
 						/>
@@ -138,38 +119,18 @@ export default function FormDialog(props) {
 						id="description"
 						label="Описание"
 						type="input"
+						value={description}
 						className={classes.item}
 						onChange={handleChangeDescription}
 						fullWidth
 					/>
-					<Box className={classes.item}>
-						<Typography>Жанры</Typography>
-						{
-							genres.map((g, index) => {
-								return (
-									<FormControlLabel
-										key={index}
-										control={
-											<Checkbox
-												checked={checked[index]}
-												onChange={handleChange}
-												name={`${index}`}
-												color="primary"
-											/>
-										}
-										label={g.Value}
-									/>
-								);
-							})
-						}
-					</Box>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} color="primary">
 						Отменить
           			</Button>
 					<Button onClick={handleSubmit} color="primary">
-						Добавить
+						Применить
           			</Button>
 				</DialogActions>
 			</Dialog>

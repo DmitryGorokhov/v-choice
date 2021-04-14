@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Box, List, ListItem, Typography } from '@material-ui/core'
-import { withStyles } from "@material-ui/core/styles";
-import FilmCard from './FilmCard'
-import AddFilmDialog from './AddFilmDialog'
+import { withStyles } from "@material-ui/core/styles"
+import FilmCard from '../../card&tiles/FilmCard/FilmCard'
+import AddFilmDialog from '../../crud/AddFilmDialog/AddFilmDialog'
 
 const styles = (theme) => ({
 	filmListItem: {

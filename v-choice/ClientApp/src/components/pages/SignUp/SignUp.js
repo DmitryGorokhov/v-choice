@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
 import { Redirect } from 'react-router';
-import { NavMenu } from './NavMenu';
+import { NavMenu } from '../../atoms/NavMenu/NavMenu';
 
 function Copyright() {
 	return (
