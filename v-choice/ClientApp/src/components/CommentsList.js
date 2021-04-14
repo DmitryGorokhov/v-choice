@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { withStyles } from "@material-ui/core/styles";
 import { List, ListItem, Typography } from '@material-ui/core'
 import CommentTile from './CommentTile/CommentTile';
+import CommentArea from './CommentArea/CommentArea';
 
 const styles = (theme) => ({
 	listItem: {
@@ -46,6 +47,7 @@ export class CommentsList extends Component {
 							}
 						</List>
 				}
+				<CommentArea />
 			</div>
 		)
 	}

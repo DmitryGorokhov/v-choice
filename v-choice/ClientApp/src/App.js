@@ -19,7 +19,7 @@ export default class App extends Component {
         <Route exact path='/' component={Films} />
         <Route path='/sign-in' component={SignIn} />
         <Route path='/sign-up' component={SignUp} />
-        <Route path='/film' component={FilmPage} />
+        <Route path='/film/:slug' component={FilmPage} />
       </Layout>
     );
   }

@@ -1,0 +1,14 @@
+.container {
+	display: flex;
+	justify-content: space-between;
+}
+
+.textField {
+	width: 85%;
+	margin-right: 20px;
+}
+
+.header {
+	margin: 12px 20px;
+}
+
