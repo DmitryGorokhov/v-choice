@@ -9,15 +9,16 @@ import {
 	FormControlLabel,
 	Grid,
 	Link,
-	LockOutlinedIcon,
 	TextField,
 	Typography
 } from '@material-ui/core'
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Redirect } from 'react-router'
 
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
+
 
 function Copyright() {
 	return (
