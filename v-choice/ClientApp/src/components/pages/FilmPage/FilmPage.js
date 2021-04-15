@@ -9,26 +9,37 @@ import { CommentsList } from '../../moleculas/CommentsList/CommentsList'
 function FilmPage() {
 	let { slug } = useParams();
 	const [film, setFilm] = useState(null);
+	const [userEmail, setUserEmail] = useState(null);
 
-	const fetchFilm = () => {
+	const loadPage = () => {
 		fetch(`api/films/${slug}`)
 			.then(response => response.json())
 			.then(result => setFilm(result));
+
+		fetch("api/account/isAuthenticated", {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		})
+			.then(response => response.json())
+			.then(result => {
+				result.message === "guest"
+					? setUserEmail(null)
+					: setUserEmail(result.message)
+			});
 	}
 
-	fetchFilm();
+	loadPage();
 	return (
 		<div>
 			<NavMenu />
-			{
-				console.log(film)
-			}
 			{
 				film !== null
 					? <FilmCard film={film} />
 					: <Typography>Загрузка...</Typography>
 			}
-			<CommentsList filmId={slug} />
+			<CommentsList filmId={slug} userEmail={userEmail} />
 		</div>
 	)
 }

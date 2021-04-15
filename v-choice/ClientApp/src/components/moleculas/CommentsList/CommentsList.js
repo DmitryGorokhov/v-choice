@@ -44,11 +44,19 @@ export class CommentsList extends Component {
 											</ListItem>
 										)
 									})
-									: <Typography>Пока нет ни одного комментария</Typography>
+									: <Typography variant='h5'>Пока нет комментариев</Typography>
 							}
 						</List>
 				}
-				<CommentArea />
+
+				{
+					this.props.userEmail === null
+						? <Typography variant='h6'>
+							Авторизируйтесь, чтобы оставить свой комментарий
+							</Typography>
+						: <CommentArea />
+				}
+
 			</div>
 		)
 	}
