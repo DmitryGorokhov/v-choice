@@ -4,6 +4,7 @@ import { withStyles } from "@material-ui/core/styles"
 
 import UpdateFilmDialog from './../../crud/UpdateFilmDialog/UpdateFilmDialog'
 import DeleteFilm from './../../crud/DeleteFilm/DeleteFilm'
+import { Link } from 'react-router-dom'
 
 const styles = (theme) => ({
 	btns: {
@@ -18,6 +19,12 @@ const styles = (theme) => ({
 	cardVerticalSection: {
 		display: 'flex',
 		justifyContent: "space-between",
+		alignItems: 'center'
+	},
+	controlsContainer: {
+		marginTop: theme.spacing(3),
+		display: 'flex',
+		justifyContent: 'space-between',
 		alignItems: 'center'
 	},
 	filmCard: {
@@ -44,7 +51,7 @@ const styles = (theme) => ({
 		fontSize: '16px'
 	},
 	genresBox: {
-		width: '50%',
+		width: '100%',
 		padding: theme.spacing(0.5)
 	}
 });
@@ -89,6 +96,9 @@ class FilmCard extends Component {
 								Жанры не выбраны
 							</Typography>
 					}
+				</Box>
+				<Box className={this.classes.controlsContainer}>
+					<Link to={`/film/${this.film.Id}`}>Подробнее</Link >
 					<Box className={this.classes.btns}>
 						<UpdateFilmDialog film={this.film} />
 						<DeleteFilm film={this.film} btnStyle={this.classes.btnDelete} />
