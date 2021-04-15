@@ -1,15 +1,9 @@
 import React, { Component } from 'react'
-import { withStyles } from "@material-ui/core/styles"
 import { List, ListItem, Typography } from '@material-ui/core'
 
 import CommentTile from '../../card&tiles/CommentTile/CommentTile'
 import CommentArea from '../../atoms/CommentArea/CommentArea'
-
-const styles = (theme) => ({
-	listItem: {
-		display: 'block'
-	},
-});
+import styles from './CommentsList.module.css'
 
 export class CommentsList extends Component {
 	constructor(props) {
@@ -27,6 +21,10 @@ export class CommentsList extends Component {
 			.then(result => this.setState({ comments: result, loading: false }));
 	}
 
+	addComment = (comment) => {
+		this.setState({ comments: [...this.state.comments, comment] })
+	}
+
 	render() {
 		return (
 			<div>
@@ -34,12 +32,12 @@ export class CommentsList extends Component {
 					this.state.loading
 						? <Typography>Загрузка...</Typography>
 						:
-						<List>
+						<List className={styles.list}>
 							{
 								this.state.comments.length !== 0
 									? this.state.comments.map(comment => {
 										return (
-											<ListItem className={this.props.classes.listItem} key={comment.Id}>
+											<ListItem className={styles.listItem} key={comment.Id}>
 												<CommentTile comment={comment} userId={null} />
 											</ListItem>
 										)
@@ -54,7 +52,7 @@ export class CommentsList extends Component {
 						? <Typography variant='h6'>
 							Авторизируйтесь, чтобы оставить свой комментарий
 							</Typography>
-						: <CommentArea />
+						: <CommentArea filmId={this.props.filmId} add={this.addComment} />
 				}
 
 			</div>
@@ -62,4 +60,4 @@ export class CommentsList extends Component {
 	}
 }
 
-export default withStyles(styles)(CommentsList)
+export default CommentsList

@@ -1,6 +1,7 @@
 .contentContainer {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	margin: 12px 20px;
 }
 
@@ -12,6 +13,7 @@
 .card {
 	margin: 20px;
 	padding: 8px;
+	width: 100%;
 }
 
 .controlsContainer {

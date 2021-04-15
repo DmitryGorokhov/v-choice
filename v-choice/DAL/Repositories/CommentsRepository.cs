@@ -22,7 +22,7 @@ namespace v_choice.DAL.Repositories
             User author = await _users.GetCurrentUserAsync(user);
             comment.Author = author;
             comment.AuthorId = author.Id;
-            comment.CreatedAt = new DateTime().Date;
+            comment.CreatedAt = DateTime.Now.Date;
 
             var film = _context.Film.Find(comment.FilmId);
             if(film != null)

@@ -1,8 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Button, TextField, Typography } from '@material-ui/core'
 import styles from './CommentArea.module.css'
 
-function CommentArea() {
+function CommentArea(props) {
+	const [text, setText] = useState('')
+
+	const handleTextChanged = (event) => {
+		setText(event.target.value);
+	}
+
+	const handleSubmit = () => {
+		let comment = {
+			Text: text,
+			FilmId: props.filmId
+		};
+		fetch('/api/comments', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json;charset=utf-8'
+			},
+			body: JSON.stringify(comment)
+		})
+			.then(response => response.json())
+			.then(result => props.add(result));
+		setText('');
+	}
+
 	return (
 		<div>
 			<Typography variant='h5' className={styles.header}>
@@ -16,9 +39,11 @@ function CommentArea() {
 					rows={4}
 					variant="outlined"
 					className={styles.textField}
+					value={text}
+					onChange={handleTextChanged}
 				/>
 				<Box>
-					<Button variant="outlined" >
+					<Button variant="outlined" onClick={handleSubmit}>
 						Отправить
 					</Button>
 				</Box>
