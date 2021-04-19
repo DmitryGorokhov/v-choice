@@ -26,9 +26,14 @@ export class CommentsList extends Component {
 	}
 
 	updateComment = (updComment) => {
-		console.log(updComment);
 		let ind = this.state.comments.findIndex(c => c.Id === updComment.Id);
 		this.state.comments[ind].Text = updComment.Text;
+		this.setState({ comments: this.state.comments });
+	}
+
+	deleteComment = (commentId) => {
+		let ind = this.state.comments.findIndex(c => c.Id === commentId);
+		this.state.comments.splice(ind, 1);
 		this.setState({ comments: this.state.comments });
 	}
 
@@ -45,7 +50,12 @@ export class CommentsList extends Component {
 									? this.state.comments.map(comment => {
 										return (
 											<ListItem className={styles.listItem} key={comment.Id}>
-												<CommentTile comment={comment} userEmail={this.props.userEmail} onUpdateMethod={this.updateComment} />
+												<CommentTile
+													comment={comment}
+													userEmail={this.props.userEmail}
+													onUpdateMethod={this.updateComment}
+													onDeleteMethod={this.deleteComment}
+												/>
 											</ListItem>
 										)
 									})
