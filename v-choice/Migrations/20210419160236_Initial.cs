@@ -189,6 +189,7 @@ namespace v_choice.Migrations
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    AuthorEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FilmId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

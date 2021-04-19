@@ -10,7 +10,7 @@ using v_choice.DAL;
 namespace v_choice.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210401104434_Initial")]
+    [Migration("20210419160236_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -188,6 +188,9 @@ namespace v_choice.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AuthorEmail")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AuthorId")
                         .HasColumnType("nvarchar(450)");

@@ -14,16 +14,30 @@ function CommentArea(props) {
 			Text: text,
 			FilmId: props.filmId
 		};
-		fetch('/api/comments', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			},
-			body: JSON.stringify(comment)
-		})
-			.then(response => response.json())
-			.then(result => props.add(result));
-		setText('');
+		if (props.typeMethod === "create") {
+			fetch('/api/comments', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+				},
+				body: JSON.stringify(comment)
+			})
+				.then(response => response.json())
+				.then(result => props.method(result));
+			setText('');
+		};
+		if (props.typeMethod === "update") {
+			comment.Id = props.commentId;
+			fetch(`/api/comments/${props.commentId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+				},
+				body: JSON.stringify(comment)
+			});
+			props.method(comment);
+			setText('');
+		};
 	}
 
 	return (

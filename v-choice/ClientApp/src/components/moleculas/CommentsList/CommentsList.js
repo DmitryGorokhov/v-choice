@@ -21,8 +21,15 @@ export class CommentsList extends Component {
 			.then(result => this.setState({ comments: result, loading: false }));
 	}
 
-	addComment = (comment) => {
+	createComment = (comment) => {
 		this.setState({ comments: [...this.state.comments, comment] })
+	}
+
+	updateComment = (updComment) => {
+		console.log(updComment);
+		let ind = this.state.comments.findIndex(c => c.Id === updComment.Id);
+		this.state.comments[ind].Text = updComment.Text;
+		this.setState({ comments: this.state.comments });
 	}
 
 	render() {
@@ -38,7 +45,7 @@ export class CommentsList extends Component {
 									? this.state.comments.map(comment => {
 										return (
 											<ListItem className={styles.listItem} key={comment.Id}>
-												<CommentTile comment={comment} userId={null} />
+												<CommentTile comment={comment} userEmail={this.props.userEmail} onUpdateMethod={this.updateComment} />
 											</ListItem>
 										)
 									})
@@ -52,9 +59,8 @@ export class CommentsList extends Component {
 						? <Typography variant='h6'>
 							Авторизируйтесь, чтобы оставить свой комментарий
 							</Typography>
-						: <CommentArea filmId={this.props.filmId} add={this.addComment} />
+						: <CommentArea filmId={this.props.filmId} typeMethod="create" method={this.createComment} />
 				}
-
 			</div>
 		)
 	}
