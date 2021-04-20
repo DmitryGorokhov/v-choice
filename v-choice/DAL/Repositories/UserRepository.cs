@@ -1,23 +1,63 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using v_choice.Interfaces;
 using v_choice.Models;
+using System.Security.Claims;
+using System.Linq;
 
 namespace v_choice.DAL.Repositories
 {
     public class UserRepository : IUserRepository
     {
+        private readonly DBContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        public UserRepository(UserManager<User> userManager, SignInManager<User> signInManager)
+        public UserRepository(DBContext dbc, UserManager<User> userManager, SignInManager<User> signInManager)
         {
+            _context = dbc;
             _userManager = userManager;
             _signInManager = signInManager;
         }
 
-        public async Task<User> GetCurrentUserAsync(System.Security.Claims.ClaimsPrincipal user)
+        public async Task AddFavoriteFilmAsync(Film film, ClaimsPrincipal user)
+        {
+            User u = await GetCurrentUserAsync(user);
+            Film f = await _context.Film.FirstOrDefaultAsync(e => e.Id == film.Id);
+            if (f == null)
+                return;
+            u.Favorites.Add(f);
+            f.Users.Add(u);
+            _context.Film.Update(f);
+            _context.User.Update(u);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Film>> GetAllFavoriteFilmsAsync(ClaimsPrincipal user)
+        {
+            User u = await GetCurrentUserAsync(user);
+            if (u == null)
+                return null;
+            return _context.Film.Where(e => e.Users.Contains(u));
+        }
+
+        public async Task<User> GetCurrentUserAsync(ClaimsPrincipal user)
         {
             return await _userManager.GetUserAsync(user);
+        }
+
+        public async Task RemoveFilmFromFavorite(Film film, ClaimsPrincipal user)
+        {
+            User u = await GetCurrentUserAsync(user);
+            Film f = _context.Film.Find(film.Id);
+            if (f == null)
+                return;
+            u.Favorites.Remove(f);
+            f.Users.Remove(u);
+            _context.Film.Update(f);
+            _context.User.Update(u);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<SignInResult> UserLogInAsync(LoginViewModel model)

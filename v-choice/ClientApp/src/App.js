@@ -8,6 +8,7 @@ import { SignIn } from './components/pages/SignIn/SignIn'
 import { SignUp } from './components/pages/SignUp/SignUp'
 import FilmPage from './components/pages/FilmPage/FilmPage'
 import { Layout } from './components/atoms/Layout/Layout'
+import UserPage from './components/pages/UserPage/UserPage'
 
 export default class App extends Component {
   static displayName = App.name;
@@ -19,6 +20,7 @@ export default class App extends Component {
         <Route path='/sign-in' component={SignIn} />
         <Route path='/sign-up' component={SignUp} />
         <Route path='/film/:slug' component={FilmPage} />
+        <Route path='/user' component={UserPage} />
       </Layout>
     );
   }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using v_choice.Models;
 
@@ -9,6 +11,9 @@ namespace v_choice.Interfaces
         Task<IdentityResult> UserRegisterAsync(RegisterViewModel model);
         Task<SignInResult> UserLogInAsync(LoginViewModel model);
         Task UserSignOutAsync();
-        Task<User> GetCurrentUserAsync(System.Security.Claims.ClaimsPrincipal user);
+        Task<User> GetCurrentUserAsync(ClaimsPrincipal user);
+        Task<IEnumerable<Film>> GetAllFavoriteFilmsAsync(ClaimsPrincipal user);
+        Task AddFavoriteFilmAsync(Film film, ClaimsPrincipal user);
+        Task RemoveFilmFromFavorite(Film film, ClaimsPrincipal user);
     }
 }

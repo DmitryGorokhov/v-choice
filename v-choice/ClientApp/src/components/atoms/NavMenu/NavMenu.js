@@ -65,7 +65,7 @@ export class NavMenu extends Component {
                 this.state.userEmail
                   ? <ul className="navbar-nav flex-grow" >
                     <NavItem>
-                      <NavLink tag={Link} className="text-dark" to="/">{this.state.userEmail}</NavLink>
+                      <NavLink tag={Link} className="text-dark" to="/user">{this.state.userEmail}</NavLink>
                     </NavItem>
                     <NavItem>
                       <NavLink

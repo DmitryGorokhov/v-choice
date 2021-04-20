@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useParams } from "react-router-dom"
-import { Typography } from '@material-ui/core'
+import { Button, Typography } from '@material-ui/core'
+import { Link } from 'react-router-dom';
 
 import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
@@ -10,6 +11,7 @@ function FilmPage() {
 	let { slug } = useParams();
 	const [film, setFilm] = useState(null);
 	const [userEmail, setUserEmail] = useState(null);
+	const [disableAddButton, setDisableAddButton] = useState(false);
 
 	const loadPage = () => {
 		fetch(`api/films/${slug}`)
@@ -30,15 +32,38 @@ function FilmPage() {
 			});
 	}
 
+	const handleAddFavorite = () => {
+		fetch(`/api/user`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json;charset=utf-8'
+			},
+			body: JSON.stringify(film)
+		});
+		setDisableAddButton(true);
+	}
+
 	loadPage();
 	return (
 		<div>
 			<NavMenu />
 			{
 				film !== null
-					? <FilmCard film={film} />
+					? <div>
+						<FilmCard film={film} />
+						<div>
+							<Typography>
+								Заинтересовал фильм и не хотите его потерять? Добавьте в избранное. Список избранных фильмов доступен в профиле.
+							</Typography>
+							<Link to="/user">Мой профиль</Link>
+						</div>
+						<Button disabled={disableAddButton}
+							onClick={handleAddFavorite}>
+							Добавить в избранное</Button>
+					</div>
 					: <Typography>Загрузка...</Typography>
 			}
+
 			<CommentsList filmId={slug} userEmail={userEmail} />
 		</div>
 	)
