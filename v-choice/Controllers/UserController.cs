@@ -25,6 +25,15 @@ namespace v_choice.Controllers
             return await _users.GetAllFavoriteFilmsAsync(HttpContext.User);
         }
         [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> CheckFilmIsAdded([FromRoute] int id)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var res = await _users.CheckFilmIsAdded(id, HttpContext.User);
+            if (res == null) return NotFound(id);
+            return Ok(res);
+        }
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> AddFilm([FromBody] Film film)
         {
