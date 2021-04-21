@@ -11,7 +11,7 @@ function FilmPage() {
 	let { slug } = useParams();
 	const [film, setFilm] = useState(null);
 	const [userEmail, setUserEmail] = useState(null);
-	const [disableAddButton, setDisableAddButton] = useState(false);
+	const [disableAddButton, setDisableAddButton] = useState(true);
 
 	const loadPage = () => {
 		fetch(`api/films/${slug}`)
@@ -30,6 +30,9 @@ function FilmPage() {
 					? setUserEmail(null)
 					: setUserEmail(result.message)
 			});
+		fetch(`api/user/${slug}`)
+			.then(response => response.json())
+			.then(result => setDisableAddButton(result));
 	}
 
 	const handleAddFavorite = () => {
