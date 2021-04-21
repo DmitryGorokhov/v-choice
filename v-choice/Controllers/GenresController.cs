@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using v_choice.Models;
 using v_choice.Interfaces;
+using System.Threading.Tasks;
 
 namespace v_choice.Controllers
 {
@@ -19,6 +20,15 @@ namespace v_choice.Controllers
         public IEnumerable<Genre> GetAll()
         {
             return _genres.GetAllGenres();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ICollection<Film>> GetFilmsByGenreId([FromRoute] int id)
+        {
+            var res = await _genres.GetFilmsByGenreIdAsync(id);
+            if (res == null)
+                return new HashSet<Film>();
+            return res;
         }
     }
 }
