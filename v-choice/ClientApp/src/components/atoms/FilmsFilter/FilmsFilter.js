@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 import {
 	Button,
 	FormControl,
@@ -8,6 +8,7 @@ import {
 	MenuItem,
 	Select
 } from '@material-ui/core'
+import SearchIcon from '@material-ui/icons/Search'
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -64,7 +65,9 @@ function FilmsFilter(props) {
 				</Select>
 				<FormHelperText>Фильтр по жанру</FormHelperText>
 			</FormControl>
-			<Button onClick={handleSubmit}>Поиск</Button>
+			<Button onClick={handleSubmit}>
+				<SearchIcon />
+			</Button>
 		</div>
 	)
 }

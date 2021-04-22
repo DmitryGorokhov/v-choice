@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
 	createStyles,
 	makeStyles,
@@ -10,9 +10,10 @@ import {
 	DialogContentText,
 	DialogTitle,
 	TextField
-} from '@material-ui/core';
+} from '@material-ui/core'
+import CreateIcon from '@material-ui/icons/Create'
 
-import MyAlerter from '../../atoms/MyAlerter/MyAlerter';
+import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -87,6 +88,7 @@ export default function UpdateFilmDialog(props) {
 	return (
 		<div>
 			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
+				<CreateIcon />
 				Изменить
       		</Button>
 

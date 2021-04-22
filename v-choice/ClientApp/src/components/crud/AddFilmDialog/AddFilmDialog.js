@@ -14,6 +14,7 @@ import {
 	TextField,
 	Typography
 } from '@material-ui/core'
+import AddIcon from '@material-ui/icons/Add'
 
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 
@@ -109,8 +110,9 @@ export default function FormDialog(props) {
 	return (
 		<div>
 			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
-				Добавить новый
-      		</Button>
+				<AddIcon />
+				Добавить
+			</Button>
 
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Добавить новый фильм</DialogTitle>

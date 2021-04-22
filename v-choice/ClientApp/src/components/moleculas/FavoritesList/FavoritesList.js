@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Button, List, ListItem, Typography } from '@material-ui/core'
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import ClearIcon from '@material-ui/icons/Clear'
 
 export class FavoritesList extends Component {
 	constructor(props) {
@@ -53,7 +54,7 @@ export class FavoritesList extends Component {
 														return this.handleRemoveItem(film)
 													}}
 												>
-													Убрать
+													<ClearIcon />
 												</Button>
 											</ListItem>
 										)

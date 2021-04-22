@@ -6,7 +6,8 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
-} from '@material-ui/core';
+} from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
 
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 
@@ -45,7 +46,9 @@ function DeleteFilm(props) {
 		<div>
 			<Button variant="outlined" color="secondary"
 				className={props.btnStyle}
-				onClick={handleClickOpen}>
+				onClick={handleClickOpen}
+			>
+				<DeleteIcon />
 				Удалить
 			</Button>
 

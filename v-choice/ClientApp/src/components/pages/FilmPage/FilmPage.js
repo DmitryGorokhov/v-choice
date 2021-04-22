@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { useParams } from "react-router-dom"
 import { Button, Typography } from '@material-ui/core'
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import BookmarkIcon from '@material-ui/icons/Bookmark'
+import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder'
 
 import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
@@ -61,8 +63,21 @@ function FilmPage() {
 							<Link to="/user">Мой профиль</Link>
 						</div>
 						<Button disabled={disableAddButton}
-							onClick={handleAddFavorite}>
-							Добавить в избранное</Button>
+							onClick={handleAddFavorite}
+						>
+							{
+								disableAddButton
+									?
+									<div>
+										<BookmarkIcon />
+										Уже добавлен
+									</div>
+									: <div>
+										<BookmarkBorderIcon />
+										Добавить в Избранное
+										</div>
+							}
+						</Button>
 					</div>
 					: <Typography>Загрузка...</Typography>
 			}
