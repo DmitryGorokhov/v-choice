@@ -3,6 +3,8 @@ import { Button, List, ListItem, Typography } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import ClearIcon from '@material-ui/icons/Clear'
 
+import styles from './FavoritesList.module.css'
+
 export class FavoritesList extends Component {
 	constructor(props) {
 		super(props);
@@ -41,12 +43,12 @@ export class FavoritesList extends Component {
 					this.state.loading
 						? <Typography>Загрузка...</Typography>
 						:
-						<List>
+						<List className={styles.list}>
 							{
 								this.state.favoriteFilms.length !== 0
 									? this.state.favoriteFilms.map(film => {
 										return (
-											<ListItem key={film.Id}>
+											<ListItem key={film.Id} className={styles.item}>
 												<Link to={`/film/${film.Id}`}>{film.Title}</Link>
 												<Button
 													variant="primary"

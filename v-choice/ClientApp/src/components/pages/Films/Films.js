@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, makeStyles, createStyles, Typography, Container } from '@material-ui/core'
+import { createStyles, makeStyles, Box, Container, Typography } from '@material-ui/core'
 
 import FilmList from '../../moleculas/FilmList/FilmList'
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'

@@ -6,6 +6,7 @@ using v_choice.Interfaces;
 using v_choice.Models;
 using System.Security.Claims;
 using System.Linq;
+using System;
 
 namespace v_choice.DAL.Repositories
 {
@@ -54,13 +55,20 @@ namespace v_choice.DAL.Repositories
 
         public async Task RemoveFilmFromFavorite(Film film, ClaimsPrincipal user)
         {
-            User u = await GetCurrentUserAsync(user);
-            Film f = await _context.Film.Include(c=>c.Users).FirstOrDefaultAsync(e => e.Id == film.Id);
-            if (f == null)
-                return;
-            f.Users.Remove(u);
-            _context.Film.Update(f);
-            await _context.SaveChangesAsync();
+            try
+            {
+                User u = await GetCurrentUserAsync(user);
+                Film f = await _context.Film.Include(c=>c.Users).FirstOrDefaultAsync(e => e.Id == film.Id);
+                if (f == null)
+                    return;
+                f.Users.Remove(u);
+                _context.Film.Update(f);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public async Task<SignInResult> UserLogInAsync(LoginViewModel model)

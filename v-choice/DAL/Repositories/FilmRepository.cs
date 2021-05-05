@@ -37,9 +37,16 @@ namespace v_choice.DAL.Repositories
 
         public async Task DeleteFilmAsync(int id)
         {
-            var item = _context.Film.Find(id);
-            _context.Film.Remove(item);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var item = _context.Film.Find(id);
+                _context.Film.Remove(item);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public IEnumerable<Film> GetAllFilmsAsync()
@@ -54,12 +61,19 @@ namespace v_choice.DAL.Repositories
 
         public async Task UpdateFilmAsync(int id, Film film)
         {
-            var item = _context.Film.Find(id);
-            item.Title = film.Title;
-            item.Year = film.Year;
-            item.Description = film.Description;
-            _context.Film.Update(item);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var item = _context.Film.Find(id);
+                item.Title = film.Title;
+                item.Year = film.Year;
+                item.Description = film.Description;
+                _context.Film.Update(item);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }

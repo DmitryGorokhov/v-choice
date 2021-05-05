@@ -83,9 +83,9 @@ class FilmCard extends Component {
 						(this.film.Genres !== undefined) && (this.film.Genres.lenght !== 0)
 							? <Box className={this.classes.genresBox}>
 								{
-									this.film.Genres.map((genre, index) => {
+									this.film.Genres.map(genre => {
 										return (
-											<Typography key={index} className={this.classes.filmGenre}>
+											<Typography key={genre.Id} className={this.classes.filmGenre}>
 												{genre.Value}
 											</Typography>
 										)

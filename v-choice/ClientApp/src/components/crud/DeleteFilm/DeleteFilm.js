@@ -37,14 +37,16 @@ function DeleteFilm(props) {
 					setError("Недостаточно прав для выполнения операции");
 				}
 				if (response.status === 204) {
-					setMsg("Фильм успешно удален")
+					setMsg("Фильм успешно удален");
 				}
 			});
 	};
 
 	return (
 		<div>
-			<Button variant="outlined" color="secondary"
+			<Button
+				variant="outlined"
+				color="secondary"
 				className={props.btnStyle}
 				onClick={handleClickOpen}
 			>

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -77,7 +78,7 @@ namespace v_choice
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services, ILogger<Startup> logger)
         {
             CreateUserRoles(services).Wait();
             if (env.IsDevelopment())
@@ -115,6 +116,7 @@ namespace v_choice
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
         }
 
         private async Task CreateUserRoles(IServiceProvider serviceProvider)

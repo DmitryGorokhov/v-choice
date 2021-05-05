@@ -13,13 +13,17 @@ function CommentTile(props) {
 	return (
 		<div>
 			<Card className={styles.card}>
-				<Box className={styles.contentContainer}>
-					<Typography variant='h6'>
-						{props.comment.Text}
-					</Typography>
-					<Typography className={styles.contentDate}>
-						{dateFormat(props.comment.CreatedAt)}
-					</Typography>
+				<Box>
+					<Box className={styles.dateContainer}>
+						<Typography className={styles.contentDate}>
+							{dateFormat(props.comment.CreatedAt)}
+						</Typography>
+					</Box>
+					<Box className={styles.textContainer}>
+						<Typography variant='h6' className={styles.contentText}>
+							{props.comment.Text}
+						</Typography>
+					</Box>
 				</Box>
 				<Collapse in={props.comment.AuthorEmail === props.userEmail}>
 					{

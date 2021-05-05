@@ -7,6 +7,7 @@ import {
 	DialogTitle,
 	Typography,
 } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
 
 function DeleteComment(props) {
 	const [open, setOpen] = useState(false);
@@ -32,7 +33,12 @@ function DeleteComment(props) {
 
 	return (
 		<div>
-			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
+			<Button
+				variant="outlined"
+				color="secondary"
+				onClick={handleClickOpen}
+			>
+				<DeleteIcon />
 				Удалить
 			</Button>
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

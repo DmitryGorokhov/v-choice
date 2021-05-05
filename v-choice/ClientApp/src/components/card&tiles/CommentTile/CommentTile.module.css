@@ -1,19 +1,29 @@
-.contentContainer {
+.dateContainer {
 	display: flex;
-	justify-content: space-between;
+	justify-content: flex-end;
 	align-items: center;
-	margin: 12px 20px;
+	margin: 6px 10px;
 }
 
 .contentDate {
-	font-size: 16px;
 	opacity: 0.7;
 }
 
+.contentText {
+	display: block;
+	hyphens: auto;
+}
+
+.textContainer {
+	margin: 12px 20px;
+	display: block;
+}
+
 .card {
+	display: block;
+	width: 1000px;
 	margin: 20px;
 	padding: 8px;
-	width: 100%;
 }
 
 .controlsContainer {

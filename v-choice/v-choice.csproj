@@ -8,6 +8,7 @@
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <RootNamespace>v_choice</RootNamespace>
+    <UserSecretsId>74e78a5a-2535-4db5-8d2f-a6e9eeda22e0</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

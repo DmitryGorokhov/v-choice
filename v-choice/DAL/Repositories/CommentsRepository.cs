@@ -41,9 +41,16 @@ namespace v_choice.DAL.Repositories
 
         public async Task DeleteCommentAsync(int id)
         {
-            var item = _context.Comment.Find(id);
-            _context.Comment.Remove(item);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var item = _context.Comment.Find(id);
+                _context.Comment.Remove(item);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public IEnumerable<Comment> GetAllCommentsAsync(int id)
@@ -53,10 +60,17 @@ namespace v_choice.DAL.Repositories
 
         public async Task UpdateCommentAsync(int id, Comment comment)
         {
-            var item = _context.Comment.Find(id);
-            item.Text = comment.Text;
-            _context.Comment.Update(item);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var item = _context.Comment.Find(id);
+                item.Text = comment.Text;
+                _context.Comment.Update(item);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }

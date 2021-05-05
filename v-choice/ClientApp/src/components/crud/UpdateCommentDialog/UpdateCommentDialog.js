@@ -6,6 +6,8 @@ import {
 	DialogContent,
 	DialogTitle,
 } from '@material-ui/core'
+import CreateIcon from '@material-ui/icons/Create'
+
 import CommentArea from '../../atoms/CommentArea/CommentArea'
 
 function UpdateCommentDialog(props) {
@@ -27,6 +29,7 @@ function UpdateCommentDialog(props) {
 	return (
 		<div>
 			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
+				<CreateIcon />
 				Изменить
 			</Button>
 			<Dialog
