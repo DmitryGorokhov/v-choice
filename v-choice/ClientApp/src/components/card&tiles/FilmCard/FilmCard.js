@@ -100,8 +100,12 @@ class FilmCard extends Component {
 				<Box className={this.classes.controlsContainer}>
 					<Link to={`/film/${this.film.Id}`}>Подробнее</Link >
 					<Box className={this.classes.btns}>
-						<UpdateFilmDialog film={this.film} />
-						<DeleteFilm film={this.film} btnStyle={this.classes.btnDelete} />
+						<UpdateFilmDialog film={this.film} onUpdate={this.props.onUpdate} />
+						<DeleteFilm
+							film={this.film}
+							btnStyle={this.classes.btnDelete}
+							onDelete={this.props.onDelete}
+						/>
 					</Box>
 				</Box>
 			</Card >

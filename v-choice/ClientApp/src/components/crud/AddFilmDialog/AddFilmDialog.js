@@ -82,7 +82,7 @@ export default function FormDialog(props) {
 					setError("Недостаточно прав для выполнения операции");
 				}
 				if (response.status === 201) {
-					setMsg("Фильм успешно создан")
+					setMsg("Фильм успешно создан");
 				}
 			});
 	};
