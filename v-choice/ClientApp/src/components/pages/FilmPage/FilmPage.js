@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from "react-router-dom"
+<<<<<<< HEAD
 import { createStyles, makeStyles, Box, Button, Typography } from '@material-ui/core'
+=======
+import { Box, Button, Typography } from '@material-ui/core'
+>>>>>>> d6dca7b (Make styles for add favorite section)
 import { Link } from 'react-router-dom'
 import BookmarkIcon from '@material-ui/icons/Bookmark'
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder'
