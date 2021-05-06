@@ -57,23 +57,6 @@ class FilmList extends Component {
 		this.setState({ films: this.allFilms });
 	}
 
-	updateFilm = (film) => {
-		let ind = this.state.films.findIndex(c => c.Id === film.Id);
-		let arr = this.state.films;
-		arr[ind] = film;
-		ind = this.state.allFilms.findIndex(c => c.Id === film.Id);
-		let all = this.state.allFilms;
-		all[ind] = film;
-		this.setState({ films: arr, allFilms: all });
-	}
-
-	deleteFilm = (film) => {
-		this.setState({
-			films: this.state.films.filter(f => f.Id !== film.Id),
-			allFilms: this.state.allFilms.filter(f => f.Id !== film.Id)
-		});
-	}
-
 	render() {
 		return (
 			<div>
@@ -104,11 +87,7 @@ class FilmList extends Component {
 														className={this.props.classes.filmListItem}
 														key={film.Id}
 													>
-														<FilmCard
-															film={film}
-															onUpdate={this.updateFilm}
-															onDelete={this.deleteFilm}
-														/>
+														<FilmCard film={film} />
 													</ListItem>
 												)
 											})

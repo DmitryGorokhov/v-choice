@@ -68,8 +68,7 @@ export default function UpdateFilmDialog(props) {
 					setError("Недостаточно прав для выполнения операции");
 				}
 				if (response.status === 204) {
-					props.onUpdate(film);
-					setOpen(false);
+					setMsg("Фильм успешно изменён");
 				}
 			});
 	};

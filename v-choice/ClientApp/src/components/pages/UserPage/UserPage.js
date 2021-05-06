@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createStyles, makeStyles, Box, Typography } from '@material-ui/core'
 
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
@@ -18,7 +18,7 @@ function UserPage() {
 	const [userEmail, setUserEmail] = useState(null);
 	const styles = useStyles();
 
-	const loadPage = () => {
+	useEffect(() => {
 		fetch("api/account/isAuthenticated", {
 			method: 'POST',
 			headers: {
@@ -26,14 +26,9 @@ function UserPage() {
 			},
 		})
 			.then(response => response.json())
-			.then(result => {
-				result.message === "guest"
-					? setUserEmail(null)
-					: setUserEmail(result.message)
-			});
-	}
+			.then(result => setUserEmail(result.message));
+	}, [])
 
-	loadPage();
 	return (
 		<div>
 			<NavMenu />

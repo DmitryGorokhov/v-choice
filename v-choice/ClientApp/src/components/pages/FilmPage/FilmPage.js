@@ -10,16 +10,6 @@ import { NavMenu } from '../../atoms/NavMenu/NavMenu'
 import { CommentsList } from '../../moleculas/CommentsList/CommentsList'
 import styles from './FilmPage.module.css'
 
-const useStyles = makeStyles((theme) => createStyles({
-	marginItem: {
-		margin: theme.spacing(2),
-	},
-	container: {
-		margin: theme.spacing(2),
-		padding: theme.spacing(1),
-	}
-}));
-
 function FilmPage() {
 	let { slug } = useParams();
 	const [film, setFilm] = useState(null);
