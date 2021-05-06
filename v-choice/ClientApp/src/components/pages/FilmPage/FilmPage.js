@@ -63,11 +63,15 @@ function FilmPage() {
 		<div>
 			<NavMenu />
 			<Box className={styles.container}>
-
-				{
-					film !== null
-						? <Box className={styles.marginItem}>
-							<FilmCard film={film} />
+				<Box className={styles.marginItem}>
+					{
+						film !== null
+							? <FilmCard film={film} />
+							: <Typography>Загрузка...</Typography>
+					}
+					{
+						userEmail !== null
+							?
 							<Box className={styles.favoriteSection}>
 								<Box className={styles.favoriteTextItem}>
 									<Typography variant="h5">
@@ -95,9 +99,10 @@ function FilmPage() {
 									}
 								</Button>
 							</Box>
-						</Box>
-						: <Typography>Загрузка...</Typography>
-				}
+							: <Typography></Typography>
+
+					}
+				</Box>
 				<Typography variant="h4" className={styles.marginItem}>
 					Мнения пользователей о фильме
 				</Typography>

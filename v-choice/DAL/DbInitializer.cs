@@ -19,7 +19,7 @@ namespace v_choice.DAL
                 new Genre{ Value="Комедия" },
                 new Genre{ Value="Боевик" },
                 new Genre{ Value="Триллер" },
-                new Genre{ Value="Драмма" },
+                new Genre{ Value="Драма" },
                 new Genre{ Value="Ужасы" },
                 new Genre{ Value="Документальный" },
                 new Genre{ Value="Мультфильм" },
