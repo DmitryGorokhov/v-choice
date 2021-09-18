@@ -1,3 +1,10 @@
+using BLL.Interface;
+using BLL.Service;
+using BLL.Utils;
+using DAL;
+using DAL.Interface;
+using DAL.Model;
+using DAL.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -11,10 +18,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
-using v_choice.DAL;
-using v_choice.DAL.Repositories;
-using v_choice.Interfaces;
-using v_choice.Models;
 
 namespace v_choice
 {
@@ -36,6 +39,11 @@ namespace v_choice
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICommentsRepository, CommentsRepository>();
+            services.AddScoped<IAutorizationService, AutorizationService>();
+            services.AddScoped<ICrudService, CrudService>();
+            services.AddScoped<IPaginationService, PaginationService>();
+            services.AddScoped<IFavoriteService, FavoriteService>();
+            services.AddScoped<IMapperDTOtoModel, MapperDTOtoModel>();
 
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
 

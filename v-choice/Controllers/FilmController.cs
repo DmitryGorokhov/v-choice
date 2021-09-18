@@ -1,0 +1,103 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+using Microsoft.Extensions.Logging;
+using BLL.Interface;
+using BLL.DTO;
+
+namespace v_choice.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class FilmController : Controller
+    {
+        private readonly ICrudService _crudService;
+        private readonly ILogger _logger;
+
+        public FilmController(ICrudService cs, ILogger<FilmController> logger)
+        {
+            _crudService = cs;
+            _logger = logger;
+        }
+
+        [HttpGet]
+        public IEnumerable<FilmDTO> GetAll()
+        {
+            _logger.LogInformation("Get all films");
+            return _crudService.GetAllFilms();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFilm([FromRoute] int id)
+        {
+            _logger.LogInformation($"Get film with Id equal {id}.");
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Get film: model state is not valid.");
+                return BadRequest(ModelState);
+            }
+
+            var film = await _crudService.GetFilmAsync(id);
+            if (film == null)
+            {
+                _logger.LogInformation($"Get film: film with Id equal {id} not found.");
+                return NotFound();
+            }
+
+            _logger.LogInformation($"Get film: film with Id equal {id} was found.");
+            return Ok(film);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] FilmDTO film)
+        {
+            _logger.LogInformation("Create film.");
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Create film: model state is not valid.");
+                return BadRequest(ModelState);
+            }
+
+            var filmDTO = await _crudService.CreateFilmAsync(film);
+            if (filmDTO == null)
+            {
+                return StatusCode(500);
+            }
+
+            return CreatedAtAction("CreateFilm", new { id = film.Id }, film);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] FilmDTO film)
+        {
+            _logger.LogInformation($"Update film with Id equal {id}.");
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Update film: model state is not valid.");
+                return BadRequest(ModelState);
+            }
+
+            await _crudService.UpdateFilmAsync(id, film);
+            return NoContent();
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            _logger.LogInformation($"Delete film with Id equal {id}.");
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Delete film: model state is not valid.");
+                return BadRequest(ModelState);
+            }
+
+            await _crudService.DeleteFilmAsync(id);
+            return NoContent();
+        }
+    }
+}
