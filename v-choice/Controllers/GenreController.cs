@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using BLL.Interface;
 using BLL.DTO;
+using BLL.Interface;
 
 namespace v_choice.Controllers
 {
@@ -24,21 +23,8 @@ namespace v_choice.Controllers
         public IEnumerable<GenreDTO> GetAll()
         {
             _logger.LogInformation("Get all genres");
-            return _crudService.GetAllGenres();
-        }
 
-        [HttpGet("{id}")]
-        public async Task<ICollection<FilmDTO>> GetFilmsByGenreId([FromRoute] int id)
-        {
-            _logger.LogInformation($"Get films that has genre with Id equal {id}");
-            var res = await _crudService.GetFilmsByGenreIdAsync(id);
-            if (res == null)
-            {
-                _logger.LogInformation($"Get films by genre id={id}: collection is empty");
-                return new HashSet<FilmDTO>();
-            }
-            _logger.LogInformation($"Get films by genre id={id}: collection is found");
-            return res;
+            return _crudService.GetAllGenres();
         }
     }
 }

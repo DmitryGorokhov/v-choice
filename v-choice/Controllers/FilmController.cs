@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using BLL.Interface;
 using BLL.DTO;
+using BLL.Interface;
 
 namespace v_choice.Controllers
 {
@@ -29,12 +29,12 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Get pagination films: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             var res = await _paginationService.GetFilmsPagination(query);
-            if (res == null)
-                return StatusCode(500);
+            if (res == null) return StatusCode(500);
 
             return Ok(res);
         }
@@ -46,17 +46,13 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Get film: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             var film = await _crudService.GetFilmAsync(id);
-            if (film == null)
-            {
-                _logger.LogInformation($"Get film: film with Id equal {id} not found.");
-                return NotFound();
-            }
+            if (film == null) return NotFound();
 
-            _logger.LogInformation($"Get film: film with Id equal {id} was found.");
             return Ok(film);
         }
 
@@ -68,14 +64,12 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Create film: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             var filmDTO = await _crudService.CreateFilmAsync(film);
-            if (filmDTO == null)
-            {
-                return StatusCode(500);
-            }
+            if (filmDTO == null) return StatusCode(500);
 
             return CreatedAtAction("CreateFilm", new { id = film.Id }, film);
         }
@@ -88,10 +82,12 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Update film: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             await _crudService.UpdateFilmAsync(id, film);
+            
             return NoContent();
         }
 
@@ -103,10 +99,12 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Delete film: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             await _crudService.DeleteFilmAsync(id);
+            
             return NoContent();
         }
     }

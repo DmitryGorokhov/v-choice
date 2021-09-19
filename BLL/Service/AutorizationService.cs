@@ -1,12 +1,12 @@
-﻿using BLL.DTO;
+﻿using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using BLL.DTO;
 using BLL.Interface;
 using DAL.Interface;
 using DAL.Model;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace BLL.Service
 {
@@ -23,20 +23,22 @@ namespace BLL.Service
 
         public async Task<UserDTO> GetCurrentUserAsync(ClaimsPrincipal user)
         {
-            _logger.LogInformation("Start login user.");
+            _logger.LogInformation("Starting get current user.");
             try
             {
-                _logger.LogInformation("Call UserLogInAsync.");
+                _logger.LogInformation("Call GetCurrentUserAsync.");
                 User usr = await _userRepository.GetCurrentUserAsync(user);
+                
                 _logger.LogInformation("Convert to DTO.");
                 UserDTO u = new UserDTO(usr);
+
                 _logger.LogInformation($"Authenticated: {u.Email}");
                 
                 return u;
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetCurrentUserAsync has thrown an exception: {e.Message}.");
+                _logger.LogError($"Get current user has thrown an exception: {e.Message}.");
 
                 return null;
             }
@@ -44,7 +46,7 @@ namespace BLL.Service
 
         public async Task<SignInResult> LogInUserAsync(LoginQuery log)
         {
-            _logger.LogInformation("Start login user.");
+            _logger.LogInformation("Starting login user.");
             try
             {
                 _logger.LogInformation("Convert to model.");
@@ -62,7 +64,7 @@ namespace BLL.Service
             }
             catch (Exception e)
             {
-                _logger.LogError($"UserLogInAsync has thrown an exception: {e.Message}.");
+                _logger.LogError($"Login user has thrown an exception: {e.Message}.");
 
                 return null;
             }
@@ -70,7 +72,7 @@ namespace BLL.Service
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterQuery reg)
         {
-            _logger.LogInformation("Start register.");
+            _logger.LogInformation("Starting register.");
             try
             {
                 _logger.LogInformation("Convert to model.");
@@ -88,7 +90,7 @@ namespace BLL.Service
             }
             catch (Exception e)
             {
-                _logger.LogError($"UserRegisterAsync has thrown an exception: {e.Message}.");
+                _logger.LogError($"Register has thrown an exception: {e.Message}.");
 
                 return null;
             }

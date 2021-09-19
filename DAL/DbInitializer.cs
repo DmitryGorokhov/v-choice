@@ -27,11 +27,6 @@ namespace DAL
                 context.Genre.Add(g);
 
             context.SaveChanges();
-
-            Film f = new Film { Title = "Default Film", Year = 2021, Description = "Some description" };
-            context.Film.Add(f);
-
-            context.SaveChanges();
         }
     }
 }

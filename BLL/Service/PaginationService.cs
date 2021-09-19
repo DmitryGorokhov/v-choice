@@ -1,11 +1,11 @@
-﻿using BLL.DTO;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using BLL.DTO;
 using BLL.Interface;
 using DAL.Interface;
 using DAL.Model;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BLL.Service
 {
@@ -31,9 +31,8 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call GetCommentsByPageAsync.");
                 var answer = await _commentsRepository.GetCommentsByPageAsync(query.PageNumber, query.OnPageCount);
-                _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully.");
                 
-                _logger.LogInformation($"Pack result object.");
+                _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully. Pack result into object before return.");
                 var res = new PaginationDTO<CommentDTO>(query)
                 {
                     TotalCount = answer.TotalCount,
@@ -57,9 +56,8 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call GetFavoriteFilmsByPageAsync.");
                 Pagination<Film> answer = await _userRepository.GetFavoriteFilmsByPageAsync(query.PageNumber, query.OnPageCount);
-                _logger.LogInformation($"Get {query.OnPageCount} favorite films on {query.PageNumber} page successfully.");
-
-                _logger.LogInformation($"Pack result object.");
+                
+                _logger.LogInformation($"Get {query.OnPageCount} favorite films on {query.PageNumber} page successfully. Pack result into object before return.");
                 var res = new PaginationDTO<FilmDTO>(query)
                 {
                     TotalCount = answer.TotalCount,
@@ -81,13 +79,12 @@ namespace BLL.Service
             _logger.LogInformation($"Starting get {query.OnPageCount} films on {query.PageNumber} page.");
             try
             {
-                _logger.LogInformation("Call GetFilmsByPageAsync.");
                 int genreId = query.GenreId != null ? (int)query.GenreId : -1;
 
+                _logger.LogInformation("Call GetFilmsByPageAsync.");
                 Pagination<Film> answer = await _filmRepository.GetFilmsByPageAsync(query.PageNumber, query.OnPageCount, genreId);
-                _logger.LogInformation($"Get {query.OnPageCount} films on {query.PageNumber} page successfully.");
-
-                _logger.LogInformation($"Pack result object.");
+                
+                _logger.LogInformation($"Get {query.OnPageCount} films on {query.PageNumber} page successfully.Pack result into object before return.");
                 var res = new PaginationDTO<FilmDTO>(query)
                 {
                     TotalCount = answer.TotalCount,

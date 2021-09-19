@@ -6,8 +6,10 @@ namespace BLL.DTO
     {
         [Required]
         public int PageNumber { get; set; }
+
         [Required]
         public int OnPageCount { get; set; }
+
         public int? GenreId { get; set; }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using BLL.Interface;
 using BLL.DTO;
+using BLL.Interface;
 
 namespace v_choice.Controllers
 {
@@ -31,12 +31,12 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Get pagination favorite films for authorized user: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             var res = await _paginationService.GetFilmsPagination(query);
-            if (res == null)
-                return StatusCode(500);
+            if (res == null) return StatusCode(500);
 
             return Ok(res);
         }
@@ -49,6 +49,7 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Check film in favorites: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
@@ -66,6 +67,7 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Add film in favorites: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
@@ -81,6 +83,7 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Delete film from favorites: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 

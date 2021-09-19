@@ -1,10 +1,9 @@
-﻿using BLL.DTO;
-using BLL.Interface;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
+using BLL.DTO;
+using BLL.Interface;
 
 namespace v_choice.Controllers
 {
@@ -30,12 +29,12 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Get pagination comments: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             var res = await _paginationService.GetCommentsPagination(query);
-            if (res == null)
-                return StatusCode(500);
+            if (res == null) return StatusCode(500);
 
             return Ok(res);
         }
@@ -48,15 +47,13 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Create comment: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             var commentDTO = await _crudService.CreateCommentAsync(comment, HttpContext.User);
-            if (commentDTO == null)
-            {
-                return StatusCode(500);
-            }
-
+            if (commentDTO == null) return StatusCode(500);
+            
             return CreatedAtAction("CreateComment", new { id = comment.Id }, comment);
         }
 
@@ -68,10 +65,12 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Update comment: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             await _crudService.UpdateCommentAsync(id, comment);
+            
             return NoContent();
         }
 
@@ -83,10 +82,12 @@ namespace v_choice.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Delete comment: model state is not valid.");
+                
                 return BadRequest(ModelState);
             }
 
             await _crudService.DeleteCommentAsync(id);
+            
             return NoContent();
         }
     }

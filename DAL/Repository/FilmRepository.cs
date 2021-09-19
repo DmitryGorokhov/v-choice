@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using DAL.Interface;
 using DAL.Model;
 
@@ -20,20 +20,20 @@ namespace DAL.Repository
         public async Task<Film> CreateFilmAsync(Film film)
         {
             if (film.Genres.Count != 0)
-            {
                 foreach (var genre in film.Genres)
                 {
-                    var g = _context.Genre.FirstOrDefault(e => e.Id == genre.Id);
+                    Genre g = _context.Genre.FirstOrDefault(e => e.Id == genre.Id);
                     if (g != null)
                     {
                         g.Films.Add(film);
                         _context.Genre.Update(g);
                     }
                 }
-            }
+
             film.Genres = new HashSet<Genre>();
             _context.Film.Add(film);
             await _context.SaveChangesAsync();
+
             return film;
         }
 
@@ -41,7 +41,7 @@ namespace DAL.Repository
         {
             try
             {
-                var item = _context.Film.Find(id);
+                Film item = _context.Film.Find(id);
                 _context.Film.Remove(item);
                 await _context.SaveChangesAsync();
             }
@@ -51,20 +51,14 @@ namespace DAL.Repository
             }
         }
 
-        public IEnumerable<Film> GetAllFilms()
-        {
-            return _context.Film.Include(f => f.Genres);
-        }
-
-        public async Task<Film> GetFilmAsync(int id)
-        {
-            return await _context.Film.SingleOrDefaultAsync(m => m.Id == id);
-        }
+        public async Task<Film> GetFilmAsync(int id) => await _context.Film.SingleOrDefaultAsync(m => m.Id == id);
 
         public async Task<Pagination<Film>> GetFilmsByPageAsync(int pageNumber, int onPageCount, int genreId)
         {
             var itemsQuery = genreId >= 0
-                ? _context.Film.Include(g => g.Genres).Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
+                ? _context.Film
+                    .Include(g => g.Genres)
+                    .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
                 : _context.Film;
 
             int total = await itemsQuery.CountAsync();
@@ -81,7 +75,7 @@ namespace DAL.Repository
         {
             try
             {
-                var item = _context.Film.Find(id);
+                Film item = _context.Film.Find(id);
                 item.Title = film.Title;
                 item.Year = film.Year;
                 item.Description = film.Description;

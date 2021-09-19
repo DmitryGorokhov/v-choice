@@ -1,7 +1,7 @@
-﻿using BLL.DTO;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using BLL.DTO;
 
 namespace BLL.Interface
 {

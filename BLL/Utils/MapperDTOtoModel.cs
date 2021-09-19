@@ -1,9 +1,9 @@
-﻿using BLL.DTO;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using BLL.DTO;
 using BLL.Interface;
 using DAL.Model;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BLL.Utils
 {
@@ -29,7 +29,9 @@ namespace BLL.Utils
                 Genres = new HashSet<Genre>(film.Genres.Select(e => GenreDTOtoModel(e)).ToList()),
                 Users = new HashSet<User>(film.Users.Select(e => UserDTOtoModel(e)).ToList())
             };
+
             _logger.LogInformation("Finish mapping FilmDTO to Model.");
+
             return model;
         }
 
@@ -41,7 +43,9 @@ namespace BLL.Utils
                 Id = genre.Id,
                 Value = genre.Value
             };
+
             _logger.LogInformation("Finish mapping GenreDTO to Model.");
+
             return model;
         }
 
@@ -53,7 +57,9 @@ namespace BLL.Utils
                 UserName = user.UserName,
                 Email = user.Email
             };
+
             _logger.LogInformation("Finish mapping UserDTO to Model.");
+
             return model;
         }
 
@@ -69,7 +75,9 @@ namespace BLL.Utils
                 AuthorEmail = comment.AuthorEmail,
                 FilmId = comment.FilmId
             };
+
             _logger.LogInformation("Finish mapping CommentDTO to Model.");
+
             return model;
         }
     }

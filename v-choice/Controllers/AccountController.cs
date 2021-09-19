@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using BLL.DTO;
-using BLL.Interface;
-using BLL.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using BLL.DTO;
+using BLL.Interface;
 
 namespace v_choice.Controllers
 {
@@ -14,7 +13,7 @@ namespace v_choice.Controllers
         private readonly IAutorizationService _autorizationService;
         private readonly ILogger _logger;
 
-        public AccountController(AutorizationService aus, ILogger<AccountController> logger)
+        public AccountController(IAutorizationService aus, ILogger<AccountController> logger)
         {
             _autorizationService = aus;
             _logger = logger;
@@ -46,8 +45,7 @@ namespace v_choice.Controllers
                     message = "Добавлен новый пользователь: " + reg.Email
                 };
 
-                _logger.LogInformation($"Register: added user with email equal {reg.Email}");
-                _logger.LogInformation("Finish register.");
+                _logger.LogInformation($"Register: added user with email equal {reg.Email}. \nFinish register.");
                 
                 return Ok(msg);
             }
@@ -99,8 +97,7 @@ namespace v_choice.Controllers
                     message = "Выполнен вход пользователем: " + log.Email
                 };
 
-                _logger.LogInformation($"Login: login user with email equal {log.Email}");
-                _logger.LogInformation("Finish login.");
+                _logger.LogInformation($"Login: login user with email equal {log.Email}. \nFinish login.");
                 
                 return Ok(msg);
             }
@@ -133,7 +130,7 @@ namespace v_choice.Controllers
             {
                 message = "Выполнен выход."
             };
-            _logger.LogInformation("Logout user");
+            _logger.LogInformation("Finish logout user.");
             
             return Ok(msg);
         }
@@ -144,6 +141,7 @@ namespace v_choice.Controllers
         {
             _logger.LogInformation("Check authenticated user");
             UserDTO usr = await _autorizationService.GetCurrentUserAsync(HttpContext.User);
+            
             var message = usr == null ? "guest" : usr.UserName;
             var msg = new
             {

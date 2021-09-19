@@ -1,6 +1,5 @@
-﻿using BLL.DTO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using BLL.DTO;
 
 namespace BLL.Interface
 {

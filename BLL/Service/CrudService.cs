@@ -1,13 +1,13 @@
-﻿using BLL.DTO;
-using BLL.Interface;
-using DAL.Interface;
-using DAL.Model;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using BLL.DTO;
+using BLL.Interface;
+using DAL.Interface;
+using DAL.Model;
 
 namespace BLL.Service
 {
@@ -37,14 +37,14 @@ namespace BLL.Service
                 
                 _logger.LogInformation("Call CreateCommentAsync.");
                 c = await _commentsRepository.CreateCommentAsync(c, user);
-                _logger.LogInformation($"Create comment: comment with Id equal {comment.Id} was created.");
-                _logger.LogInformation("Convert to DTO.");
+                
+                _logger.LogInformation($"Create comment: comment with Id equal {comment.Id} was created. Convert to DTO before return.");
 
                 return new CommentDTO(c);
             }
             catch (Exception e)
             {
-                _logger.LogError($"CreateCommentAsync has thrown an exception: {e.Message}.");
+                _logger.LogError($"Create comment has thrown an exception: {e.Message}.");
 
                 return null;
             }
@@ -59,14 +59,14 @@ namespace BLL.Service
                 
                 _logger.LogInformation("Call CreateFilmAsync.");
                 f = await _filmRepository.CreateFilmAsync(f);
-                _logger.LogInformation($"Create film: film with Id equal {film.Id} was created.");
-                _logger.LogInformation("Convert to DTO.");
+                
+                _logger.LogInformation($"Create film: film with Id equal {film.Id} was created. Convert to DTO before return.");
                 
                 return new FilmDTO(f);
             }
             catch(Exception e)
             {
-                _logger.LogError($"CreateFilmAsync has thrown an exception: {e.Message}.");
+                _logger.LogError($"Create film has thrown an exception: {e.Message}.");
                 
                 return null;
             }
@@ -79,6 +79,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call DeleteCommentAsync.");
                 await _commentsRepository.DeleteCommentAsync(id);
+
                 _logger.LogInformation($"Delete comment: comment with Id equal {id} was deleted.");
             }
             catch (Exception e)
@@ -94,6 +95,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call DeleteFilmAsync.");
                 await _filmRepository.DeleteFilmAsync(id);
+                
                 _logger.LogInformation($"Delete film: film with Id equal {id} was deleted.");
             }
             catch (Exception e)
@@ -102,59 +104,51 @@ namespace BLL.Service
             }
         }
 
-        public object GetAllCommentsAsync(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerable<FilmDTO> GetAllFilms()
-        {
-            _logger.LogInformation($"Starting get all films.");
-            try
-            {
-                _logger.LogInformation("Call GetAllFilms.");
-                IEnumerable<Film> films = _filmRepository.GetAllFilms();
-                _logger.LogInformation("Get all films successfull.");
-                _logger.LogInformation("Convert to DTO.");
-                
-                return films.Select(e => new FilmDTO(e)).ToList();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"GetAllFilms has thrown an exception: {e.Message}.");
-                
-                return new List<FilmDTO>();
-            }
-        }
-
         public IEnumerable<GenreDTO> GetAllGenres()
         {
-            _logger.LogInformation($"Starting get all genres.");
+            _logger.LogInformation("Starting get all genres.");
             try
             {
                 _logger.LogInformation("Call GetAllGenres.");
-                IEnumerable<Genre> genres = _genreRepository.GetAllGenres();
-                _logger.LogInformation("Get all genres successfull.");
-                _logger.LogInformation("Convert to DTO.");
+                var genres = _genreRepository.GetAllGenres();
+
+                _logger.LogInformation("Get all genres successfull. Convert to DTO before return.");
 
                 return genres.Select(e => new GenreDTO(e)).ToList();
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetAllGenres has thrown an exception: {e.Message}.");
+                _logger.LogError($"Get all genres has thrown an exception: {e.Message}.");
 
                 return new List<GenreDTO>();
             }
         }
 
-        public Task<FilmDTO> GetFilmAsync(int id)
+        public async Task<FilmDTO> GetFilmAsync(int id)
         {
-            throw new System.NotImplementedException();
-        }
+            _logger.LogInformation($"Starting get film with Id equal {id}.");
+            try
+            {
+                _logger.LogInformation("Call GetFilmAsync.");
+                var film = await _filmRepository.GetFilmAsync(id);
 
-        public Task<ICollection<FilmDTO>> GetFilmsByGenreIdAsync(int id)
-        {
-            throw new System.NotImplementedException();
+                if (film == null)
+                {
+                    _logger.LogInformation($"Get film: film with Id equal {id} not found.");
+                    
+                    return null;
+                }
+
+                _logger.LogInformation($"Get film with Id equal {id} successfully. Convert to DTO before return.");
+
+                return new FilmDTO(film);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Get film with Id equal {id} has thrown an exception: {e.Message}.");
+
+                return null;
+            }
         }
 
         public async Task UpdateCommentAsync(int id, CommentDTO comment)
@@ -164,8 +158,9 @@ namespace BLL.Service
             {
                 Comment c = _mapper.CommentDTOtoModel(comment);
 
-                _logger.LogInformation("Call UpdateFilmAsync.");
+                _logger.LogInformation("Call UpdateCommentAsync.");
                 await _commentsRepository.UpdateCommentAsync(id, c);
+                
                 _logger.LogInformation($"Update comment: comment with Id equal {id} was updated.");
             }
             catch (Exception e)
@@ -183,6 +178,7 @@ namespace BLL.Service
                 
                 _logger.LogInformation("Call UpdateFilmAsync.");
                 await _filmRepository.UpdateFilmAsync(id, f);
+                
                 _logger.LogInformation($"Update film: film with Id equal {id} was updated.");
             }
             catch (Exception e)

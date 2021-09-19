@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using DAL.Interface;
 using DAL.Model;
-using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository
 {
@@ -12,6 +11,7 @@ namespace DAL.Repository
     {
         private readonly DBContext _context;
         private readonly IUserRepository _users;
+
         public CommentsRepository(DBContext dbc, IUserRepository users)
         {
             _context = dbc;
@@ -27,16 +27,18 @@ namespace DAL.Repository
             comment.CreatedAt = DateTime.Now.Date;
 
             var film = _context.Film.Find(comment.FilmId);
-            if(film != null)
+            if (film != null)
             {
                 film.Comments.Add(comment);
                 _context.Film.Update(film);
             }
+
             author.Comments.Add(comment);
             _context.User.Update(author);
 
             _context.Comment.Add(comment);
             await _context.SaveChangesAsync();
+
             return comment;
         }
 
@@ -44,7 +46,7 @@ namespace DAL.Repository
         {
             try
             {
-                var item = _context.Comment.Find(id);
+                Comment item = _context.Comment.Find(id);
                 _context.Comment.Remove(item);
                 await _context.SaveChangesAsync();
             }
@@ -52,11 +54,6 @@ namespace DAL.Repository
             {
                 throw e;
             }
-        }
-
-        public IEnumerable<Comment> GetAllCommentsAsync(int id)
-        {
-            return _context.Comment.Where(e => e.FilmId == id);
         }
 
         public async Task<Pagination<Comment>> GetCommentsByPageAsync(int pageNumber, int onPageCount)
@@ -75,7 +72,7 @@ namespace DAL.Repository
         {
             try
             {
-                var item = _context.Comment.Find(id);
+                Comment item = _context.Comment.Find(id);
                 item.Text = comment.Text;
                 _context.Comment.Update(item);
                 await _context.SaveChangesAsync();
