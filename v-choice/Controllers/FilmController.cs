@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 using Microsoft.Extensions.Logging;
 using BLL.Interface;
 using BLL.DTO;
@@ -14,19 +12,31 @@ namespace v_choice.Controllers
     public class FilmController : Controller
     {
         private readonly ICrudService _crudService;
+        private readonly IPaginationService _paginationService;
         private readonly ILogger _logger;
 
-        public FilmController(ICrudService cs, ILogger<FilmController> logger)
+        public FilmController(ICrudService cs, IPaginationService ps, ILogger<FilmController> logger)
         {
             _crudService = cs;
+            _paginationService = ps;
             _logger = logger;
         }
 
         [HttpGet]
-        public IEnumerable<FilmDTO> GetAll()
+        public async Task<IActionResult> GetFilmsPagination([FromQuery] PaginationQuery query)
         {
-            _logger.LogInformation("Get all films");
-            return _crudService.GetAllFilms();
+            _logger.LogInformation("Get pagination films");
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Get pagination films: model state is not valid.");
+                return BadRequest(ModelState);
+            }
+
+            var res = await _paginationService.GetFilmsPagination(query);
+            if (res == null)
+                return StatusCode(500);
+
+            return Ok(res);
         }
 
         [HttpGet("{id}")]

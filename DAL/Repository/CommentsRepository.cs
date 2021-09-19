@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DAL.Interface;
 using DAL.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository
 {
@@ -56,6 +57,18 @@ namespace DAL.Repository
         public IEnumerable<Comment> GetAllCommentsAsync(int id)
         {
             return _context.Comment.Where(e => e.FilmId == id);
+        }
+
+        public async Task<Pagination<Comment>> GetCommentsByPageAsync(int pageNumber, int onPageCount)
+        {
+            int total = await _context.Comment.CountAsync();
+            var items = await _context.Comment.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
+
+            return new Pagination<Comment>()
+            {
+                Items = items,
+                TotalCount = total
+            };
         }
 
         public async Task UpdateCommentAsync(int id, Comment comment)

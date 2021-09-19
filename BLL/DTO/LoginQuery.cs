@@ -2,7 +2,7 @@
 
 namespace BLL.DTO
 {
-    public class RegisterDTO
+    public class LoginQuery
     {
         [Required]
         [Display(Name = "Email")]
@@ -13,10 +13,9 @@ namespace BLL.DTO
         [Display(Name = "Пароль")]
         public string Password { get; set; }
 
-        [Required]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Подтвердить пароль")]
-        public string PasswordConfirm { get; set; }
+        [Display(Name = "Запомнить?")]
+        public bool RememberMe { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }

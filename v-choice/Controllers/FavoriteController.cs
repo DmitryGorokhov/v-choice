@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 using Microsoft.Extensions.Logging;
 using BLL.Interface;
 using BLL.DTO;
@@ -14,20 +12,33 @@ namespace v_choice.Controllers
     public class FavoriteController : Controller
     {
         private readonly IFavoriteService _favoriteService;
+        private readonly IPaginationService _paginationService;
         private readonly ILogger _logger;
 
-        public FavoriteController(IFavoriteService fs, ILogger<FavoriteController> logger)
+        public FavoriteController(IFavoriteService fs, IPaginationService ps, ILogger<FavoriteController> logger)
         {
             _favoriteService = fs;
+            _paginationService = ps;
             _logger = logger;
         }
 
         [Authorize]
         [HttpGet]
-        public async Task<IEnumerable<FilmDTO>> GetFavoriteFilmsAsync()
+        public async Task<IActionResult> GetFavoriteFilmsPagination([FromQuery] PaginationQuery query)
         {
-            _logger.LogInformation("Get favorite films for authorized user.");
-            return await _favoriteService.GetAllFavoriteFilmsAsync(HttpContext.User);
+            _logger.LogInformation("Get pagination favorite films for authorized user.");
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Get pagination favorite films for authorized user: model state is not valid.");
+                return BadRequest(ModelState);
+            }
+
+            var res = await _paginationService.GetFilmsPagination(query);
+            if (res == null)
+                return StatusCode(500);
+
+            return Ok(res);
         }
 
         [Authorize]

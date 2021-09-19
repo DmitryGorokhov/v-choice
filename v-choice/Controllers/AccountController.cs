@@ -22,7 +22,7 @@ namespace v_choice.Controllers
 
         [HttpPost]
         [Route("api/Account/Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO reg)
+        public async Task<IActionResult> Register([FromBody] RegisterQuery reg)
         {
             _logger.LogInformation("Register new user.");
             if (!ModelState.IsValid)
@@ -76,7 +76,7 @@ namespace v_choice.Controllers
 
         [HttpPost]
         [Route("api/Account/Login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO log)
+        public async Task<IActionResult> Login([FromBody] LoginQuery log)
         {
             _logger.LogInformation("Login user.");
             if (ModelState.IsValid)

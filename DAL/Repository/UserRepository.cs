@@ -28,6 +28,7 @@ namespace DAL.Repository
             Film f = await _context.Film.Include(c => c.Users).FirstOrDefaultAsync(e => e.Id == film.Id);
             if (f == null)
                 return;
+
             f.Users.Add(u);
             _context.Film.Update(f);
             await _context.SaveChangesAsync();
@@ -39,6 +40,7 @@ namespace DAL.Repository
             Film f = await _context.Film.Include(c => c.Users).FirstOrDefaultAsync(e => e.Id == id);
             if (f == null)
                 return null;
+
             return f.Users.Contains(u);
         }
 
@@ -51,6 +53,18 @@ namespace DAL.Repository
         public async Task<User> GetCurrentUserAsync(ClaimsPrincipal user)
         {
             return await _userManager.GetUserAsync(user);
+        }
+
+        public async Task<Pagination<Film>> GetFavoriteFilmsByPageAsync(int pageNumber, int onPageCount)
+        {
+            int total = await _context.Film.CountAsync();
+            var items = await _context.Film.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
+            
+            return new Pagination<Film>()
+            { 
+                Items = items,
+                TotalCount = total
+            };
         }
 
         public async Task RemoveFilmFromFavorite(Film film, ClaimsPrincipal user)

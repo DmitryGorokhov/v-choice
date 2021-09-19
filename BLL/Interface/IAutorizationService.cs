@@ -7,8 +7,8 @@ namespace BLL.Interface
 {
     public interface IAutorizationService
     {
-        Task<IdentityResult> RegisterUserAsync(RegisterDTO reg);
-        Task<SignInResult> LogInUserAsync(LoginDTO log);
+        Task<IdentityResult> RegisterUserAsync(RegisterQuery reg);
+        Task<SignInResult> LogInUserAsync(LoginQuery log);
         Task UserSignOutAsync();
         Task<UserDTO> GetCurrentUserAsync(ClaimsPrincipal user);
     }

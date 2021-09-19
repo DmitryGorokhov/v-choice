@@ -61,6 +61,22 @@ namespace DAL.Repository
             return await _context.Film.SingleOrDefaultAsync(m => m.Id == id);
         }
 
+        public async Task<Pagination<Film>> GetFilmsByPageAsync(int pageNumber, int onPageCount, int genreId)
+        {
+            var itemsQuery = genreId >= 0
+                ? _context.Film.Include(g => g.Genres).Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
+                : _context.Film;
+
+            int total = await itemsQuery.CountAsync();
+            var items = await itemsQuery.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
+
+            return new Pagination<Film>()
+            {
+                Items = items,
+                TotalCount = total
+            };
+        }
+
         public async Task UpdateFilmAsync(int id, Film film)
         {
             try

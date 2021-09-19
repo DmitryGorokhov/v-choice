@@ -42,7 +42,7 @@ namespace BLL.Service
             }
         }
 
-        public async Task<SignInResult> LogInUserAsync(LoginDTO log)
+        public async Task<SignInResult> LogInUserAsync(LoginQuery log)
         {
             _logger.LogInformation("Start login user.");
             try
@@ -68,7 +68,7 @@ namespace BLL.Service
             }
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(RegisterDTO reg)
+        public async Task<IdentityResult> RegisterUserAsync(RegisterQuery reg)
         {
             _logger.LogInformation("Start register.");
             try

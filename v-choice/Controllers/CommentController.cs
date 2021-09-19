@@ -13,31 +13,31 @@ namespace v_choice.Controllers
     public class CommentController : Controller
     {
         private readonly ICrudService _crudService;
+        private readonly IPaginationService _paginationService;
         private readonly ILogger _logger;
 
-        public CommentController(ICrudService cs, ILogger<CommentController> logger)
+        public CommentController(ICrudService cs, IPaginationService ps, ILogger<CommentController> logger)
         {
             _crudService = cs;
+            _paginationService = ps;
             _logger = logger;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetAllCommentsByFilmID([FromRoute] int id)
+        [HttpGet]
+        public async Task<IActionResult> GetCommentsPagination([FromQuery] PaginationQuery query)
         {
-            _logger.LogInformation($"Get all comments for film with Id equal {id}.");
+            _logger.LogInformation("Get pagination comments");
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Get all comments: model state is not valid.");
+                _logger.LogWarning("Get pagination comments: model state is not valid.");
                 return BadRequest(ModelState);
             }
-            var comments = _crudService.GetAllCommentsAsync(id);
-            if (comments == null)
-            {
-                _logger.LogInformation($"Not Found: comments for film with Id equal {id}.");
-                return NotFound();
-            }
-            _logger.LogInformation($"Ok status: comments for film with Id equal {id} was found.");
-            return Ok(comments);
+
+            var res = await _paginationService.GetCommentsPagination(query);
+            if (res == null)
+                return StatusCode(500);
+
+            return Ok(res);
         }
 
         [Authorize]
