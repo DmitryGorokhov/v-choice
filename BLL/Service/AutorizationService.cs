@@ -14,11 +14,13 @@ namespace BLL.Service
     {
         private readonly IUserRepository _userRepository;
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
-        public AutorizationService(IUserRepository ur, ILogger<AutorizationService> logger)
+        public AutorizationService(IUserRepository ur, ILogger<AutorizationService> logger, IMapper mapper)
         {
             _userRepository = ur;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public async Task<UserDTO> GetCurrentUserAsync(ClaimsPrincipal user)
@@ -29,8 +31,14 @@ namespace BLL.Service
                 _logger.LogInformation("Call GetCurrentUserAsync.");
                 User usr = await _userRepository.GetCurrentUserAsync(user);
                 
-                _logger.LogInformation("Convert to DTO.");
-                UserDTO u = new UserDTO(usr);
+                if (usr == null)
+                {
+                    _logger.LogInformation($"Authenticated: guest");
+                    
+                    return null;
+                }
+
+                UserDTO u = _mapper.UserModelToDTO(usr);
 
                 _logger.LogInformation($"Authenticated: {u.Email}");
                 
@@ -42,6 +50,14 @@ namespace BLL.Service
 
                 return null;
             }
+        }
+
+        public async Task<string> GetCurrentUserEmailAsync(ClaimsPrincipal user)
+        {
+            _logger.LogInformation("Starting get email of current user.");
+            UserDTO u = await GetCurrentUserAsync(user);
+            
+            return u != null ? u.UserName : "guest";
         }
 
         public async Task<SignInResult> LogInUserAsync(LoginQuery log)

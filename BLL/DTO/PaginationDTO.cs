@@ -4,8 +4,7 @@ namespace BLL.DTO
 {
     public class PaginationDTO<T>
     {
-        public PaginationDTO()
-        { }
+        public PaginationDTO() { }
 
         public PaginationDTO(PaginationQuery query)
         {

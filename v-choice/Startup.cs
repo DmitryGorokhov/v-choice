@@ -43,7 +43,7 @@ namespace v_choice
             services.AddScoped<ICrudService, CrudService>();
             services.AddScoped<IPaginationService, PaginationService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
-            services.AddScoped<IMapperDTOtoModel, MapperDTOtoModel>();
+            services.AddScoped<IMapper, Mapper>();
 
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
 

@@ -14,14 +14,16 @@ namespace BLL.Service
         private readonly ICommentsRepository _commentsRepository;
         private readonly IFilmRepository _filmRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
-        public PaginationService(ICommentsRepository cr, IFilmRepository fr, IUserRepository ur, ILogger<PaginationService> logger)
+        public PaginationService(ICommentsRepository cr, IFilmRepository fr, IUserRepository ur, ILogger<PaginationService> logger, IMapper mapper)
         {
             _commentsRepository = cr;
             _filmRepository = fr;
             _userRepository = ur;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public async Task<PaginationDTO<CommentDTO>> GetCommentsPagination(PaginationQuery query)
@@ -36,7 +38,7 @@ namespace BLL.Service
                 var res = new PaginationDTO<CommentDTO>(query)
                 {
                     TotalCount = answer.TotalCount,
-                    Items = answer.Items.Select(e => new CommentDTO(e)).ToList(),
+                    Items = answer.Items.Select(e => _mapper.CommentModelToDTO(e)).ToList(),
                 };
 
                 return res;
@@ -61,7 +63,7 @@ namespace BLL.Service
                 var res = new PaginationDTO<FilmDTO>(query)
                 {
                     TotalCount = answer.TotalCount,
-                    Items = answer.Items.Select(e => new FilmDTO(e)).ToList(),
+                    Items = answer.Items.Select(e => _mapper.FilmModelToDTO(e)).ToList(),
                 };
 
                 return res;
@@ -84,11 +86,11 @@ namespace BLL.Service
                 _logger.LogInformation("Call GetFilmsByPageAsync.");
                 Pagination<Film> answer = await _filmRepository.GetFilmsByPageAsync(query.PageNumber, query.OnPageCount, genreId);
                 
-                _logger.LogInformation($"Get {query.OnPageCount} films on {query.PageNumber} page successfully.Pack result into object before return.");
+                _logger.LogInformation($"Get {query.OnPageCount} films on {query.PageNumber} page successfully. Pack result into object before return.");
                 var res = new PaginationDTO<FilmDTO>(query)
                 {
                     TotalCount = answer.TotalCount,
-                    Items = answer.Items.Select(e => new FilmDTO(e)).ToList(),
+                    Items = answer.Items.Select(e => _mapper.FilmModelToDTO(e)).ToList(),
                 };
 
                 return res;

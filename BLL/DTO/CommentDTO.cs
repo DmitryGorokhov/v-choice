@@ -5,18 +5,7 @@ namespace BLL.DTO
 {
     public class CommentDTO
     {
-        public CommentDTO()
-        { }
-
-        public CommentDTO(Comment comment)
-        {
-            Id = comment.Id;
-            Text = comment.Text;
-            CreatedAt = comment.CreatedAt;
-            AuthorId = comment.AuthorId;
-            AuthorEmail = comment.AuthorEmail;
-            FilmId = comment.FilmId;
-        }
+        public CommentDTO() { }
 
         public int Id { get; set; }
 

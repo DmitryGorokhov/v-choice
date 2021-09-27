@@ -1,17 +1,8 @@
-﻿using DAL.Model;
-
-namespace BLL.DTO
+﻿namespace BLL.DTO
 {
     public class GenreDTO
     {
-        public GenreDTO()
-        { }
-
-        public GenreDTO(Genre genre)
-        {
-            Id = genre.Id;
-            Value = genre.Value;
-        }
+        public GenreDTO() { }
 
         public int Id { get; set; }
 

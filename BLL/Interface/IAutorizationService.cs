@@ -11,5 +11,6 @@ namespace BLL.Interface
         Task<SignInResult> LogInUserAsync(LoginQuery log);
         Task UserSignOutAsync();
         Task<UserDTO> GetCurrentUserAsync(ClaimsPrincipal user);
+        Task<string> GetCurrentUserEmailAsync(ClaimsPrincipal user);
     }
 }

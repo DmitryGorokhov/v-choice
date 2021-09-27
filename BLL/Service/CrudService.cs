@@ -17,9 +17,9 @@ namespace BLL.Service
         private readonly IGenreRepository _genreRepository;
         private readonly ICommentsRepository _commentsRepository;
         private readonly ILogger _logger;
-        private readonly IMapperDTOtoModel _mapper;
+        private readonly IMapper _mapper;
 
-        public CrudService(IFilmRepository fr, IGenreRepository gr, ICommentsRepository cr, ILogger<CrudService> logger, IMapperDTOtoModel mapper)
+        public CrudService(IFilmRepository fr, IGenreRepository gr, ICommentsRepository cr, ILogger<CrudService> logger, IMapper mapper)
         {
             _filmRepository = fr;
             _genreRepository = gr;
@@ -38,9 +38,9 @@ namespace BLL.Service
                 _logger.LogInformation("Call CreateCommentAsync.");
                 c = await _commentsRepository.CreateCommentAsync(c, user);
                 
-                _logger.LogInformation($"Create comment: comment with Id equal {comment.Id} was created. Convert to DTO before return.");
+                _logger.LogInformation($"Create comment: comment with Id equal {comment.Id} was created.");
 
-                return new CommentDTO(c);
+                return _mapper.CommentModelToDTO(c);
             }
             catch (Exception e)
             {
@@ -60,9 +60,9 @@ namespace BLL.Service
                 _logger.LogInformation("Call CreateFilmAsync.");
                 f = await _filmRepository.CreateFilmAsync(f);
                 
-                _logger.LogInformation($"Create film: film with Id equal {film.Id} was created. Convert to DTO before return.");
-                
-                return new FilmDTO(f);
+                _logger.LogInformation($"Create film: film with Id equal {film.Id} was created.");
+
+                return _mapper.FilmModelToDTO(f);
             }
             catch(Exception e)
             {
@@ -112,9 +112,9 @@ namespace BLL.Service
                 _logger.LogInformation("Call GetAllGenres.");
                 var genres = _genreRepository.GetAllGenres();
 
-                _logger.LogInformation("Get all genres successfull. Convert to DTO before return.");
+                _logger.LogInformation("Get all genres successfull.");
 
-                return genres.Select(e => new GenreDTO(e)).ToList();
+                return genres.Select(e => _mapper.GenreModelToDTO(e)).ToList();
             }
             catch (Exception e)
             {
@@ -139,9 +139,9 @@ namespace BLL.Service
                     return null;
                 }
 
-                _logger.LogInformation($"Get film with Id equal {id} successfully. Convert to DTO before return.");
+                _logger.LogInformation($"Get film with Id equal {id} successfully.");
 
-                return new FilmDTO(film);
+                return _mapper.FilmModelToDTO(film);
             }
             catch (Exception e)
             {

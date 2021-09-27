@@ -14,9 +14,9 @@ namespace BLL.Service
     {
         private readonly IUserRepository _userRepository;
         private readonly ILogger _logger;
-        private readonly IMapperDTOtoModel _mapper;
+        private readonly IMapper _mapper;
 
-        public FavoriteService(IUserRepository ur, ILogger<FavoriteService> logger, IMapperDTOtoModel mapper)
+        public FavoriteService(IUserRepository ur, ILogger<FavoriteService> logger, IMapper mapper)
         {
             _userRepository = ur;
             _logger = logger;

@@ -139,10 +139,9 @@ namespace v_choice.Controllers
         [Route("api/Account/isAuthenticated")]
         public async Task<IActionResult> LoginAuthenticatedOff()
         {
-            _logger.LogInformation("Check authenticated user");
-            UserDTO usr = await _autorizationService.GetCurrentUserAsync(HttpContext.User);
+            _logger.LogInformation("Check authenticated user email");
             
-            var message = usr == null ? "guest" : usr.UserName;
+            string message = await _autorizationService.GetCurrentUserEmailAsync(HttpContext.User);
             var msg = new
             {
                 message
