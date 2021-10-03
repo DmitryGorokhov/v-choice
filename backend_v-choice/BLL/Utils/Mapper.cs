@@ -25,9 +25,17 @@ namespace BLL.Utils
                 Title = film.Title,
                 Year = film.Year,
                 Description = film.Description,
-                Comments = new HashSet<Comment>(film.Comments.Select(e => CommentDTOtoModel(e)).ToList()),
-                Genres = new HashSet<Genre>(film.Genres.Select(e => GenreDTOtoModel(e)).ToList()),
-                Users = new HashSet<User>(film.Users.Select(e => UserDTOtoModel(e)).ToList())
+                Comments = new HashSet<Comment>(film.Comments
+                .Select(e => CommentDTOtoModel(e))
+                .ToList()),
+
+                Genres = new HashSet<Genre>(film.Genres
+                .Select(e => GenreDTOtoModel(e))
+                .ToList()),
+
+                Users = new HashSet<User>(film.Users
+                .Select(e => UserDTOtoModel(e))
+                .ToList())
             };
 
             _logger.LogInformation("Finish mapping FilmDTO to Model.");

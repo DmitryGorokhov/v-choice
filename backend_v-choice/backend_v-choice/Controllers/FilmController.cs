@@ -42,18 +42,21 @@ namespace backend_v_choice.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFilm([FromRoute] int id)
         {
-            _logger.LogInformation($"Get film with Id equal {id}.");
-            if (!ModelState.IsValid)
+            _logger.LogInformation($"Get film with Id equal {id}."); // 1
+            if (id < 0) // 2
             {
-                _logger.LogWarning("Get film: model state is not valid.");
+                _logger.LogWarning("Get film: model state is not valid."); // 3
                 
-                return BadRequest(ModelState);
+                return BadRequest(ModelState); // 4
             }
 
-            var film = await _crudService.GetFilmAsync(id);
-            if (film == null) return NotFound();
+            var film = await _crudService.GetFilmAsync(id); // 5
+            if (film == null) // 6
+            {
+                return NotFound(); // 4
+            } // выход из if - аналогично else // 7
 
-            return Ok(film);
+            return Ok(film); // 4
         }
 
         [Authorize(Roles = "admin")]
