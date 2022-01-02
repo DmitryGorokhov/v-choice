@@ -25,7 +25,7 @@ namespace backend_v_choice.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCommentsPagination([FromQuery] PaginationQuery query)
         {
-            _logger.LogInformation("Get pagination comments");
+            _logger.LogInformation("Get pagination comments.");
             if (!ModelState.IsValid || query == null)
             {
                 _logger.LogWarning("Get pagination comments: model state is not valid.");

@@ -11,5 +11,7 @@ namespace BLL.DTO
         public int OnPageCount { get; set; }
 
         public int? GenreId { get; set; }
+
+        public int? FilmId { get; set; }
     }
 }

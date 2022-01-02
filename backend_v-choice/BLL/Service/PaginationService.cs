@@ -32,7 +32,7 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call GetCommentsByPageAsync.");
-                var answer = await _commentsRepository.GetCommentsByPageAsync(query.PageNumber, query.OnPageCount);
+                var answer = await _commentsRepository.GetCommentsByPageAsync(query.PageNumber, query.OnPageCount, query.FilmId);
                 
                 _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully. Pack result into object before return.");
                 var res = new PaginationDTO<CommentDTO>(query)

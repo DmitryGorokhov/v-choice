@@ -1,0 +1,17 @@
+.favoriteSection {
+	display: flex;
+	align-items: center;
+	margin: 40px 20px;
+}
+
+.favoriteTextItem {
+	width: 80%;
+}
+
+.text {
+	font-size: 20px;
+}
+
+.favoriteButton {
+	font-size: 16px;
+}

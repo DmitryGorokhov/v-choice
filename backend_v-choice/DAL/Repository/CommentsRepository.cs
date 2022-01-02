@@ -56,16 +56,29 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<Pagination<Comment>> GetCommentsByPageAsync(int pageNumber, int onPageCount)
+        public async Task<Pagination<Comment>> GetCommentsByPageAsync(int pageNumber, int onPageCount, int? filmId)
         {
-            int total = await _context.Comment.CountAsync();
-            var items = await _context.Comment.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
+            if (filmId is null)
+            {
+                // All comments.
+                return GetCommentsByPage(pageNumber, onPageCount);
+            }
+
+            var collection = _context.Comment.Where(c => c.FilmId == filmId).Select(c => c);
+            var total = await collection.CountAsync();
+            var items = await collection.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
 
             return new Pagination<Comment>()
             {
                 Items = items,
                 TotalCount = total
             };
+        }
+
+        private static Pagination<Comment> GetCommentsByPage(int pageNumber, int onPageCount)
+        {
+            // Is not allowed. Returns empty.
+            return new Pagination<Comment>();
         }
 
         public async Task UpdateCommentAsync(int id, Comment comment)
