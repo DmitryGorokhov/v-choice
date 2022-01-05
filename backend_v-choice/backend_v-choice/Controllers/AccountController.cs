@@ -77,7 +77,7 @@ namespace backend_v_choice.Controllers
         public async Task<IActionResult> Login([FromBody] LoginQuery log)
         {
             _logger.LogInformation("Login user.");
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Login: model state is not valid.");
                 var errorMsg = new

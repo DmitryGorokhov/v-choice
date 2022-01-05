@@ -23,7 +23,7 @@ function Films() {
 				<Box className={classes.headerContainer}>
 					<Typography variant="h2">
 						Фильмы
-				</Typography>
+					</Typography>
 				</Box>
 				<FilmList />
 			</Container>
