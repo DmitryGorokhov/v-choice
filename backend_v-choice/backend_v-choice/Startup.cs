@@ -16,6 +16,7 @@ using DAL;
 using DAL.Interface;
 using DAL.Model;
 using DAL.Repository;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 
 namespace backend_v_choice
 {
@@ -49,7 +50,13 @@ namespace backend_v_choice
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<IMapper, Mapper>();
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
-           
+
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "../../frontend_v-choice/build";
+            });
+
             services.AddMvc().AddNewtonsoftJson(o =>
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -94,11 +101,22 @@ namespace backend_v_choice
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
+            app.UseSpaStaticFiles();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "../../frontend_v-choice";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                }
             });
         }
 
