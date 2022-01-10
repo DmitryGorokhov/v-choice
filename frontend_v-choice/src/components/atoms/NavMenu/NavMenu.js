@@ -58,7 +58,7 @@ export class NavMenu extends Component {
       <header>
         <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
           <Container>
-            <NavbarBrand tag={Link} to="/">v_choice</NavbarBrand>
+            <NavbarBrand tag={Link} to="/catalog">v_choice</NavbarBrand>
             <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
             <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
               {
@@ -72,7 +72,7 @@ export class NavMenu extends Component {
                         tag={Link}
                         className="text-dark"
                         onClick={this.handleClickLogout}
-                        to="/"
+                        to="/catalog"
                       >
                         Выйти
                       </NavLink>

@@ -130,7 +130,7 @@ export function SignIn() {
 											</Alert>);
 									})
 									: logoutAction()
-								: <Redirect to="/" />
+								: <Redirect to="/catalog" />
 						}
 					</Box>
 					<form className={classes.form} noValidate>

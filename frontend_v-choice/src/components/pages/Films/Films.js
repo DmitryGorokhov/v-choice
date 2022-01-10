@@ -1,4 +1,5 @@
 import React from 'react'
+import { useParams } from "react-router-dom"
 import { createStyles, makeStyles, Box, Container, Typography } from '@material-ui/core'
 
 import FilmList from '../../moleculas/FilmList/FilmList'
@@ -14,6 +15,15 @@ const useStyles = makeStyles((theme) => createStyles({
 }));
 
 function Films() {
+	let { page, count } = useParams();
+	console.log(page);
+	if (page === undefined) {
+		page = 1;
+	}
+
+	if (count === undefined) {
+		count = 3;
+	}
 	const classes = useStyles();
 
 	return (
@@ -25,7 +35,7 @@ function Films() {
 						Фильмы
 					</Typography>
 				</Box>
-				<FilmList />
+				<FilmList pageNumber={page} onPage={count} />
 			</Container>
 		</div>
 	)

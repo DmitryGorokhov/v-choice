@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Button, List, ListItem, Typography } from '@material-ui/core'
 import { Link } from 'react-router-dom'
+import { Button, List, ListItem, Typography } from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/Clear'
 
 import styles from './FavoritesList.module.css'
@@ -8,7 +8,13 @@ import styles from './FavoritesList.module.css'
 export class FavoritesList extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { favoriteFilms: [], loading: true };
+		this.state = {
+			favoriteFilms: [],
+			loading: true,
+			pageNumber: 1,
+			onPage: 5,
+			totalFilms: 0
+		};
 	}
 
 	componentDidMount() {
@@ -16,13 +22,17 @@ export class FavoritesList extends Component {
 	}
 
 	async fetchFavorites() {
-		fetch(`https://localhost:5001/api/favorite`)
+		fetch(`https://localhost:5001/api/favorite?pagenumber=${this.state.pageNumber}&onpagecount=${this.state.onPage}`)
 			.then(response => response.json())
-			.then(result => this.setState({ favoriteFilms: result, loading: false }));
+			.then(result => this.setState({
+				favoriteFilms: result.items,
+				loading: false,
+				totalFilms: result.totalCount
+			}));
 	}
 
 	removeItem = (film) => {
-		this.setState({ favoriteFilms: this.state.favoriteFilms.filter(f => f.Id !== film.Id) });
+		this.setState({ favoriteFilms: this.state.favoriteFilms.filter(f => f.id !== film.id) });
 	}
 
 	handleRemoveItem = (film) => {
@@ -42,14 +52,13 @@ export class FavoritesList extends Component {
 				{
 					this.state.loading
 						? <Typography>Загрузка...</Typography>
-						:
-						<List className={styles.list}>
+						: <List className={styles.list}>
 							{
 								this.state.favoriteFilms.length !== 0
 									? this.state.favoriteFilms.map(film => {
 										return (
-											<ListItem key={film.Id} className={styles.item}>
-												<Link to={`/film/${film.Id}`}>{film.Title}</Link>
+											<ListItem key={film.id} className={styles.item}>
+												<Link to={`/film/${film.id}`}>{film.title}</Link>
 												<Button
 													variant="primary"
 													onClick={() => {
