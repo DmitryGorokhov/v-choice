@@ -1,41 +1,36 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, List, ListItem, Typography } from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/Clear'
+import Pagination from '@material-ui/lab/Pagination'
 
 import styles from './FavoritesList.module.css'
 
-export class FavoritesList extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			favoriteFilms: [],
-			loading: true,
-			pageNumber: 1,
-			onPage: 5,
-			totalFilms: 0
-		};
-	}
+function FavoritesList() {
+	const [state, setState] = useState({
+		onPage: 5,
+		favorites: [],
+		loading: true,
+		totalCount: 0,
+		currentPage: 1
+	});
 
-	componentDidMount() {
-		this.fetchFavorites();
-	}
-
-	async fetchFavorites() {
-		fetch(`https://localhost:5001/api/favorite?pagenumber=${this.state.pageNumber}&onpagecount=${this.state.onPage}`)
+	useEffect(() => {
+		fetch(`https://localhost:5001/api/favorite?pagenumber=${state.currentPage}&onpagecount=${state.onPage}`)
 			.then(response => response.json())
-			.then(result => this.setState({
-				favoriteFilms: result.items,
+			.then(result => setState({
+				...state,
+				favorites: result.items,
 				loading: false,
-				totalFilms: result.totalCount
+				totalCount: result.totalCount
 			}));
+	}, [state.currentPage])
+
+	const removeItem = (film) => {
+		setState({ ...state, favorites: state.favorites.filter(f => f.id !== film.id) });
 	}
 
-	removeItem = (film) => {
-		this.setState({ favoriteFilms: this.state.favoriteFilms.filter(f => f.id !== film.id) });
-	}
-
-	handleRemoveItem = (film) => {
+	const handleRemoveItem = (film) => {
 		fetch(`https://localhost:5001/api/favorite`, {
 			method: 'DELETE',
 			headers: {
@@ -43,26 +38,36 @@ export class FavoritesList extends Component {
 			},
 			body: JSON.stringify(film)
 		});
-		this.removeItem(film);
+		removeItem(film);
 	}
 
-	render() {
-		return (
-			<div>
-				{
-					this.state.loading
-						? <Typography>Загрузка...</Typography>
-						: <List className={styles.list}>
+	const calculatePagesCount = () => {
+		let value = Math.floor(state.totalCount / state.onPage)
+		return value * state.onPage === state.totalCount ? value : value + 1
+	}
+
+	const handleChangePage = (event, newPage) => {
+		setState({ ...state, currentPage: newPage, loading: true });
+	}
+
+	return (
+		<div>
+			{
+				state.loading
+					? <Typography>Загрузка...</Typography>
+					:
+					<>
+						<List className={styles.list}>
 							{
-								this.state.favoriteFilms.length !== 0
-									? this.state.favoriteFilms.map(film => {
+								state.favorites.length !== 0
+									? state.favorites.map(film => {
 										return (
 											<ListItem key={film.id} className={styles.item}>
 												<Link to={`/film/${film.id}`}>{film.title}</Link>
 												<Button
 													variant="primary"
 													onClick={() => {
-														return this.handleRemoveItem(film)
+														return handleRemoveItem(film)
 													}}
 												>
 													<ClearIcon />
@@ -73,10 +78,17 @@ export class FavoritesList extends Component {
 									: <Typography variant='h5'>Список избранных фильмов пуст</Typography>
 							}
 						</List>
-				}
-			</div>
-		)
-	}
+						<Pagination
+							page={Number(state.currentPage)}
+							count={calculatePagesCount()}
+							variant="outlined"
+							color="primary"
+							onChange={handleChangePage}
+						/>
+					</>
+			}
+		</div>
+	)
 }
 
 export default FavoritesList
