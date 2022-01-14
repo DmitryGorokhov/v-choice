@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from "react-router-dom"
 import { createStyles, makeStyles, Box, Container, Typography } from '@material-ui/core'
 
@@ -15,15 +15,26 @@ const useStyles = makeStyles((theme) => createStyles({
 }));
 
 function Films() {
+	const [state, setState] = useState({
+		genres: [],
+	});
+
+	useEffect(() => {
+		fetch('https://localhost:5001/api/genre')
+			.then(response => response.json())
+			.then(result => setState({ ...state, genres: result }));
+	}, [])
+
 	let { page, count } = useParams();
-	console.log(page);
+
+	// Check url params
 	if (page === undefined) {
 		page = 1;
 	}
-
 	if (count === undefined) {
 		count = 3;
 	}
+
 	const classes = useStyles();
 
 	return (
@@ -35,7 +46,7 @@ function Films() {
 						Фильмы
 					</Typography>
 				</Box>
-				<FilmList pageNumber={page} onPage={count} />
+				<FilmList pageNumber={page} onPage={count} genres={state.genres} />
 			</Container>
 		</div>
 	)

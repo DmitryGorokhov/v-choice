@@ -1,14 +1,25 @@
-import React, { Component } from 'react'
-import { withRouter } from 'react-router';
-import { Box, List, ListItem, Typography, InputLabel, MenuItem, FormHelperText, FormControl, Select } from '@material-ui/core'
-import { withStyles } from "@material-ui/core/styles"
+import React, { useEffect, useState } from 'react'
+import {
+	createStyles,
+	makeStyles,
+	Box,
+	List,
+	ListItem,
+	Typography,
+	InputLabel,
+	MenuItem,
+	FormHelperText,
+	FormControl,
+	Select
+} from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
+import { useHistory } from 'react-router-dom';
 
 import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import AddFilmDialog from '../../crud/AddFilmDialog/AddFilmDialog'
 import FilmsFilter from '../../atoms/FilmsFilter/FilmsFilter'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => createStyles({
 	filmListItem: {
 		display: 'block'
 	},
@@ -22,137 +33,123 @@ const styles = (theme) => ({
 		alignItems: 'center',
 		margin: theme.spacing(0, 2),
 	}
-});
+}));
 
-class FilmList extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			genres: [],
-			films: [],
-			loading: true,
-			totalFilms: 0
-		};
-		this.allFilms = [];
-		this.onPage = this.props.onPage;
-	}
+function FilmList(props) {
+	const classes = useStyles();
+	const history = useHistory();
 
-	componentDidMount() {
-		this.fetchGenresData();
-		this.fetchFilmsData();
-	}
+	const [state, setState] = useState({
+		films: [],
+		loading: true,
+		totalFilms: 0,
+		onPage: props.onPage,
+		currentPage: props.pageNumber,
+	});
 
-	async fetchFilmsData() {
-		fetch(`https://localhost:5001/api/film?pagenumber=${this.props.pageNumber}&onpagecount=${this.onPage}`)
+	useEffect(() => {
+		fetch(`https://localhost:5001/api/film?pagenumber=${state.currentPage}&onpagecount=${state.onPage}`)
 			.then(response => response.json())
 			.then(result => {
-				this.allFilms = result.items;
-				this.setState({ films: result.items, totalFilms: result.totalCount });
+				setState({ ...state, films: result.items, totalFilms: result.totalCount, loading: false });
 			});
+	}, [state.currentPage, state.onPage])
+
+	const updateFilmList = (filmList) => {
+		setState({ films: filmList });
 	}
 
-	async fetchGenresData() {
-		fetch('https://localhost:5001/api/genre')
-			.then(response => response.json())
-			.then(result => this.setState({ genres: result, loading: false }));
+	const showAll = () => {
+
 	}
 
-	updateFilmList = (filmList) => {
-		this.setState({ films: filmList })
+	const handleChangePage = (event, newPage) => {
+		history.replace({ pathname: `/catalog/${newPage}/${state.onPage}` });
+		setState({ ...state, currentPage: newPage, loading: true });
 	}
 
-	showAll = () => {
-		this.setState({ films: this.allFilms });
+	const handleChangeOnPageCount = (event) => {
+		const newCountOnPage = event.target.value;
+		history.replace({ pathname: `/catalog/${1}/${newCountOnPage}` });
+		setState({ ...state, currentPage: 1, onPage: newCountOnPage, loading: true });
 	}
 
-	handleChangePage = (event, newPage) => {
-		this.props.history.push(`/catalog/${newPage}/${this.onPage}`);
-		this.props.history.go();
+	const calculatePagesCount = () => {
+		let value = Math.floor(state.totalFilms / state.onPage);
+		return value * state.onPage === state.totalFilms ? value : value + 1;
 	}
 
-	handleChangeOnPageCount = (event) => {
-		this.props.history.push(`/catalog/${1}/${event.target.value}`);
-		this.props.history.go();
-	}
-
-	calculatePagesCount = () => {
-		let value = Math.floor(this.state.totalFilms / this.onPage)
-		return value * this.onPage === this.state.totalFilms ? value : value + 1
-	}
-
-	render() {
-		return (
-			<>
-				{
-					this.state.loading
-						? <Typography className={this.props.classes.loading}>
-							Загрузка...
-						</Typography >
-						: <>
-							<Box>
-								<Box className={this.props.classes.tools}>
-									<Typography variant="subtitle1">
-										Инструменты
-									</Typography>
-									<FilmsFilter
-										onFilter={this.updateFilmList}
-										genres={this.state.genres}
-										loadAll={this.showAll}
-									/>
-									<AddFilmDialog genres={this.state.genres} />
-								</Box>
-								<Box>
-									<List>
-										{
-											this.state.films.length !== 0
-												? this.state.films.map(film => {
-													return (
-														<ListItem
-															className={this.props.classes.filmListItem}
-															key={film.Id}
-														>
-															<FilmCard film={film} />
-														</ListItem>
-													)
-												})
-												: <Typography variant="h5">
-													Нет фильмов с выбранным жанром
-												</Typography>
-										}
-									</List>
-								</Box>
-							</Box>
-							<Box>
-								<Pagination
-									page={Number(this.props.pageNumber)}
-									count={this.calculatePagesCount()}
-									variant="outlined"
-									color="primary"
-									onChange={this.handleChangePage}
+	return (
+		<>
+			{
+				state.loading
+					? <Typography className={classes.loading}>
+						Загрузка...
+					</Typography >
+					: <>
+						<Box>
+							<Box className={classes.tools}>
+								<Typography variant="subtitle1">
+									Инструменты
+								</Typography>
+								<FilmsFilter
+									onFilter={updateFilmList}
+									genres={props.genres}
+									loadAll={showAll}
 								/>
-								<FormControl sx={{ m: 1, minWidth: 120 }}>
-									<InputLabel id="simple-select-helper-label">Количество</InputLabel>
-									<Select
-										labelId="simple-select-helper-label"
-										id="simple-select-helper"
-										value={this.onPage}
-										label="Количество"
-										onChange={this.handleChangeOnPageCount}
-									>
-										<MenuItem value={3}>3</MenuItem>
-										<MenuItem value={5}>5</MenuItem>
-										<MenuItem value={10}>10</MenuItem>
-										<MenuItem value={20}>20</MenuItem>
-										<MenuItem value={50}>50</MenuItem>
-									</Select>
-									<FormHelperText>фильмов на странице</FormHelperText>
-								</FormControl>
+								<AddFilmDialog genres={props.genres} />
 							</Box>
-						</>
-				}
-			</>
-		)
-	}
+							<Box>
+								<List>
+									{
+										state.films.length !== 0
+											? state.films.map(film => {
+												return (
+													<ListItem
+														className={classes.filmListItem}
+														key={film.id}
+													>
+														<FilmCard film={film} />
+													</ListItem>
+												)
+											})
+											: <Typography variant="h5">
+												Нет фильмов с выбранным жанром
+											</Typography>
+									}
+								</List>
+							</Box>
+						</Box>
+						<Box>
+							<Pagination
+								page={Number(state.currentPage)}
+								count={calculatePagesCount()}
+								variant="outlined"
+								color="primary"
+								onChange={handleChangePage}
+							/>
+							<FormControl sx={{ m: 1, minWidth: 120 }}>
+								<InputLabel id="simple-select-helper-label">Количество</InputLabel>
+								<Select
+									labelId="simple-select-helper-label"
+									id="simple-select-helper"
+									value={state.onPage}
+									label="Количество"
+									onChange={handleChangeOnPageCount}
+								>
+									<MenuItem value={3}>3</MenuItem>
+									<MenuItem value={5}>5</MenuItem>
+									<MenuItem value={10}>10</MenuItem>
+									<MenuItem value={20}>20</MenuItem>
+									<MenuItem value={50}>50</MenuItem>
+								</Select>
+								<FormHelperText>фильмов на странице</FormHelperText>
+							</FormControl>
+						</Box>
+					</>
+			}
+		</>
+	)
 }
 
-export default withRouter(withStyles(styles)(FilmList))
+export default FilmList
