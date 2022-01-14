@@ -7,7 +7,7 @@ import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder'
 
 import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
-import { CommentsList } from '../../moleculas/CommentsList/CommentsList'
+import CommentsList from '../../moleculas/CommentsList/CommentsList'
 import styles from './FilmPage.module.css'
 
 function FilmPage() {

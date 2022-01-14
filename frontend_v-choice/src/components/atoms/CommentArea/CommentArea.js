@@ -22,8 +22,7 @@ function CommentArea(props) {
 				},
 				body: JSON.stringify(comment)
 			})
-				.then(response => response.json())
-				.then(result => props.method(result));
+				.then(response => response.json());
 			setText('');
 		};
 		if (props.typeMethod === "update") {

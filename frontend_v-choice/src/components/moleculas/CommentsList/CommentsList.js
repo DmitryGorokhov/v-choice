@@ -1,66 +1,67 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 import { List, ListItem, Typography } from '@material-ui/core'
+import Pagination from '@material-ui/lab/Pagination'
 
 import CommentTile from '../../card&tiles/CommentTile/CommentTile'
 import CommentArea from '../../atoms/CommentArea/CommentArea'
 import styles from './CommentsList.module.css'
 
-export class CommentsList extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			comments: [],
-			loading: true,
-			pageNumber: 1,
-			onPage: 3,
-			totalCount: 0
-		};
-	}
 
-	componentDidMount() {
-		this.fetchComments(this.props.filmId);
-	}
+function CommentsList(props) {
+	const filmId = props.filmId;
+	const [state, setState] = useState({
+		onPage: 3,
+		comments: [],
+		loading: true,
+		totalCount: 0,
+		currentPage: 1
+	});
 
-	async fetchComments(filmId) {
-		fetch(`https://localhost:5001/api/Comment?PageNumber=${this.state.pageNumber}&OnPageCount=${this.state.onPage}&FilmId=${filmId}`)
+	useEffect(() => {
+		fetch(`https://localhost:5001/api/Comment?PageNumber=${state.currentPage}&OnPageCount=${state.onPage}&FilmId=${filmId}`)
 			.then(response => response.json())
-			.then(result => this.setState({ comments: result.items, loading: false, totalCount: result.totalCount }));
+			.then(result => setState({ ...state, comments: result.items, loading: false, totalCount: result.totalCount }));
+	}, [state.currentPage])
+
+	const updateComment = (updComment) => {
+		let ind = state.comments.findIndex(c => c.id === updComment.id);
+		state.comments[ind].text = updComment.text;
+		setState({ ...state, comments: state.comments });
 	}
 
-	createComment = (comment) => {
-		this.setState({ comments: [...this.state.comments, comment] })
+	const deleteComment = (commentId) => {
+		let ind = state.comments.findIndex(c => c.id === commentId);
+		state.comments.splice(ind, 1);
+		setState({ ...state, comments: state.comments });
 	}
 
-	updateComment = (updComment) => {
-		let ind = this.state.comments.findIndex(c => c.Id === updComment.Id);
-		this.state.comments[ind].text = updComment.text;
-		this.setState({ comments: this.state.comments });
+	const calculatePagesCount = () => {
+		let value = Math.floor(state.totalCount / state.onPage)
+		return value * state.onPage === state.totalCount ? value : value + 1
 	}
 
-	deleteComment = (commentId) => {
-		let ind = this.state.comments.findIndex(c => c.Id === commentId);
-		this.state.comments.splice(ind, 1);
-		this.setState({ comments: this.state.comments });
+	const handleChangePage = (event, newPage) => {
+		setState({ ...state, currentPage: newPage, loading: true });
 	}
 
-	render() {
-		return (
-			<div>
-				{
-					this.state.loading
-						? <Typography>Загрузка...</Typography>
-						:
+	return (
+		<div>
+			{
+				state.loading
+					? <Typography>Загрузка...</Typography>
+					:
+					<>
 						<List className={styles.list}>
 							{
-								this.state.comments.length !== 0
-									? this.state.comments.map(comment => {
+								state.comments.length !== 0
+									? state.comments.map(comment => {
 										return (
 											<ListItem className={styles.listItem} key={comment.Id}>
 												<CommentTile
 													comment={comment}
-													userEmail={this.props.userEmail}
-													onUpdateMethod={this.updateComment}
-													onDeleteMethod={this.deleteComment}
+													userEmail={props.userEmail}
+													onUpdateMethod={updateComment}
+													onDeleteMethod={deleteComment}
 												/>
 											</ListItem>
 										)
@@ -68,18 +69,26 @@ export class CommentsList extends Component {
 									: <Typography variant='h5'>Пока нет комментариев</Typography>
 							}
 						</List>
-				}
+						<Pagination
+							page={Number(state.currentPage)}
+							count={calculatePagesCount()}
+							variant="outlined"
+							color="primary"
+							onChange={handleChangePage}
+						/>
+					</>
 
-				{
-					this.props.userEmail === null
-						? <Typography variant='h6'>
-							Авторизируйтесь, чтобы оставить свой комментарий
-						</Typography>
-						: <CommentArea filmId={this.props.filmId} typeMethod="create" method={this.createComment} />
-				}
-			</div>
-		)
-	}
+			}
+
+			{
+				props.userEmail === null
+					? <Typography variant='h6'>
+						Авторизируйтесь, чтобы оставить свой комментарий
+					</Typography>
+					: <CommentArea filmId={filmId} typeMethod="create" />
+			}
+		</div>
+	)
 }
 
 export default CommentsList
