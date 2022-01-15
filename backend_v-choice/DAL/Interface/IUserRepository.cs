@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
+﻿using DAL.Model;
+using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using DAL.Model;
 
 namespace DAL.Interface
 {

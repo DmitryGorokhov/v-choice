@@ -1,9 +1,9 @@
-﻿using System;
+﻿using DAL.Interface;
+using DAL.Model;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Interface;
-using DAL.Model;
 
 namespace DAL.Repository
 {
@@ -50,9 +50,9 @@ namespace DAL.Repository
                 _context.Comment.Remove(item);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -90,9 +90,9 @@ namespace DAL.Repository
                 _context.Comment.Update(item);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
     }

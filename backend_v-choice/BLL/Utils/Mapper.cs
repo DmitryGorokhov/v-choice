@@ -25,6 +25,10 @@ namespace BLL.Utils
                 Title = film.Title,
                 Year = film.Year,
                 Description = film.Description,
+                AverageRate = film.AverageRate,
+                CountRate = film.CountRate,
+                TotalRate = film.TotalRate,
+
                 Comments = new HashSet<Comment>(film.Comments
                 .Select(e => CommentDTOtoModel(e))
                 .ToList()),
@@ -35,10 +39,31 @@ namespace BLL.Utils
 
                 Users = new HashSet<User>(film.Users
                 .Select(e => UserDTOtoModel(e))
+                .ToList()),
+
+                RateCollection = new HashSet<Rate>(film.RateCollection
+                .Select(e => RateDTOtoModel(e))
                 .ToList())
             };
 
             _logger.LogInformation("Finish mapping FilmDTO to Model.");
+
+            return model;
+        }
+
+        public Rate RateDTOtoModel(RateDTO rate)
+        {
+            _logger.LogInformation("Start mapping RateDTO to Model.");
+            Rate model = new Rate()
+            {
+                Id = rate.Id,
+                Value = rate.Value,
+                AuthorId = rate.AuthorId,
+                AuthorEmail = rate.AuthorEmail,
+                FilmId = rate.FilmId
+            };
+
+            _logger.LogInformation("Finish mapping RateDTO to Model.");
 
             return model;
         }
@@ -105,9 +130,34 @@ namespace BLL.Utils
                 Title = film.Title,
                 Year = film.Year,
                 Description = film.Description,
+                AverageRate = film.AverageRate,
+                CountRate = film.CountRate,
+                TotalRate = film.TotalRate,
+
                 Comments = new HashSet<CommentDTO>(film.Comments.Select(e => CommentModelToDTO(e)).ToList()),
                 Genres = new HashSet<GenreDTO>(film.Genres.Select(e => GenreModelToDTO(e)).ToList()),
-                Users = new HashSet<UserDTO>(film.Users.Select(e => UserModelToDTO(e)).ToList())
+                Users = new HashSet<UserDTO>(film.Users.Select(e => UserModelToDTO(e)).ToList()),
+                RateCollection = new HashSet<RateDTO>(film.RateCollection.Select(e => RateModelToDTO(e)).ToList()),
+            };
+        }
+
+        public RateDTO RateModelToDTO(Rate rate)
+        {
+            _logger.LogInformation("Convert to DTO before return.");
+            if (rate == null)
+            {
+                _logger.LogInformation("Model instance is null. Skip creating DTO.");
+
+                return null;
+            }
+
+            return new RateDTO()
+            {
+                Id = rate.Id,
+                Value = rate.Value,
+                AuthorId = rate.AuthorId,
+                AuthorEmail = rate.AuthorEmail,
+                FilmId = rate.FilmId
             };
         }
 

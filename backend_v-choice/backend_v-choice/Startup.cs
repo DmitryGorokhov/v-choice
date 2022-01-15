@@ -1,14 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using BLL.Interface;
 using BLL.Service;
 using BLL.Utils;
@@ -16,7 +5,18 @@ using DAL;
 using DAL.Interface;
 using DAL.Model;
 using DAL.Repository;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 
 namespace backend_v_choice
 {
@@ -44,6 +44,7 @@ namespace backend_v_choice
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICommentsRepository, CommentsRepository>();
+            services.AddScoped<IRateRepository, RateRepository>();
             services.AddScoped<IAutorizationService, AutorizationService>();
             services.AddScoped<ICrudService, CrudService>();
             services.AddScoped<IPaginationService, PaginationService>();

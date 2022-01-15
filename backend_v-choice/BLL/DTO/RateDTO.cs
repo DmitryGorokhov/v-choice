@@ -1,15 +1,17 @@
 ﻿using System;
-using DAL.Model;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BLL.DTO
 {
-    public class CommentDTO
+    public class RateDTO
     {
-        public CommentDTO() { }
+        public RateDTO() { }
 
         public int Id { get; set; }
-        public string Text { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public int Value { get; set; }
         public string AuthorId { get; set; }
         public string AuthorEmail { get; set; }
         public int FilmId { get; set; }

@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using BLL.DTO;
+using BLL.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using BLL.DTO;
-using BLL.Interface;
+using System.Threading.Tasks;
 
 namespace backend_v_choice.Controllers
 {

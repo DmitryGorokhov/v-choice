@@ -4,11 +4,10 @@ using DAL.Model;
 
 namespace DAL
 {
-    public partial class DBContext: IdentityDbContext<User>
+    public partial class DBContext : IdentityDbContext<User>
     {
         #region Constructor
-        public DBContext(DbContextOptions<DBContext> options)
-            : base(options)
+        public DBContext(DbContextOptions<DBContext> options) : base(options)
         { }
         #endregion
 
@@ -16,6 +15,7 @@ namespace DAL
         public virtual DbSet<Comment> Comment { get; set; }
         public virtual DbSet<Genre> Genre { get; set; }
         public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<Rate> Rate { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,21 +32,25 @@ namespace DAL
                 entity.HasMany(e => e.Comments)
                     .WithOne(e => e.Film)
                     .HasForeignKey(e => e.FilmId);
+
+                entity.HasMany(e => e.RateCollection)
+                    .WithOne(e => e.Film)
+                    .HasForeignKey(e => e.FilmId);
             });
 
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasMany(e => e.Comments)
-                .WithOne(e => e.Author)
-                .HasForeignKey(e => e.AuthorId);
-            });
+                    .WithOne(e => e.Author)
+                    .HasForeignKey(e => e.AuthorId);
 
-            modelBuilder.Entity<User>(entity =>
-            {
+                entity.HasMany(e => e.RateCollection)
+                    .WithOne(e => e.Author)
+                    .HasForeignKey(e => e.AuthorId);
+
                 entity.HasMany(e => e.Favorites)
-                .WithMany(e => e.Users);
+                    .WithMany(e => e.Users);
             });
         }
-
     }
 }
