@@ -26,21 +26,18 @@ const useStyles = makeStyles((theme) => ({
 
 function FilmsFilter(props) {
 	const classes = useStyles();
-	const [genre, setGenre] = useState('');
+	const [state, setState] = useState({
+		byGenreId: props.selectedGenre !== undefined ? props.selectedGenre : -1,
+	});
 
-	const handleChange = (event) => {
-		console.log(event.target.value);
-		setGenre(event.target.value);
+	const handleChangeGenreId = (event) => {
+		setState({ ...state, byGenreId: Number(event.target.value) });
 	};
 
 	const handleSubmit = () => {
-		if (genre !== "") {
-			genre === '-1'
-				? props.loadAll()
-				: fetch(`https://localhost:5001/api/genres/${genre}`)
-					.then(response => response.json())
-					.then(result => props.onFilter(result));
-		}
+		state.byGenreId === -1
+			? props.loadAll()
+			: props.onFilter(state.byGenreId);
 	};
 
 	return (
@@ -50,15 +47,15 @@ function FilmsFilter(props) {
 				<Select
 					labelId="demo-simple-select-label"
 					id="demo-simple-select"
-					value={genre}
-					onChange={handleChange}
+					value={state.byGenreId}
+					onChange={handleChangeGenreId}
 				>
-					<MenuItem value="">
+					<MenuItem value="-1">
 						<em>Выберите жанр</em>
 					</MenuItem>
 					{
 						props.genres.map(g => {
-							return <MenuItem value={g.Id} key={g.Id}>{g.value}</MenuItem>
+							return <MenuItem value={g.id} key={g.id}>{g.value}</MenuItem>
 						})
 					}
 					<MenuItem value="-1">Показать все</MenuItem>

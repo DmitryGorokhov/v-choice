@@ -45,33 +45,49 @@ function FilmList(props) {
 		totalFilms: 0,
 		onPage: props.onPage,
 		currentPage: props.pageNumber,
+		byGenreId: props.genreId,
 	});
 
 	useEffect(() => {
-		fetch(`https://localhost:5001/api/film?pagenumber=${state.currentPage}&onpagecount=${state.onPage}`)
+		const queryByGenreId = state.byGenreId !== -1
+			? `&genreid=${state.byGenreId}`
+			: "";
+		fetch("https://localhost:5001/api/film?" +
+			`pagenumber=${state.currentPage}` +
+			`&onpagecount=${state.onPage}` +
+			queryByGenreId)
 			.then(response => response.json())
 			.then(result => {
-				setState({ ...state, films: result.items, totalFilms: result.totalCount, loading: false });
+				setState({
+					...state,
+					films: result.items,
+					totalFilms: result.totalCount,
+					loading: false
+				});
 			});
-	}, [state.currentPage, state.onPage])
-
-	const updateFilmList = (filmList) => {
-		setState({ films: filmList });
-	}
+	}, [state.currentPage, state.onPage, state.byGenreId])
 
 	const showAll = () => {
+		history.replace({ pathname: `/catalog/${1}/${state.onPage}` });
+		setState({ ...state, currentPage: 1, byGenreId: -1, loading: true });
+	}
 
+	const handleFiltersChanged = (newGenreId) => {
+		history.replace({ pathname: `/catalog/${1}/${state.onPage}/${newGenreId}` });
+		setState({ ...state, currentPage: 1, byGenreId: newGenreId, loading: true });
 	}
 
 	const handleChangePage = (event, newPage) => {
-		history.replace({ pathname: `/catalog/${newPage}/${state.onPage}` });
+		const byGenre = state.byGenreId !== -1 ? `/${state.byGenreId}` : "";
+		history.replace({ pathname: `/catalog/${newPage}/${state.onPage}` + byGenre });
 		setState({ ...state, currentPage: newPage, loading: true });
 	}
 
 	const handleChangeOnPageCount = (event) => {
-		const newCountOnPage = event.target.value;
-		history.replace({ pathname: `/catalog/${1}/${newCountOnPage}` });
-		setState({ ...state, currentPage: 1, onPage: newCountOnPage, loading: true });
+		const newCount = event.target.value;
+		const byGenre = state.byGenreId !== -1 ? `/${state.byGenreId}` : "";
+		history.replace({ pathname: `/catalog/${1}/${newCount}` + byGenre });
+		setState({ ...state, currentPage: 1, onPage: newCount, loading: true });
 	}
 
 	const calculatePagesCount = () => {
@@ -93,9 +109,10 @@ function FilmList(props) {
 									Инструменты
 								</Typography>
 								<FilmsFilter
-									onFilter={updateFilmList}
+									onFilter={handleFiltersChanged}
 									genres={props.genres}
 									loadAll={showAll}
+									selectedGenre={state.byGenreId}
 								/>
 								<AddFilmDialog genres={props.genres} />
 							</Box>
@@ -143,7 +160,7 @@ function FilmList(props) {
 									<MenuItem value={20}>20</MenuItem>
 									<MenuItem value={50}>50</MenuItem>
 								</Select>
-								<FormHelperText>фильмов на странице</FormHelperText>
+								<FormHelperText>на странице</FormHelperText>
 							</FormControl>
 						</Box>
 					</>

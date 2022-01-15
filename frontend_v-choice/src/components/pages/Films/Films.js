@@ -25,15 +25,12 @@ function Films() {
 			.then(result => setState({ ...state, genres: result }));
 	}, [])
 
-	let { page, count } = useParams();
+	let { page, count, genreId } = useParams();
 
 	// Check url params
-	if (page === undefined) {
-		page = 1;
-	}
-	if (count === undefined) {
-		count = 3;
-	}
+	page = (page === undefined || Number(page) === NaN) ? 1 : Number(page);
+	count = (count === undefined || Number(count) === NaN) ? 3 : Number(count);
+	genreId = (genreId === undefined || Number(genreId) === NaN) ? -1 : Number(genreId);
 
 	const classes = useStyles();
 
@@ -46,7 +43,7 @@ function Films() {
 						Фильмы
 					</Typography>
 				</Box>
-				<FilmList pageNumber={page} onPage={count} genres={state.genres} />
+				<FilmList pageNumber={page} onPage={count} genres={state.genres} genreId={genreId} />
 			</Container>
 		</div>
 	)
