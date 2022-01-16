@@ -27,6 +27,9 @@ namespace DAL.Repository
             var film = _context.Film.Find(rate.FilmId);
             if (film != null)
             {
+                film.CountRate++;
+                film.TotalRate += rate.Value;
+                film.AverageRate = film.TotalRate / film.CountRate;
                 film.RateCollection.Add(rate);
                 _context.Film.Update(film);
             }
@@ -45,6 +48,16 @@ namespace DAL.Repository
             try
             {
                 Rate item = _context.Rate.Find(id);
+
+                var film = _context.Film.Find(item.FilmId);
+                if (film != null)
+                {
+                    film.CountRate--;
+                    film.TotalRate -= item.Value;
+                    film.AverageRate = film.TotalRate / film.CountRate;
+                    _context.Film.Update(film);
+                }
+
                 _context.Rate.Remove(item);
                 await _context.SaveChangesAsync();
             }
@@ -68,8 +81,18 @@ namespace DAL.Repository
             try
             {
                 Rate item = _context.Rate.Find(id);
+                
+                var film = _context.Film.Find(rate.FilmId);
+                if (film != null)
+                {
+                    film.TotalRate += rate.Value - item.Value;
+                    film.AverageRate = film.TotalRate / film.CountRate;
+                    _context.Film.Update(film);
+                }
+
                 item.Value = rate.Value;
                 _context.Rate.Update(item);
+                
                 await _context.SaveChangesAsync();
             }
             catch
