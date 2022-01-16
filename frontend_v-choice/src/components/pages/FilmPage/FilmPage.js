@@ -9,6 +9,7 @@ import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
 import CommentsList from '../../moleculas/CommentsList/CommentsList'
 import styles from './FilmPage.module.css'
+import RateArea from '../../atoms/RateArea/RateArea'
 
 function FilmPage() {
 	let { slug } = useParams();
@@ -49,6 +50,22 @@ function FilmPage() {
 		setDisableAddButton(true);
 	}
 
+	const handleRateChanged = (value, count) => {
+		// Only one func for create, update or delete user rate,
+		// so value can be newRate, newRate - oldRate, - oldRate.
+		// Just add it to TotalRate.
+		const newTotal = film.totalRate + value
+		// The same about count.
+		const newCount = film.countRate + count
+
+		setFilm({
+			...film,
+			countRate: newCount,
+			totalRate: newTotal,
+			averageRate: newTotal / newCount
+		});
+	}
+
 	return (
 		<div>
 			<NavMenu />
@@ -56,7 +73,15 @@ function FilmPage() {
 				<Box className={styles.marginItem}>
 					{
 						film !== null
-							? <FilmCard film={film} />
+							?
+							<>
+								<FilmCard film={film} />
+								<RateArea
+									filmId={film.id}
+									filmRate={film.averageRate}
+									user={userEmail}
+									onAction={handleRateChanged} />
+							</>
 							: <Typography>Загрузка...</Typography>
 					}
 					{
@@ -64,9 +89,8 @@ function FilmPage() {
 							?
 							<Box className={styles.favoriteSection}>
 								<Box className={styles.favoriteTextItem}>
-									<Typography variant="h5">
-										Заинтересовал фильм и не хотите его потерять? Добавьте в избранное.<br />Список избранных фильмов доступен в профиле.<br />
-										<Link className={styles.text} to="/user">Мой профиль</Link>
+									<Typography variant="h6">
+										Заинтересовал фильм и не хотите его потерять? Добавьте в избранное.<br />Список избранных фильмов доступен в <Link className={styles.text} to="/user">профиле</Link>
 									</Typography>
 								</Box>
 

@@ -191,20 +191,24 @@ namespace BLL.Service
             }
         }
 
-        public async Task<int?> GetFilmRate(int filmId, ClaimsPrincipal user)
+        public async Task<RateDTO> GetFilmRate(int filmId, ClaimsPrincipal user)
         {
             _logger.LogInformation($"Start get film rate with id={filmId} of current user.");
             try
             {
                 _logger.LogInformation("Call GetFilmRate.");
-                int? res = await _rateRepository.GetFilmRate(filmId, user);
+                var res = await _rateRepository.GetFilmRate(filmId, user);
 
-                string message = res == null
-                    ? $"Get film rate of current user: rate of film with Id equal {filmId} not found."
-                    : $"Get film rate of current user: Ok - {res}.";
-                _logger.LogInformation(message);
+                if (res == null)
+                {
+                    _logger.LogInformation($"Get film rate of current user: rate of film with Id equal {filmId} not found.");
 
-                return res;
+                    return null;
+                }
+
+                _logger.LogInformation($"Get film rate of current user: Ok - {res.Value}.");
+
+                return _mapper.RateModelToDTO(res);
             }
             catch (Exception e)
             {

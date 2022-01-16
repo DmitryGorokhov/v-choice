@@ -18,6 +18,6 @@ namespace BLL.Interface
         Task<RateDTO> CreateRateAsync(RateDTO rate, ClaimsPrincipal user);
         Task UpdateRateAsync(int id, RateDTO rate);
         Task DeleteRateAsync(int id);
-        Task<int?> GetFilmRate(int filmId, ClaimsPrincipal user);
+        Task<RateDTO> GetFilmRate(int filmId, ClaimsPrincipal user);
     }
 }

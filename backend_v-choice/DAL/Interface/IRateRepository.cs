@@ -9,6 +9,6 @@ namespace DAL.Interface
         Task<Rate> CreateRateAsync(Rate rate, ClaimsPrincipal user);
         Task UpdateRateAsync(int id, Rate rate);
         Task DeleteRateAsync(int id);
-        Task<int?> GetFilmRate(int filmId, ClaimsPrincipal user);
+        Task<Rate> GetFilmRate(int filmId, ClaimsPrincipal user);
     }
 }

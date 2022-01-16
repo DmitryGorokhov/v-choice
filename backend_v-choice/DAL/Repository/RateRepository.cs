@@ -53,8 +53,17 @@ namespace DAL.Repository
                 if (film != null)
                 {
                     film.CountRate--;
-                    film.TotalRate -= item.Value;
-                    film.AverageRate = film.TotalRate / film.CountRate;
+                    if (film.CountRate == 0)
+                    {
+                        film.TotalRate = 0;
+                        film.AverageRate = 0;
+                    }
+                    else
+                    {
+                        film.TotalRate -= item.Value;
+                        film.AverageRate = film.TotalRate / film.CountRate;
+                    }
+
                     _context.Film.Update(film);
                 }
 
@@ -67,13 +76,12 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<int?> GetFilmRate(int filmId, ClaimsPrincipal user)
+        public async Task<Rate> GetFilmRate(int filmId, ClaimsPrincipal user)
         {
             User u = await _users.GetCurrentUserAsync(user);
             Rate rate = await _context.Rate.FirstOrDefaultAsync(e => e.FilmId == filmId && e.AuthorId == u.Id);
-            if (rate == null) return null;
-
-            return rate.Value;
+            
+            return rate;
         }
 
         public async Task UpdateRateAsync(int id, Rate rate)
