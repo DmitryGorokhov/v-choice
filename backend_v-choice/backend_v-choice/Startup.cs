@@ -45,6 +45,7 @@ namespace backend_v_choice
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICommentsRepository, CommentsRepository>();
             services.AddScoped<IRateRepository, RateRepository>();
+            services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             services.AddScoped<IAutorizationService, AutorizationService>();
             services.AddScoped<ICrudService, CrudService>();
             services.AddScoped<IPaginationService, PaginationService>();

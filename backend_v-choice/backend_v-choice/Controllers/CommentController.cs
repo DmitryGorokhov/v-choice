@@ -33,7 +33,7 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            var res = await _paginationService.GetCommentsPagination(query);
+            var res = await _paginationService.GetCommentsPagination(query, HttpContext.User);
             if (res == null) return StatusCode(500);
 
             return Ok(res);

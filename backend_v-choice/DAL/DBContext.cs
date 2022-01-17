@@ -16,6 +16,7 @@ namespace DAL
         public virtual DbSet<Genre> Genre { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Rate> Rate { get; set; }
+        public virtual DbSet<Favorite> Favorite { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +37,10 @@ namespace DAL
                 entity.HasMany(e => e.RateCollection)
                     .WithOne(e => e.Film)
                     .HasForeignKey(e => e.FilmId);
+
+                entity.HasMany(e => e.InFavorites)
+                    .WithOne(e => e.Film)
+                    .HasForeignKey(e => e.FilmId);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -49,7 +54,8 @@ namespace DAL
                     .HasForeignKey(e => e.AuthorId);
 
                 entity.HasMany(e => e.Favorites)
-                    .WithMany(e => e.Users);
+                    .WithOne(e => e.Author)
+                    .HasForeignKey(e => e.AuthorId);
             });
         }
     }

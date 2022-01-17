@@ -42,17 +42,6 @@ namespace UnitTests
                     new GenreDTO() { Id = 10002, Value = "Genre 2" },
                     new GenreDTO() { Id = 10003, Value = "Genre 3" }
                 },
-                Users = new HashSet<UserDTO>()
-                {
-                    new UserDTO() {
-                        UserName = "testName1",
-                        Email = "User200@mail.com"
-                    },
-                    new UserDTO() {
-                        UserName = "testName2",
-                        Email = "User300@mail.com"
-                    }
-                }
             };
         }
 
@@ -69,7 +58,6 @@ namespace UnitTests
             Assert.Equal(testFilmDTO.Title, film.Title);
             Assert.Equal(testFilmDTO.Year, film.Year);
             Assert.Equal(testFilmDTO.Genres.Count, film.Genres.Count);
-            Assert.Equal(testFilmDTO.Users.Count, film.Users.Count);
             Assert.Equal(testFilmDTO.Comments.Count, film.Comments.Count);
         }
     }

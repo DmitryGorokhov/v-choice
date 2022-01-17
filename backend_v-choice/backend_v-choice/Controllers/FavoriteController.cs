@@ -35,7 +35,7 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            var res = await _paginationService.GetFilmsPagination(query);
+            var res = await _paginationService.GetFavoriteFilmsPagination(query, HttpContext.User);
             if (res == null) return StatusCode(500);
 
             return Ok(res);
@@ -60,8 +60,8 @@ namespace backend_v_choice.Controllers
         }
 
         [Authorize]
-        [HttpPut]
-        public async Task<IActionResult> AddFilm([FromBody] FilmDTO film)
+        [HttpPut("{filmId}")]
+        public async Task<IActionResult> AddFavoriteFilm([FromRoute] int filmId)
         {
             _logger.LogInformation($"Add film to favorite films of authorized user.");
             if (!ModelState.IsValid)
@@ -71,13 +71,13 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _favoriteService.AddFavoriteFilmAsync(film, HttpContext.User);
+            await _favoriteService.AddFavoriteFilmAsync(filmId, HttpContext.User);
             return NoContent();
         }
 
         [Authorize]
-        [HttpDelete]
-        public async Task<IActionResult> DeleteFilm([FromBody] FilmDTO film)
+        [HttpDelete("{filmId}")]
+        public async Task<IActionResult> DeleteFilm([FromRoute] int filmId)
         {
             _logger.LogInformation($"Delete film from favorite films of authorized user.");
             if (!ModelState.IsValid)
@@ -87,7 +87,7 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _favoriteService.RemoveFilmFromFavorite(film, HttpContext.User);
+            await _favoriteService.RemoveFilmFromFavorite(filmId, HttpContext.User);
             return NoContent();
         }
     }

@@ -13,5 +13,15 @@ namespace BLL.DTO
         public int? GenreId { get; set; }
 
         public int? FilmId { get; set; }
+
+        public int? SortBy { get; set; }
+
+        public bool? CommonOrder { get; set; }
+
+        public bool? MyCommentsFirst { get; set; }
+
+        public bool? HasCommentsOnly { get; set; }
+
+        public bool? WithoutMyRateOnly { get; set; }
     }
 }

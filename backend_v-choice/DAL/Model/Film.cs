@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DAL.Model
 {
@@ -7,7 +8,7 @@ namespace DAL.Model
         public Film()
         {
             Comments = new HashSet<Comment>();
-            Users = new HashSet<User>();
+            InFavorites = new HashSet<Favorite>();
             Genres = new HashSet<Genre>();
             RateCollection = new HashSet<Rate>();
         }
@@ -19,9 +20,10 @@ namespace DAL.Model
         public int TotalRate { get; set; }
         public float AverageRate { get; set; }
         public int CountRate { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<Favorite> InFavorites { get; set; }
         public virtual ICollection<Genre> Genres { get; set; }
         public virtual ICollection<Rate> RateCollection { get; set; }
     }

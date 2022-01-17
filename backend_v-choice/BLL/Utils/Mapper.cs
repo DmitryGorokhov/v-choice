@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using BLL.DTO;
+﻿using BLL.DTO;
 using BLL.Interface;
 using DAL.Model;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BLL.Utils
 {
@@ -28,6 +28,7 @@ namespace BLL.Utils
                 AverageRate = film.AverageRate,
                 CountRate = film.CountRate,
                 TotalRate = film.TotalRate,
+                CreatedAt = film.CreatedAt,
 
                 Comments = new HashSet<Comment>(film.Comments
                 .Select(e => CommentDTOtoModel(e))
@@ -37,8 +38,8 @@ namespace BLL.Utils
                 .Select(e => GenreDTOtoModel(e))
                 .ToList()),
 
-                Users = new HashSet<User>(film.Users
-                .Select(e => UserDTOtoModel(e))
+                InFavorites = new HashSet<Favorite>(film.InFavorites
+                .Select(e => FavoriteDTOtoModel(e))
                 .ToList()),
 
                 RateCollection = new HashSet<Rate>(film.RateCollection
@@ -64,6 +65,22 @@ namespace BLL.Utils
             };
 
             _logger.LogInformation("Finish mapping RateDTO to Model.");
+
+            return model;
+        }
+
+        public Favorite FavoriteDTOtoModel(FavoriteDTO fav)
+        {
+            _logger.LogInformation("Start mapping FavoriteDTO to Model.");
+            Favorite model = new Favorite()
+            {
+                Id = fav.Id,
+                AddedAt = fav.AddedAt,
+                AuthorId = fav.AuthorId,
+                FilmId = fav.FilmId
+            };
+
+            _logger.LogInformation("Finish mapping FavoriteDTO to Model.");
 
             return model;
         }
@@ -133,10 +150,11 @@ namespace BLL.Utils
                 AverageRate = film.AverageRate,
                 CountRate = film.CountRate,
                 TotalRate = film.TotalRate,
+                CreatedAt = film.CreatedAt,
 
                 Comments = new HashSet<CommentDTO>(film.Comments.Select(e => CommentModelToDTO(e)).ToList()),
                 Genres = new HashSet<GenreDTO>(film.Genres.Select(e => GenreModelToDTO(e)).ToList()),
-                Users = new HashSet<UserDTO>(film.Users.Select(e => UserModelToDTO(e)).ToList()),
+                InFavorites = new HashSet<FavoriteDTO>(film.InFavorites.Select(e => FavoriteModelToDTO(e)).ToList()),
                 RateCollection = new HashSet<RateDTO>(film.RateCollection.Select(e => RateModelToDTO(e)).ToList()),
             };
         }
@@ -158,6 +176,25 @@ namespace BLL.Utils
                 AuthorId = rate.AuthorId,
                 AuthorEmail = rate.AuthorEmail,
                 FilmId = rate.FilmId
+            };
+        }
+
+        public FavoriteDTO FavoriteModelToDTO(Favorite fav)
+        {
+            _logger.LogInformation("Convert to DTO before return.");
+            if (fav == null)
+            {
+                _logger.LogInformation("Model instance is null. Skip creating DTO.");
+
+                return null;
+            }
+
+            return new FavoriteDTO()
+            {
+                Id = fav.Id,
+                AddedAt = fav.AddedAt,
+                AuthorId = fav.AuthorId,
+                FilmId = fav.FilmId
             };
         }
 

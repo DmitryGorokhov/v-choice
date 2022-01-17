@@ -3,6 +3,7 @@ using DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DAL.Repository
@@ -56,7 +57,7 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<Pagination<Comment>> GetCommentsByPageAsync(int pageNumber, int onPageCount, int? filmId)
+        public async Task<Pagination<Comment>> GetCommentsByPageAsync(int pageNumber, int onPageCount, int? filmId, bool commonOrder, bool userFirst, ClaimsPrincipal user)
         {
             if (filmId is null)
             {
@@ -64,7 +65,36 @@ namespace DAL.Repository
                 return GetCommentsByPage(pageNumber, onPageCount);
             }
 
+            // Get by film Id.
             var collection = _context.Comment.Where(c => c.FilmId == filmId).Select(c => c);
+
+            if (userFirst)
+            {
+                string userId = (await _users.GetCurrentUserAsync(user)).Id;
+
+                // By userId first and by date order.
+                collection = commonOrder switch
+                {
+                    // old to new
+                    false => collection.Where(c => c.AuthorId == userId).OrderBy(c => c.CreatedAt)
+                        .Union(collection.Where(c => c.AuthorId != userId).OrderBy(c => c.CreatedAt)),
+                    // new to old, default
+                    true => collection.Where(c => c.AuthorId == userId).OrderByDescending(c => c.CreatedAt)
+                        .Union(collection.Where(c => c.AuthorId != userId).OrderByDescending(c => c.CreatedAt)),
+                };
+            }
+            else
+            {
+                // By date order only.
+                collection = commonOrder switch
+                {
+                    // old to new
+                    false => collection.OrderBy(c => c.CreatedAt),
+                    // new to old, default
+                    true => collection.OrderByDescending(c => c.CreatedAt),
+                };
+            }
+
             var total = await collection.CountAsync();
             var items = await collection.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
 

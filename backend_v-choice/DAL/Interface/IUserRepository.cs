@@ -11,9 +11,5 @@ namespace DAL.Interface
         Task<SignInResult> UserLogInAsync(LoginModel model);
         Task UserSignOutAsync();
         Task<User> GetCurrentUserAsync(ClaimsPrincipal user);
-        Task AddFavoriteFilmAsync(Film film, ClaimsPrincipal user);
-        Task RemoveFilmFromFavorite(Film film, ClaimsPrincipal user);
-        Task<bool?> CheckFilmIsAdded(int id, ClaimsPrincipal user);
-        Task<Pagination<Film>> GetFavoriteFilmsByPageAsync(int pageNumber, int onPageCount);
     }
 }
