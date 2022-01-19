@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { List, ListItem, Typography } from '@material-ui/core'
+import { Button, Checkbox, FormControlLabel, List, ListItem, Typography } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
+
 
 import CommentTile from '../../card&tiles/CommentTile/CommentTile'
 import CommentArea from '../../atoms/CommentArea/CommentArea'
@@ -14,14 +17,22 @@ function CommentsList(props) {
 		comments: [],
 		loading: true,
 		totalCount: 0,
-		currentPage: 1
+		currentPage: 1,
+		sortByDateInCommonOrder: true,
+		userCommentsFirst: false
 	});
 
 	useEffect(() => {
-		fetch(`https://localhost:5001/api/Comment?PageNumber=${state.currentPage}&OnPageCount=${state.onPage}&FilmId=${filmId}`)
+		fetch(
+			'https://localhost:5001/api/Comment' +
+			`?PageNumber=${state.currentPage}` +
+			`&OnPageCount=${state.onPage}` +
+			`&FilmId=${filmId}` +
+			`&CommonOrder=${state.sortByDateInCommonOrder}` +
+			`&MyCommentsFirst=${state.userCommentsFirst}`)
 			.then(response => response.json())
 			.then(result => setState({ ...state, comments: result.items, loading: false, totalCount: result.totalCount }));
-	}, [state.currentPage])
+	}, [state.currentPage, state.sortByDateInCommonOrder, state.userCommentsFirst])
 
 	const updateComment = (updComment) => {
 		let ind = state.comments.findIndex(c => c.id === updComment.id);
@@ -42,6 +53,24 @@ function CommentsList(props) {
 
 	const handleChangePage = (event, newPage) => {
 		setState({ ...state, currentPage: newPage, loading: true });
+	}
+
+	const handleSortByDateOrderChanged = (event) => {
+		setState({
+			...state,
+			currentPage: 1,
+			sortByDateInCommonOrder: !state.sortByDateInCommonOrder,
+			loading: true
+		});
+	}
+
+	const handleUserCommentsFirstChanged = (event) => {
+		setState({
+			...state,
+			currentPage: 1,
+			userCommentsFirst: !state.userCommentsFirst,
+			loading: true
+		});
 	}
 
 	return (
@@ -76,6 +105,22 @@ function CommentsList(props) {
 							color="primary"
 							onChange={handleChangePage}
 						/>
+						<Button
+							variant="primary"
+							onClick={handleSortByDateOrderChanged}
+						>
+							{
+								state.sortByDateInCommonOrder
+									? <ArrowDownwardIcon />
+									: <ArrowUpwardIcon />
+							}
+						</Button>
+						<FormControlLabel
+							control={<Checkbox
+								checked={state.userCommentsFirst}
+								onChange={handleUserCommentsFirstChanged}
+								color="primary" />}
+							label="Сначала мои" />
 					</>
 
 			}
@@ -87,7 +132,7 @@ function CommentsList(props) {
 					</Typography>
 					: <CommentArea filmId={filmId} typeMethod="create" />
 			}
-		</div>
+		</div >
 	)
 }
 

@@ -60,7 +60,7 @@ namespace backend_v_choice.Controllers
         }
 
         [Authorize]
-        [HttpPut("{filmId}")]
+        [HttpPost("{filmId}")]
         public async Task<IActionResult> AddFavoriteFilm([FromRoute] int filmId)
         {
             _logger.LogInformation($"Add film to favorite films of authorized user.");

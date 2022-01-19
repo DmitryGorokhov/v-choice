@@ -65,7 +65,7 @@ namespace DAL.Repository
                 true => collection.OrderByDescending(c => c.AddedAt),
             };
 
-            var favFilms = collection.Select(fav => _context.Film.Find(fav.FilmId));
+            var favFilms = collection.Select(fav => _context.Film.FirstOrDefault(f => f.Id == fav.FilmId));
 
             var total = await favFilms.CountAsync();
             var items = await favFilms.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();

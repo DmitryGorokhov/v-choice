@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { Button, List, ListItem, Typography } from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/Clear'
 import Pagination from '@material-ui/lab/Pagination'
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 
 import styles from './FavoritesList.module.css'
 
@@ -12,31 +14,35 @@ function FavoritesList() {
 		favorites: [],
 		loading: true,
 		totalCount: 0,
-		currentPage: 1
+		currentPage: 1,
+		sortByDateInCommonOrder: true,
 	});
 
 	useEffect(() => {
-		fetch(`https://localhost:5001/api/favorite?pagenumber=${state.currentPage}&onpagecount=${state.onPage}`)
+		fetch(
+			'https://localhost:5001/api/Favorite' +
+			`?PageNumber=${state.currentPage}` +
+			`&OnPageCount=${state.onPage}` +
+			`&CommonOrder=${state.onPage}`)
 			.then(response => response.json())
-			.then(result => setState({
-				...state,
-				favorites: result.items,
-				loading: false,
-				totalCount: result.totalCount
-			}));
-	}, [state.currentPage])
+			.then(result => {
+				console.log(result);
+				setState({
+					...state,
+					favorites: result.items,
+					loading: false,
+					totalCount: result.totalCount
+				});
+			})
+	}, [state.currentPage, state.sortByDateInCommonOrder])
 
 	const removeItem = (film) => {
 		setState({ ...state, favorites: state.favorites.filter(f => f.id !== film.id) });
 	}
 
 	const handleRemoveItem = (film) => {
-		fetch(`https://localhost:5001/api/favorite`, {
+		fetch(`https://localhost:5001/api/Favorite/${film.id}`, {
 			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			},
-			body: JSON.stringify(film)
 		});
 		removeItem(film);
 	}
@@ -48,6 +54,15 @@ function FavoritesList() {
 
 	const handleChangePage = (event, newPage) => {
 		setState({ ...state, currentPage: newPage, loading: true });
+	}
+
+	const handleSortByDateOrderChanged = (event) => {
+		setState({
+			...state,
+			currentPage: 1,
+			sortByDateInCommonOrder: !state.sortByDateInCommonOrder,
+			loading: true
+		});
 	}
 
 	return (
@@ -85,6 +100,16 @@ function FavoritesList() {
 							color="primary"
 							onChange={handleChangePage}
 						/>
+						<Button
+							variant="primary"
+							onClick={handleSortByDateOrderChanged}
+						>
+							{
+								state.sortByDateInCommonOrder
+									? <ArrowDownwardIcon />
+									: <ArrowUpwardIcon />
+							}
+						</Button>
 					</>
 			}
 		</div>

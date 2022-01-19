@@ -40,12 +40,8 @@ function FilmPage() {
 	}, [])
 
 	const handleAddFavorite = () => {
-		fetch(`https://localhost:5001/api/favorite`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			},
-			body: JSON.stringify(film)
+		fetch(`https://localhost:5001/api/favorite/${film.id}`, {
+			method: 'POST',
 		});
 		setDisableAddButton(true);
 	}

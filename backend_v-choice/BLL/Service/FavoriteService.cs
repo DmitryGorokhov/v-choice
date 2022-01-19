@@ -1,4 +1,5 @@
 ﻿using BLL.Interface;
+using DAL.Interface;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Security.Claims;
@@ -8,10 +9,10 @@ namespace BLL.Service
 {
     public class FavoriteService : IFavoriteService
     {
-        private readonly IFavoriteService _favoriteRepository;
+        private readonly IFavoriteRepository _favoriteRepository;
         private readonly ILogger _logger;
 
-        public FavoriteService(IFavoriteService favr, ILogger<FavoriteService> logger)
+        public FavoriteService(IFavoriteRepository favr, ILogger<FavoriteService> logger)
         {
             _favoriteRepository = favr;
             _logger = logger;
