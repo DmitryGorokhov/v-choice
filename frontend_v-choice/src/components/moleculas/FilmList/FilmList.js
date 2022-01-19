@@ -43,19 +43,25 @@ function FilmList(props) {
 		films: [],
 		loading: true,
 		totalFilms: 0,
-		onPage: props.onPage,
 		currentPage: props.pageNumber,
-		byGenreId: props.genreId,
+		onPage: props.onPage,
+		byGenreId: props.genre,
+		sortType: props.sortType,
+		commonOrder: props.order,
+		hasCommentsOnly: props.onlyComments,
+		withoutUserRate: props.noUserRate
 	});
 
 	useEffect(() => {
-		const queryByGenreId = state.byGenreId !== -1
-			? `&genreid=${state.byGenreId}`
-			: "";
-		fetch("https://localhost:5001/api/film?" +
-			`pagenumber=${state.currentPage}` +
-			`&onpagecount=${state.onPage}` +
-			queryByGenreId)
+		fetch("https://localhost:5001/api/Film?" +
+			`PageNumber=${state.currentPage}` +
+			`&OnPageCount=${state.onPage}` +
+			`&GenreId=${state.byGenreId}` +
+			`&SortBy=${state.sortType}` +
+			`&CommonOrder=${state.commonOrder}` +
+			`&HasCommentsOnly=${state.hasCommentsOnly}` +
+			`&WithoutMyRateOnly=${state.withoutUserRate}`
+		)
 			.then(response => response.json())
 			.then(result => {
 				setState({
@@ -69,24 +75,71 @@ function FilmList(props) {
 
 	const showAll = () => {
 		history.replace({ pathname: `/catalog/${1}/${state.onPage}` });
-		setState({ ...state, currentPage: 1, byGenreId: -1, loading: true });
+		setState({
+			...state,
+			currentPage: 1,
+			byGenreId: -1,
+			sortType: 0,
+			commonOrder: true,
+			hasCommentsOnly: false,
+			withoutUserRate: false,
+			loading: true
+		});
 	}
 
-	const handleFiltersChanged = (newGenreId) => {
-		history.replace({ pathname: `/catalog/${1}/${state.onPage}/${newGenreId}` });
-		setState({ ...state, currentPage: 1, byGenreId: newGenreId, loading: true });
+	const handleFiltersChanged = (genre, type, commonOrder, commentsOnly, withoutUserRate) => {
+		const newType = type > 0 && type < 4 ? type : 0
+		history.replace({
+			pathname:
+				'/catalog' +
+				`/${1}` +
+				`/${state.onPage}` +
+				`/${genre}` +
+				`/${newType}` +
+				`/${Number(commonOrder)}` +
+				`/${Number(commentsOnly)}` +
+				`/${Number(withoutUserRate)}`
+		})
+		setState({
+			...state,
+			currentPage: 1,
+			byGenreId: genre,
+			sortType: newType,
+			commonOrder: commonOrder,
+			hasCommentsOnly: commentsOnly,
+			withoutUserRate: withoutUserRate,
+			loading: true
+		});
 	}
 
 	const handleChangePage = (event, newPage) => {
-		const byGenre = state.byGenreId !== -1 ? `/${state.byGenreId}` : "";
-		history.replace({ pathname: `/catalog/${newPage}/${state.onPage}` + byGenre });
-		setState({ ...state, currentPage: newPage, loading: true });
+		history.replace({
+			pathname:
+				'/catalog' +
+				`/${newPage}` +
+				`/${state.onPage}` +
+				`/${state.byGenreId}` +
+				`/${state.sortType}` +
+				`/${Number(state.commonOrder)}` +
+				`/${Number(state.hasCommentsOnly)}` +
+				`/${Number(state.withoutUserRate)}`
+		})
+		setState({ ...state, currentPage: newPage, loading: true })
 	}
 
 	const handleChangeOnPageCount = (event) => {
 		const newCount = event.target.value;
-		const byGenre = state.byGenreId !== -1 ? `/${state.byGenreId}` : "";
-		history.replace({ pathname: `/catalog/${1}/${newCount}` + byGenre });
+		history.replace({
+			pathname:
+				'/catalog' +
+				`/${1}` +
+				`/${newCount}` +
+				`/${state.byGenreId}` +
+				`/${state.sortType}` +
+				`/${Number(state.commonOrder)}` +
+				`/${Number(state.hasCommentsOnly)}` +
+				`/${Number(state.withoutUserRate)}`
+		})
 		setState({ ...state, currentPage: 1, onPage: newCount, loading: true });
 	}
 
@@ -131,7 +184,7 @@ function FilmList(props) {
 												)
 											})
 											: <Typography variant="h5">
-												Нет фильмов с выбранным жанром
+												Не найдено фильмов по запросу
 											</Typography>
 									}
 								</List>

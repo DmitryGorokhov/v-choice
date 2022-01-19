@@ -4,7 +4,6 @@ import Pagination from '@material-ui/lab/Pagination'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 
-
 import CommentTile from '../../card&tiles/CommentTile/CommentTile'
 import CommentArea from '../../atoms/CommentArea/CommentArea'
 import styles from './CommentsList.module.css'
