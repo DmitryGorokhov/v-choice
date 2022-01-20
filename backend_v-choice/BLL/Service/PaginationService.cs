@@ -95,13 +95,11 @@ namespace BLL.Service
             _logger.LogInformation($"Starting get {query.OnPageCount} films on {query.PageNumber} page.");
             try
             {
-                int genreId = query.GenreId != null ? (int)query.GenreId : -1;
-
                 _logger.LogInformation("Call GetFilmsByPageAsync.");
                 Pagination<Film> answer = await _filmRepository.GetFilmsByPageAsync(
                     query.PageNumber,
                     query.OnPageCount,
-                    genreId,
+                    query.GenreId ?? 0,
                     query.SortBy ?? 0,
                     query.CommonOrder ?? true,
                     query.HasCommentsOnly ?? false,

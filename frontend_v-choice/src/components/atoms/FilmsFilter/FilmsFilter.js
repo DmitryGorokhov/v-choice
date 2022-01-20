@@ -51,11 +51,11 @@ function FilmsFilter(props) {
 
 	const handleSortTypeChanged = (event) => {
 		const value = Number(event.target.value)
-		if (value !== -1) {
+		if (value !== 0) {
 			setState({
 				...state,
 				commonOrder: Math.floor(value / 10),
-				sortType: value % 10
+				sortType: Boolean(value % 10)
 			});
 		}
 	};
@@ -78,7 +78,7 @@ function FilmsFilter(props) {
 					value={state.byGenreId}
 					onChange={handleChangeGenreId}
 				>
-					<MenuItem value="-1">
+					<MenuItem value="0">
 						<em>Выберите жанр</em>
 					</MenuItem>
 					{
@@ -86,7 +86,7 @@ function FilmsFilter(props) {
 							return <MenuItem value={g.id} key={g.id}>{g.value}</MenuItem>
 						})
 					}
-					<MenuItem value="-1">Показать все</MenuItem>
+					<MenuItem value="0">Показать все</MenuItem>
 				</Select>
 				<FormHelperText>Фильтр по жанру</FormHelperText>
 			</FormControl>

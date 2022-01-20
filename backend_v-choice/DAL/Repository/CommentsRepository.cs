@@ -70,7 +70,7 @@ namespace DAL.Repository
 
             if (userFirst)
             {
-                string userId = (await _users.GetCurrentUserAsync(user)).Id;
+                string userId = (await _users.GetCurrentUserAsync(user)).Id ?? string.Empty;
 
                 // By userId first and by date order.
                 collection = commonOrder switch

@@ -71,14 +71,22 @@ function FilmList(props) {
 					loading: false
 				});
 			});
-	}, [state.currentPage, state.onPage, state.byGenreId])
+	}, [
+		state.currentPage,
+		state.onPage,
+		state.byGenreId,
+		state.sortType,
+		state.commonOrder,
+		state.hasCommentsOnly,
+		state.withoutUserRate
+	])
 
 	const showAll = () => {
 		history.replace({ pathname: `/catalog/${1}/${state.onPage}` });
 		setState({
 			...state,
 			currentPage: 1,
-			byGenreId: -1,
+			byGenreId: 0,
 			sortType: 0,
 			commonOrder: true,
 			hasCommentsOnly: false,

@@ -66,47 +66,44 @@ namespace DAL.Repository
             bool withoutUserRateOnly,
             ClaimsPrincipal user)
         {
-            var collection = _context.Film;
-            
-            if (genreId > 0)
-            {
-                collection
+            var collection = genreId > 0
+                ? _context.Film
                     .Include(e => e.Genres)
-                    .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null);
-            }
+                    .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null).Select(e => e)
+                : _context.Film;
 
             if (hasCommentsOnly)
             {
-                collection
+                collection = collection
                     .Include(e => e.Comments)
                     .Where(e => e.Comments.Count != 0);
             }
 
             if (withoutUserRateOnly)
             {
-                string userId = (await _users.GetCurrentUserAsync(user)).Id;
-                collection
+                string userId = (await _users.GetCurrentUserAsync(user)).Id ?? string.Empty;
+                collection =  collection
                     .Include(e => e.RateCollection)
                     .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
             }
 
-            var itemsQuery = sortType switch
+            collection = sortType switch
             {
                 // by created date
-                1 when commonOrder => collection.OrderByDescending(e => e.CreatedAt).Select(e => e),
-                1 when !commonOrder => collection.OrderBy(e => e.CreatedAt).Select(e => e),
+                1 when commonOrder => collection.OrderByDescending(e => e.CreatedAt),
+                1 when !commonOrder => collection.OrderBy(e => e.CreatedAt),
                 // by year
-                2 when commonOrder => collection.OrderByDescending(e => e.Year).Select(e => e),
-                2 when !commonOrder => collection.OrderBy(e => e.Year).Select(e => e),
+                2 when commonOrder => collection.OrderByDescending(e => e.Year),
+                2 when !commonOrder => collection.OrderBy(e => e.Year),
                 // by rate
                 3 when commonOrder => collection.OrderByDescending(e => e.AverageRate),
-                3 when !commonOrder => collection.OrderBy(e => e.AverageRate).Select(e => e),
+                3 when !commonOrder => collection.OrderBy(e => e.AverageRate),
                 // none
-                _ => collection.Select(e => e)
+                _ => collection
             };
 
-            int total = await itemsQuery.CountAsync();
-            var items = await itemsQuery.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
+            int total = await collection.CountAsync();
+            var items = await collection.Include(e => e.Genres).Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
 
             return new Pagination<Film>()
             {

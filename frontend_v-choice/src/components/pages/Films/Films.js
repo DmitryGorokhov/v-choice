@@ -36,7 +36,7 @@ function Films() {
 	const params = {
 		pageNumber: (page === undefined || Number(page) === NaN) ? 1 : Number(page),
 		onPage: (count === undefined || Number(count) === NaN) ? 3 : Number(count),
-		genre: (genre === undefined || Number(genre) === NaN) ? -1 : Number(genre),
+		genre: (genre === undefined || Number(genre) === NaN) ? 0 : Number(genre),
 		sortType: (type === undefined || Number(type) === NaN) ? 0 : Number(type),
 		order: !(Number(order) === 0),
 		onlyComments: Number(order) === 1,
