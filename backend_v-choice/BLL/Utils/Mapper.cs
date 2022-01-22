@@ -104,6 +104,7 @@ namespace BLL.Utils
             _logger.LogInformation("Start mapping UserDTO to Model.");
             User model = new User()
             {
+                Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email
             };

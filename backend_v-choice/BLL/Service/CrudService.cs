@@ -17,16 +17,18 @@ namespace BLL.Service
         private readonly IGenreRepository _genreRepository;
         private readonly ICommentsRepository _commentsRepository;
         private readonly IRateRepository _rateRepository;
+        private readonly IAutorizationService _autorizationService;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
 
-        public CrudService(IFilmRepository fr, IGenreRepository gr, ICommentsRepository cr, ILogger<CrudService> logger, IRateRepository rr, IMapper mapper)
+        public CrudService(IFilmRepository fr, IGenreRepository gr, ICommentsRepository cr, ILogger<CrudService> logger, IRateRepository rr, IAutorizationService aus, IMapper mapper)
         {
             _filmRepository = fr;
             _genreRepository = gr;
             _commentsRepository = cr;
             _logger = logger;
             _rateRepository = rr;
+            _autorizationService = aus;
             _mapper = mapper;
         }
 
@@ -38,7 +40,9 @@ namespace BLL.Service
                 Comment c = _mapper.CommentDTOtoModel(comment);
                 
                 _logger.LogInformation("Call CreateCommentAsync.");
-                c = await _commentsRepository.CreateCommentAsync(c, user);
+
+                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                c = await _commentsRepository.CreateCommentAsync(c, userId);
                 
                 _logger.LogInformation($"Create comment: comment with Id equal {comment.Id} was created.");
 

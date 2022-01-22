@@ -10,11 +10,13 @@ namespace BLL.Service
     public class FavoriteService : IFavoriteService
     {
         private readonly IFavoriteRepository _favoriteRepository;
+        private readonly IAutorizationService _autorizationService;
         private readonly ILogger _logger;
 
-        public FavoriteService(IFavoriteRepository favr, ILogger<FavoriteService> logger)
+        public FavoriteService(IFavoriteRepository favr, IAutorizationService aus, ILogger<FavoriteService> logger)
         {
             _favoriteRepository = favr;
+            _autorizationService = aus;
             _logger = logger;
         }
 
@@ -24,7 +26,9 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call AddFavoriteFilmAsync.");
-                await _favoriteRepository.AddFavoriteFilmAsync(filmId, user);
+                
+                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                await _favoriteRepository.AddFavoriteFilmAsync(filmId, userId);
                 
                 _logger.LogInformation($"Add film in favorites: film with id={filmId} was added to favorite films.");
             }
@@ -40,7 +44,9 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call CheckFilmIsAdded.");
-                var res = await _favoriteRepository.CheckFilmIsAdded(filmId, user);
+                
+                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                var res = await _favoriteRepository.CheckFilmIsAdded(filmId, userId);
                 
                 string message = res == null
                     ? $"Check film in favorites: film with Id equal {filmId} not found."
@@ -63,7 +69,9 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call RemoveFilmFromFavorite.");
-                await _favoriteRepository.RemoveFilmFromFavorite(filmId, user);
+                
+                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                await _favoriteRepository.RemoveFilmFromFavorite(filmId, userId);
                 
                 _logger.LogInformation($"Delete film from favorites: film with id={filmId} was deleted from favorite films.");
             }

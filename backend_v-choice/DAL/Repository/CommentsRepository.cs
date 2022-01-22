@@ -3,7 +3,6 @@ using DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DAL.Repository
@@ -11,17 +10,16 @@ namespace DAL.Repository
     public class CommentsRepository : ICommentsRepository
     {
         private readonly DBContext _context;
-        private readonly IUserRepository _users;
 
-        public CommentsRepository(DBContext dbc, IUserRepository users)
+        public CommentsRepository(DBContext dbc)
         {
             _context = dbc;
-            _users = users;
         }
 
-        public async Task<Comment> CreateCommentAsync(Comment comment, System.Security.Claims.ClaimsPrincipal user)
+        public async Task<Comment> CreateCommentAsync(Comment comment, string userId)
         {
-            User author = await _users.GetCurrentUserAsync(user);
+            User author = await _context.User.FirstOrDefaultAsync(c => c.Id == userId);
+
             comment.Author = author;
             comment.AuthorId = author.Id;
             comment.AuthorEmail = author.Email;
@@ -45,56 +43,59 @@ namespace DAL.Repository
 
         public async Task DeleteCommentAsync(int id)
         {
-            try
-            {
-                Comment item = _context.Comment.Find(id);
-                _context.Comment.Remove(item);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            Comment item = _context.Comment.Find(id);
+            _context.Comment.Remove(item);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<Pagination<Comment>> GetCommentsByPageAsync(int pageNumber, int onPageCount, int? filmId, bool commonOrder, bool userFirst, ClaimsPrincipal user)
+        public async Task<Pagination<Comment>> GetByDateOnlyAsync(int pageNumber, int onPageCount, int? filmId)
         {
-            if (filmId is null)
-            {
-                // All comments.
-                return GetCommentsByPage(pageNumber, onPageCount);
-            }
+            var collection = _context.Comment
+                .Where(c => c.FilmId == filmId)
+                .OrderBy(c => c.CreatedAt);
 
-            // Get by film Id.
-            var collection = _context.Comment.Where(c => c.FilmId == filmId).Select(c => c);
+            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        }
 
-            if (userFirst)
-            {
-                string userId = (await _users.GetCurrentUserAsync(user)).Id ?? string.Empty;
+        public async Task<Pagination<Comment>> GetByDateDescendingOnlyAsync(int pageNumber, int onPageCount, int? filmId)
+        {
+            var collection = _context.Comment
+                .Where(c => c.FilmId == filmId)
+                .OrderByDescending(c => c.CreatedAt);
 
-                // By userId first and by date order.
-                collection = commonOrder switch
-                {
-                    // old to new
-                    false => collection.Where(c => c.AuthorId == userId).OrderBy(c => c.CreatedAt)
-                        .Union(collection.Where(c => c.AuthorId != userId).OrderBy(c => c.CreatedAt)),
-                    // new to old, default
-                    true => collection.Where(c => c.AuthorId == userId).OrderByDescending(c => c.CreatedAt)
-                        .Union(collection.Where(c => c.AuthorId != userId).OrderByDescending(c => c.CreatedAt)),
-                };
-            }
-            else
-            {
-                // By date order only.
-                collection = commonOrder switch
-                {
-                    // old to new
-                    false => collection.OrderBy(c => c.CreatedAt),
-                    // new to old, default
-                    true => collection.OrderByDescending(c => c.CreatedAt),
-                };
-            }
+            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        }
 
+        public async Task<Pagination<Comment>> GetByDateUserFirstAsync(int pageNumber, int onPageCount, int? filmId, string userId)
+        {
+            var collection = _context.Comment.Where(c => c.FilmId == filmId);
+
+            collection = collection
+                .Where(c => c.AuthorId == userId)
+                .OrderBy(c => c.CreatedAt)
+                .Union(collection
+                        .Where(c => c.AuthorId != userId)
+                        .OrderBy(c => c.CreatedAt));
+
+            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        }
+
+        public async Task<Pagination<Comment>> GetByDateDescendingUserFirstAsync(int pageNumber, int onPageCount, int? filmId, string userId)
+        {
+            var collection = _context.Comment.Where(c => c.FilmId == filmId);
+
+            collection = collection
+                .Where(c => c.AuthorId == userId)
+                .OrderByDescending(c => c.CreatedAt)
+                .Union(collection
+                        .Where(c => c.AuthorId != userId)
+                        .OrderByDescending(c => c.CreatedAt));
+
+            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        }
+
+        private async Task<Pagination<Comment>> SplitByPagesAsync(IQueryable<Comment> collection, int pageNumber, int onPageCount)
+        {
             var total = await collection.CountAsync();
             var items = await collection.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
 
@@ -105,25 +106,12 @@ namespace DAL.Repository
             };
         }
 
-        private static Pagination<Comment> GetCommentsByPage(int pageNumber, int onPageCount)
-        {
-            // Is not allowed. Returns empty.
-            return new Pagination<Comment>();
-        }
-
         public async Task UpdateCommentAsync(int id, Comment comment)
         {
-            try
-            {
-                Comment item = _context.Comment.Find(id);
-                item.Text = comment.Text;
-                _context.Comment.Update(item);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            Comment item = _context.Comment.Find(id);
+            item.Text = comment.Text;
+            _context.Comment.Update(item);
+            await _context.SaveChangesAsync();
         }
     }
 }

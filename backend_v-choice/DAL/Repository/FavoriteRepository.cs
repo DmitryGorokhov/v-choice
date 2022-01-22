@@ -3,7 +3,6 @@ using DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DAL.Repository
@@ -11,18 +10,16 @@ namespace DAL.Repository
     public class FavoriteRepository : IFavoriteRepository
     {
         private readonly DBContext _context;
-        private readonly IUserRepository _users;
         
-        public FavoriteRepository(DBContext dbc, IUserRepository ur)
+        public FavoriteRepository(DBContext dbc)
         {
             _context = dbc;
-            _users = ur;
         }
 
 
-        public async Task AddFavoriteFilmAsync(int filmId, ClaimsPrincipal user)
+        public async Task AddFavoriteFilmAsync(int filmId, string userId)
         {
-            User author = await _users.GetCurrentUserAsync(user);
+            User author = await _context.User.FirstOrDefaultAsync(e => e.Id == userId);
             Film film = await _context.Film.FirstOrDefaultAsync(e => e.Id == filmId);
 
             Favorite fav = new Favorite()
@@ -44,27 +41,34 @@ namespace DAL.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool?> CheckFilmIsAdded(int filmId, ClaimsPrincipal user)
+        public async Task<bool?> CheckFilmIsAdded(int filmId, string userId)
         {
-            string userId = (await _users.GetCurrentUserAsync(user)).Id;
-            Favorite item = await _context.Favorite.FirstOrDefaultAsync(e => e.FilmId == filmId && e.AuthorId == userId);
+            Favorite item = await _context.Favorite
+                .FirstOrDefaultAsync(e => e.FilmId == filmId && e.AuthorId == userId);
+
             return item != null;
         }
 
-        public async Task<Pagination<Film>> GetFavoriteFilmsByPageAsync(int pageNumber, int onPageCount, bool commonOrder, ClaimsPrincipal user)
+        public async Task<Pagination<Film>> GetByDateAsync(int pageNumber, int onPageCount, string userId)
         {
-            string userId = (await _users.GetCurrentUserAsync(user)).Id;
-            var collection = _context.Favorite.Where(c => c.AuthorId == userId);
+            var collection = _context.Favorite
+                .Where(c => c.AuthorId == userId)
+                .OrderBy(c => c.AddedAt);
 
-            // By date order only.
-            collection = commonOrder switch
-            {
-                // old to new
-                false => collection.OrderBy(c => c.AddedAt),
-                // new to old, default
-                true => collection.OrderByDescending(c => c.AddedAt),
-            };
+            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        }
 
+        public async Task<Pagination<Film>> GetByDateDescendingAsync(int pageNumber, int onPageCount, string userId)
+        {
+            var collection = _context.Favorite
+                .Where(c => c.AuthorId == userId)
+                .OrderByDescending(c => c.AddedAt);
+
+            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        }
+
+        private async Task<Pagination<Film>> SplitByPagesAsync(IQueryable<Favorite> collection, int pageNumber, int onPageCount)
+        {
             var favFilms = collection.Select(fav => _context.Film.FirstOrDefault(f => f.Id == fav.FilmId));
 
             var total = await favFilms.CountAsync();
@@ -77,10 +81,11 @@ namespace DAL.Repository
             };
         }
 
-        public async Task RemoveFilmFromFavorite(int filmId, ClaimsPrincipal user)
+        public async Task RemoveFilmFromFavorite(int filmId, string userId)
         {
-            string userId = (await _users.GetCurrentUserAsync(user)).Id;
-            Favorite item = await _context.Favorite.FirstOrDefaultAsync(e => e.FilmId == filmId && e.AuthorId == userId);
+            Favorite item = await _context.Favorite
+                .FirstOrDefaultAsync(e => e.FilmId == filmId && e.AuthorId == userId);
+            
             _context.Favorite.Remove(item);
             await _context.SaveChangesAsync();
         }

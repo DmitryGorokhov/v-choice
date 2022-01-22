@@ -12,14 +12,12 @@ namespace DAL.Repository
     public class FilmRepository : IFilmRepository
     {
         private readonly DBContext _context;
-        private readonly IUserRepository _users;
 
-        public FilmRepository(DBContext dbc, IUserRepository ur)
+        public FilmRepository(DBContext dbc)
         {
             _context = dbc;
-            _users = ur;
         }
-        
+
         public async Task<Film> CreateFilmAsync(Film film)
         {
             if (film.Genres.Count != 0)
@@ -42,19 +40,170 @@ namespace DAL.Repository
 
         public async Task DeleteFilmAsync(int id)
         {
-            try
-            {
-                Film item = _context.Film.Find(id);
-                _context.Film.Remove(item);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            Film item = _context.Film.Find(id);
+            _context.Film.Remove(item);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<Film> GetFilmAsync(int id) => await _context.Film.SingleOrDefaultAsync(m => m.Id == id);
+        
+        //public async Task<Pagination<Film>> GetAsync(int pageNumber, int onPageCount)
+        //{
+        //    var collection = _context.Film;
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+        
+        //public async Task<Pagination<Film>> GetByGenreAsync(int pageNumber, int onPageCount, int genreId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Genres)
+        //            .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetHasCommentsAsync(int pageNumber, int onPageCount)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Comments)
+        //            .Where(e => e.Comments.Count != 0);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetHasCommentsByGenreAsync(int pageNumber, int onPageCount, int genreId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Genres)
+        //            .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
+        //            .Include(e => e.Comments)
+        //            .Where(e => e.Comments.Count != 0);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetNoUserRateAsync(int pageNumber, int onPageCount, string userId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.RateCollection)
+        //            .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetNoUserRateByGenreAsync(int pageNumber, int onPageCount, string userId, int genreId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Genres)
+        //            .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
+        //            .Include(e => e.RateCollection)
+        //            .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetHasCommentsNoUserRateAsync(int pageNumber, int onPageCount, string userId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Comments)
+        //            .Where(e => e.Comments.Count != 0)
+        //            .Include(e => e.RateCollection)
+        //            .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetHasCommentsNoUserRateByGenreAsync(int pageNumber, int onPageCount, string userId, int genreId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Genres)
+        //            .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
+        //            .Include(e => e.Comments)
+        //            .Where(e => e.Comments.Count != 0)
+        //            .Include(e => e.RateCollection)
+        //            .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetAsync(int pageNumber, int onPageCount)
+        //{
+        //    var collection = _context.Film;
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetByGenreAsync(int pageNumber, int onPageCount, int genreId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Genres)
+        //            .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetHasCommentsAsync(int pageNumber, int onPageCount)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Comments)
+        //            .Where(e => e.Comments.Count != 0);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetHasCommentsByGenreAsync(int pageNumber, int onPageCount, int genreId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Genres)
+        //            .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
+        //            .Include(e => e.Comments)
+        //            .Where(e => e.Comments.Count != 0);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetNoUserRateAsync(int pageNumber, int onPageCount, string userId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.RateCollection)
+        //            .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetNoUserRateByGenreAsync(int pageNumber, int onPageCount, string userId, int genreId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Genres)
+        //            .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
+        //            .Include(e => e.RateCollection)
+        //            .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetHasCommentsNoUserRateAsync(int pageNumber, int onPageCount, string userId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Comments)
+        //            .Where(e => e.Comments.Count != 0)
+        //            .Include(e => e.RateCollection)
+        //            .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
+
+        //public async Task<Pagination<Film>> GetHasCommentsNoUserRateByGenreAsync(int pageNumber, int onPageCount, string userId, int genreId)
+        //{
+        //    var collection = _context.Film
+        //            .Include(e => e.Genres)
+        //            .Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null)
+        //            .Include(e => e.Comments)
+        //            .Where(e => e.Comments.Count != 0)
+        //            .Include(e => e.RateCollection)
+        //            .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
+
+        //    return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        //}
 
         public async Task<Pagination<Film>> GetFilmsByPageAsync(
             int pageNumber,
@@ -64,7 +213,7 @@ namespace DAL.Repository
             bool commonOrder,
             bool hasCommentsOnly,
             bool withoutUserRateOnly,
-            ClaimsPrincipal user)
+            string userId)
         {
             var collection = genreId > 0
                 ? _context.Film
@@ -81,8 +230,7 @@ namespace DAL.Repository
 
             if (withoutUserRateOnly)
             {
-                string userId = (await _users.GetCurrentUserAsync(user)).Id ?? string.Empty;
-                collection =  collection
+                collection = collection
                     .Include(e => e.RateCollection)
                     .Where(e => e.RateCollection.FirstOrDefault(r => r.AuthorId == userId) == null);
             }
@@ -102,8 +250,17 @@ namespace DAL.Repository
                 _ => collection
             };
 
-            int total = await collection.CountAsync();
-            var items = await collection.Include(e => e.Genres).Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
+            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        }
+
+        private async Task<Pagination<Film>> SplitByPagesAsync(IQueryable<Film> collection, int pageNumber, int onPageCount)
+        {
+            var total = await collection.CountAsync();
+            var items = await collection
+                .Include(e => e.Genres)
+                .Skip((pageNumber - 1) * onPageCount)
+                .Take(onPageCount)
+                .ToListAsync();
 
             return new Pagination<Film>()
             {
@@ -114,19 +271,12 @@ namespace DAL.Repository
 
         public async Task UpdateFilmAsync(int id, Film film)
         {
-            try
-            {
-                Film item = _context.Film.Find(id);
-                item.Title = film.Title;
-                item.Year = film.Year;
-                item.Description = film.Description;
-                _context.Film.Update(item);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            Film item = _context.Film.Find(id);
+            item.Title = film.Title;
+            item.Year = film.Year;
+            item.Description = film.Description;
+            _context.Film.Update(item);
+            await _context.SaveChangesAsync();
         }
     }
 }

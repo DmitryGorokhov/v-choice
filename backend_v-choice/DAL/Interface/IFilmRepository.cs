@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DAL.Model;
 
 namespace DAL.Interface
@@ -10,6 +9,6 @@ namespace DAL.Interface
         Task<Film> CreateFilmAsync(Film film);
         Task UpdateFilmAsync(int id, Film film);
         Task DeleteFilmAsync(int id);
-        Task<Pagination<Film>> GetFilmsByPageAsync(int pageNumber, int onPageCount, int genreId, int sortType, bool commonOrder, bool hasCommentsOnly, bool withoutUserRateOnly, ClaimsPrincipal user);
+        Task<Pagination<Film>> GetFilmsByPageAsync(int pageNumber, int onPageCount, int genreId, int sortType, bool commonOrder, bool hasCommentsOnly, bool withoutUserRateOnly, string userId);
     }
 }
