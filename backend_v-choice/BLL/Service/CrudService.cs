@@ -108,7 +108,8 @@ namespace BLL.Service
                 Rate r = _mapper.RateDTOtoModel(rate);
 
                 _logger.LogInformation("Call CreateRateAsync.");
-                r = await _rateRepository.CreateRateAsync(r, user);
+                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                r = await _rateRepository.CreateRateAsync(r, userId);
 
                 _logger.LogInformation($"Create rate: rate with Id equal {rate.Id} was created.");
 
@@ -239,7 +240,8 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call GetFilmRate.");
-                var res = await _rateRepository.GetFilmRate(filmId, user);
+                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                var res = await _rateRepository.GetFilmRate(filmId, userId);
 
                 if (res == null)
                 {

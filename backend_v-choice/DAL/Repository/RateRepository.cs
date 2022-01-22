@@ -1,7 +1,6 @@
 ﻿using DAL.Interface;
 using DAL.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DAL.Repository
@@ -9,17 +8,15 @@ namespace DAL.Repository
     public class RateRepository : IRateRepository
     {
         private readonly DBContext _context;
-        private readonly IUserRepository _users;
 
-        public RateRepository(DBContext dbc, IUserRepository users)
+        public RateRepository(DBContext dbc)
         {
             _context = dbc;
-            _users = users;
         }
 
-        public async Task<Rate> CreateRateAsync(Rate rate, ClaimsPrincipal user)
+        public async Task<Rate> CreateRateAsync(Rate rate, string userId)
         {
-            User author = await _users.GetCurrentUserAsync(user);
+            User author = await _context.User.FirstOrDefaultAsync(e => e.Id == userId);
             rate.Author = author;
             rate.AuthorId = author.Id;
             rate.AuthorEmail = author.Email;
@@ -45,68 +42,54 @@ namespace DAL.Repository
 
         public async Task DeleteRateAsync(int id)
         {
-            try
+            Rate item = _context.Rate.Find(id);
+
+            var film = _context.Film.Find(item.FilmId);
+            if (film != null)
             {
-                Rate item = _context.Rate.Find(id);
-
-                var film = _context.Film.Find(item.FilmId);
-                if (film != null)
+                film.CountRate--;
+                if (film.CountRate == 0)
                 {
-                    film.CountRate--;
-                    if (film.CountRate == 0)
-                    {
-                        film.TotalRate = 0;
-                        film.AverageRate = 0;
-                    }
-                    else
-                    {
-                        film.TotalRate -= item.Value;
-                        film.AverageRate = film.TotalRate / film.CountRate;
-                    }
-
-                    _context.Film.Update(film);
+                    film.TotalRate = 0;
+                    film.AverageRate = 0;
+                }
+                else
+                {
+                    film.TotalRate -= item.Value;
+                    film.AverageRate = film.TotalRate / film.CountRate;
                 }
 
-                _context.Rate.Remove(item);
-                await _context.SaveChangesAsync();
+                _context.Film.Update(film);
             }
-            catch
-            {
-                throw;
-            }
+
+            _context.Rate.Remove(item);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<Rate> GetFilmRate(int filmId, ClaimsPrincipal user)
+        public async Task<Rate> GetFilmRate(int filmId, string userId)
         {
-            User u = await _users.GetCurrentUserAsync(user);
+            User u = await _context.User.FirstOrDefaultAsync(e => e.Id == userId);
             Rate rate = await _context.Rate.FirstOrDefaultAsync(e => e.FilmId == filmId && e.AuthorId == u.Id);
-            
+
             return rate;
         }
 
         public async Task UpdateRateAsync(int id, Rate rate)
         {
-            try
-            {
-                Rate item = _context.Rate.Find(id);
-                
-                var film = _context.Film.Find(rate.FilmId);
-                if (film != null)
-                {
-                    film.TotalRate += rate.Value - item.Value;
-                    film.AverageRate = film.TotalRate / film.CountRate;
-                    _context.Film.Update(film);
-                }
+            Rate item = _context.Rate.Find(id);
 
-                item.Value = rate.Value;
-                _context.Rate.Update(item);
-                
-                await _context.SaveChangesAsync();
-            }
-            catch
+            var film = _context.Film.Find(rate.FilmId);
+            if (film != null)
             {
-                throw;
+                film.TotalRate += rate.Value - item.Value;
+                film.AverageRate = film.TotalRate / film.CountRate;
+                _context.Film.Update(film);
             }
+
+            item.Value = rate.Value;
+            _context.Rate.Update(item);
+
+            await _context.SaveChangesAsync();
         }
     }
 }
