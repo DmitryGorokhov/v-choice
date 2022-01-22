@@ -74,6 +74,28 @@ namespace BLL.Service
             }
         }
 
+        public async Task<GenreDTO> CreateGenreAsync(GenreDTO genre)
+        {
+            _logger.LogInformation("Start creating genre.");
+            try
+            {
+                Genre g = _mapper.GenreDTOtoModel(genre);
+
+                _logger.LogInformation("Call CreateGenreAsync.");
+                g = await _genreRepository.CreateGenreAsync(g);
+
+                _logger.LogInformation($"Create genre: genre with Id equal {genre.Id} was created.");
+
+                return _mapper.GenreModelToDTO(g);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Create genre has thrown an exception: {e.Message}.");
+
+                return null;
+            }
+        }
+
         public async Task<RateDTO> CreateRateAsync(RateDTO rate, ClaimsPrincipal user)
         {
             _logger.LogInformation("Start creating rate.");
@@ -125,6 +147,22 @@ namespace BLL.Service
             catch (Exception e)
             {
                 _logger.LogError($"Delete film with id={id} has thrown an exception: {e.Message}.");
+            }
+        }
+
+        public async Task DeleteGenreAsync(int id)
+        {
+            _logger.LogInformation($"Start deleting genre with Id equal {id}.");
+            try
+            {
+                _logger.LogInformation("Call DeleteGenreAsync.");
+                await _genreRepository.DeleteGenreAsync(id);
+
+                _logger.LogInformation($"Delete genre: genre with Id equal {id} was deleted.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Delete genre with id={id} has thrown an exception: {e.Message}.");
             }
         }
 
@@ -251,6 +289,24 @@ namespace BLL.Service
             catch (Exception e)
             {
                 _logger.LogError($"Update film with id={id} has thrown an exception: {e.Message}.");
+            }
+        }
+
+        public async Task UpdateGenreAsync(int id, GenreDTO genre)
+        {
+            _logger.LogInformation($"Start updating genre with Id equal {id}.");
+            try
+            {
+                Genre g = _mapper.GenreDTOtoModel(genre);
+
+                _logger.LogInformation("Call UpdateGenreAsync.");
+                await _genreRepository.UpdateGenreAsync(id, g);
+
+                _logger.LogInformation($"Update genre: genre with Id equal {id} was updated.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Update genre with id={id} has thrown an exception: {e.Message}.");
             }
         }
 

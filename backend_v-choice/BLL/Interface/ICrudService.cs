@@ -19,5 +19,8 @@ namespace BLL.Interface
         Task UpdateRateAsync(int id, RateDTO rate);
         Task DeleteRateAsync(int id);
         Task<RateDTO> GetFilmRate(int filmId, ClaimsPrincipal user);
+        Task<GenreDTO> CreateGenreAsync(GenreDTO genre);
+        Task UpdateGenreAsync(int id, GenreDTO genre);
+        Task DeleteGenreAsync(int id);
     }
 }
