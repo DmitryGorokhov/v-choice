@@ -228,7 +228,7 @@ namespace DAL.Repository
                     .Where(e => e.Comments.Count != 0);
             }
 
-            if (withoutUserRateOnly)
+            if (withoutUserRateOnly && userId != null)
             {
                 collection = collection
                     .Include(e => e.RateCollection)

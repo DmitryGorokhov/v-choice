@@ -111,7 +111,7 @@ export default function FormDialog(props) {
 		<div>
 			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
 				<AddIcon />
-				Добавить
+				Добавить фильм
 			</Button>
 
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
@@ -174,7 +174,7 @@ export default function FormDialog(props) {
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} color="primary">
-						Отменить
+						Закрыть
 					</Button>
 					<Button onClick={handleSubmit} color="primary">
 						Добавить

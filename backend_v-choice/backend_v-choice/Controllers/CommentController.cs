@@ -54,7 +54,7 @@ namespace backend_v_choice.Controllers
             var commentDTO = await _crudService.CreateCommentAsync(comment, HttpContext.User);
             if (commentDTO == null) return StatusCode(500);
             
-            return CreatedAtAction("CreateComment", new { id = comment.Id }, comment);
+            return CreatedAtAction("CreateComment", new { id = commentDTO.Id }, commentDTO);
         }
 
         [Authorize]

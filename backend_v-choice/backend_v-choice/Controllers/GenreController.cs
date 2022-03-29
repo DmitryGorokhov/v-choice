@@ -31,7 +31,7 @@ namespace backend_v_choice.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateGenre([FromBody] GenreDTO genre)
+        public async Task<IActionResult> CreateGenreAsync([FromBody] GenreDTO genre)
         {
             _logger.LogInformation("Create genre.");
             if (!ModelState.IsValid)
@@ -44,7 +44,7 @@ namespace backend_v_choice.Controllers
             var genreDTO = await _crudService.CreateGenreAsync(genre);
             if (genreDTO == null) return StatusCode(500);
 
-            return CreatedAtAction("CreateGenre", new { id = genreDTO.Id }, genre);
+            return CreatedAtAction("CreateGenre", new { id = genreDTO.Id }, genreDTO);
         }
 
         [Authorize(Roles = "admin")]

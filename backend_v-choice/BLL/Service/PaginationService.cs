@@ -109,7 +109,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call GetFilmsByPageAsync.");
 
-                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                string userId = (await _autorizationService.GetCurrentUserAsync(user))?.Id;
 
                 Pagination<Film> answer = await _filmRepository.GetFilmsByPageAsync(
                     query.PageNumber,

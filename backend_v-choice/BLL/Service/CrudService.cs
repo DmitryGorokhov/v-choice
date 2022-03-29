@@ -88,7 +88,7 @@ namespace BLL.Service
                 _logger.LogInformation("Call CreateGenreAsync.");
                 g = await _genreRepository.CreateGenreAsync(g);
 
-                _logger.LogInformation($"Create genre: genre with Id equal {genre.Id} was created.");
+                _logger.LogInformation($"Create genre: genre with Id equal {g.Id} was created.");
 
                 return _mapper.GenreModelToDTO(g);
             }

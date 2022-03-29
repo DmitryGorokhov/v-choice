@@ -74,7 +74,7 @@ namespace backend_v_choice.Controllers
             var filmDTO = await _crudService.CreateFilmAsync(film);
             if (filmDTO == null) return StatusCode(500);
 
-            return CreatedAtAction("CreateFilm", new { id = film.Id }, film);
+            return CreatedAtAction("CreateFilm", new { id = filmDTO.Id }, filmDTO);
         }
 
         [Authorize(Roles = "admin")]

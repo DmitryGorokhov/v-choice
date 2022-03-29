@@ -52,7 +52,7 @@ namespace backend_v_choice.Controllers
             var rateDTO = await _crudService.CreateRateAsync(rate, HttpContext.User);
             if (rateDTO == null) return StatusCode(500);
 
-            return CreatedAtAction("CreateRate", new { id = rate.Id }, rate);
+            return CreatedAtAction("CreateRate", new { id = rateDTO.Id }, rateDTO);
         }
 
         [Authorize]

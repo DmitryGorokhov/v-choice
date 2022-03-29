@@ -13,11 +13,12 @@ import {
 	Select
 } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom'
 
 import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import AddFilmDialog from '../../crud/AddFilmDialog/AddFilmDialog'
 import FilmsFilter from '../../atoms/FilmsFilter/FilmsFilter'
+import GenreManager from '../../crud/GenresManager/GenresManager'
 
 const useStyles = makeStyles((theme) => createStyles({
 	filmListItem: {
@@ -166,9 +167,6 @@ function FilmList(props) {
 					: <>
 						<Box>
 							<Box className={classes.tools}>
-								<Typography variant="subtitle1">
-									Инструменты
-								</Typography>
 								<FilmsFilter
 									onFilter={handleFiltersChanged}
 									genres={props.genres}
@@ -176,6 +174,10 @@ function FilmList(props) {
 									selectedGenre={state.byGenreId}
 								/>
 								<AddFilmDialog genres={props.genres} />
+								<GenreManager genres={props.genres}
+									onCreate={props.onGenreCreate}
+									onUpdate={props.onGenreUpdate}
+									onDelete={props.onGenreDelete} />
 							</Box>
 							<Box>
 								<List>

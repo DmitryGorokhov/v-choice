@@ -12,16 +12,13 @@ export default function MyAlerter(props) {
 							{props.error}<br />
 							<Link href="/sign-in" variant="body2">
 								Авторизироваться как администратор
-								</Link>
+							</Link>
 						</Alert>
 						: <Box></Box>
 					: () => {
 						return (
 							<Alert variant="outlined" severity="success">
-								{props.msg}<br />
-								<Link href="/" variant="body2">
-									Вернуться к фильмам
-              								</Link>
+								{props.msg}
 							</Alert>
 						)
 					}

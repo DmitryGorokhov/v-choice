@@ -15,14 +15,12 @@ const useStyles = makeStyles((theme) => createStyles({
 }));
 
 function Films() {
-	const [state, setState] = useState({
-		genres: [],
-	});
+	const [genres, setGenres] = useState([]);
 
 	useEffect(() => {
 		fetch('https://localhost:5001/api/genre')
 			.then(response => response.json())
-			.then(result => setState({ ...state, genres: result }));
+			.then(result => setGenres(result));
 	}, [])
 
 	let { page, count, genre, type, order, onlyc, norate } = useParams();
@@ -43,6 +41,23 @@ function Films() {
 		noUserRate: Number(order) === 1,
 	}
 
+	const handleCreateGenre = (genre) => {
+		setGenres([...genres, genre]);
+	}
+
+	const handleUpdateGenre = (genre) => {
+		let arr = [...genres];
+		let found = arr.find(g => g.id === genre.id);
+		if (found) {
+			found.value = genre.value;
+		}
+		setGenres([...arr]);
+	}
+
+	const handleDeleteGenre = (genre) => {
+		setGenres(genres.filter(g => g.id !== genre.id));
+	}
+
 	return (
 		<div>
 			<NavMenu />
@@ -52,7 +67,13 @@ function Films() {
 						Фильмы
 					</Typography>
 				</Box>
-				<FilmList {...params} genres={state.genres} />
+				<FilmList
+					{...params}
+					genres={genres}
+					onGenreCreate={handleCreateGenre}
+					onGenreUpdate={handleUpdateGenre}
+					onGenreDelete={handleDeleteGenre}
+				/>
 			</Container>
 		</div>
 	)
