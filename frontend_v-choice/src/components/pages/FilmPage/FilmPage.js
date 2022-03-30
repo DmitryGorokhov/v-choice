@@ -20,7 +20,8 @@ function FilmPage() {
 	useEffect(() => {
 		fetch(`https://localhost:5001/api/film/${slug}`)
 			.then(response => response.json())
-			.then(result => setFilm(result));
+			.then(result => setFilm(result))
+			.catch();
 
 		fetch("https://localhost:5001/api/account/isAuthenticated", {
 			method: 'POST',
@@ -33,10 +34,12 @@ function FilmPage() {
 				result.message === "guest"
 					? setUserEmail(null)
 					: setUserEmail(result.message)
-			});
+			})
+			.catch();
 		fetch(`https://localhost:5001/api/favorite/${slug}`)
 			.then(response => response.json())
-			.then(result => setDisableAddButton(result));
+			.then(result => setDisableAddButton(result))
+			.catch();
 	}, [])
 
 	const handleAddFavorite = () => {

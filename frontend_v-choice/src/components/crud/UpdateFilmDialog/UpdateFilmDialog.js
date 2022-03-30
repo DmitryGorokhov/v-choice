@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState } from 'react'
 import {
 	createStyles,
 	makeStyles,
@@ -33,69 +33,66 @@ const useStyles = makeStyles((theme) => createStyles({
 
 export default function UpdateFilmDialog(props) {
 	const classes = useStyles();
-	const [open, setOpen] = React.useState(false);
-	const [title, setTitle] = React.useState(props.film.Title);
-	const [year, setYear] = React.useState(props.film.Year);
-	const [description, setDescription] = React.useState(props.film.Description);
+	const [open, setOpen] = useState(false);
 
-	const [error, setError] = React.useState(null);
-	const [msg, setMsg] = React.useState(null);
+	const [state, setState] = useState({
+		film: { ...props.film },
+		error: null,
+		msg: null,
+	});
 
-	const handleClickOpen = () => {
+	const handleOpenDialog = () => {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleCloseDialog = () => {
 		setOpen(false);
+		setState({ ...state, error: null, msg: null })
 	};
 
 	const handleSubmit = () => {
-		let film = {
-			Title: title || props.film.Title,
-			Description: description || props.film.Description,
-			Year: year || props.film.Year,
-		}
-		const postURL = `https://localhost:5001/api/films/${props.film.Id}`;
+		const postURL = `https://localhost:5001/api/film/${props.film.id}`;
 		fetch(postURL, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(film)
+			body: JSON.stringify(state.film)
 		})
 			.then(response => {
 				if (response.status === 401) {
-					setError("Недостаточно прав для выполнения операции");
+					setState({ ...state, error: "Недостаточно прав для выполнения операции", msg: null });
 				}
 				if (response.status === 204) {
-					setMsg("Фильм успешно изменён");
+					setState({ ...state, error: null, msg: "Фильм успешно изменён" });
+					props.onUpdate(state.film);
 				}
 			});
 	};
 
 	const handleChangeTitle = (event) => {
-		setTitle(event.target.value);
+		setState({ ...state, film: { ...state.film, title: event.target.value } });
 	};
 
 	const handleChangeYear = (event) => {
-		setYear(event.target.value);
+		setState({ ...state, film: { ...state.film, year: event.target.value } });
 	};
 
 	const handleChangeDescription = (event) => {
-		setDescription(event.target.value);
+		setState({ ...state, film: { ...state.film, description: event.target.value } });
 	};
 
 	return (
-		<div>
-			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
+		<>
+			<Button variant="outlined" color="primary" onClick={handleOpenDialog}>
 				<CreateIcon />
 				Изменить
 			</Button>
 
-			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+			<Dialog open={open} /*onClose={handleCloseDialog}*/ aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Изменить информацию о фильме</DialogTitle>
 				<DialogContent>
-					<MyAlerter msg={msg} error={error} />
+					<MyAlerter msg={state.msg} error={state.error} />
 					<DialogContentText>
 						Заполните информацию о фильме
 					</DialogContentText>
@@ -106,7 +103,7 @@ export default function UpdateFilmDialog(props) {
 							id="title"
 							label="Название"
 							type="input"
-							value={title}
+							value={state.film.title}
 							className={classes.inputTitle}
 							onChange={handleChangeTitle}
 						/>
@@ -115,7 +112,7 @@ export default function UpdateFilmDialog(props) {
 							id="year"
 							label="Год"
 							type="number"
-							value={year}
+							value={state.film.year}
 							className={classes.inputYear}
 							onChange={handleChangeYear}
 						/>
@@ -126,21 +123,21 @@ export default function UpdateFilmDialog(props) {
 						id="description"
 						label="Описание"
 						type="input"
-						value={description}
+						value={state.film.description}
 						className={classes.item}
 						onChange={handleChangeDescription}
 						fullWidth
 					/>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose} color="primary">
-						Отменить
+					<Button onClick={handleCloseDialog} color="primary">
+						Закрыть
 					</Button>
 					<Button onClick={handleSubmit} color="primary">
 						Применить
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</div>
+		</>
 	);
 }

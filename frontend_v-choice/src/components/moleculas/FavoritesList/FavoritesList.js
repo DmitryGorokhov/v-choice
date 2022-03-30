@@ -23,7 +23,7 @@ function FavoritesList() {
 			'https://localhost:5001/api/Favorite' +
 			`?PageNumber=${state.currentPage}` +
 			`&OnPageCount=${state.onPage}` +
-			`&CommonOrder=${state.onPage}`)
+			`&CommonOrder=${state.sortByDateInCommonOrder}`)
 			.then(response => response.json())
 			.then(result => {
 				console.log(result);

@@ -9,10 +9,11 @@ function RateArea(props) {
 	const [userRate, setUserRate] = useState(null)
 
 	useEffect(() => {
-		if (props.user !== null) {
+		if (props.user !== null && props.filmId !== null) {
 			fetch(`https://localhost:5001/api/rate/${props.filmId}`)
 				.then(response => response.json())
 				.then(result => setUserRate(result))
+				.catch()
 		}
 	}, [])
 

@@ -50,21 +50,37 @@ export default function FormDialog(props) {
 			msg: null,
 		});
 
-	const handleClickOpen = () => {
+	const handleOpenDialog = () => {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleCloseDialog = () => {
 		setOpen(false);
+		setState({ ...managerState, error: null, msg: null });
 	};
 
 	const handleSubmit = () => {
 		managerState.currentGenreId === -1 ? createGenre() : updateGenre();
 	};
 
+	const checkEmptyValue = () => {
+
+		if (!(managerState.value && managerState.value !== "")) {
+			setState({ ...managerState, error: "Введено пустое значение", msg: null });
+			return true;
+		}
+
+		return false;
+	}
+
 	const createGenre = () => {
+		if (checkEmptyValue()) {
+			return;
+		}
+
 		let genre = { value: managerState.value };
-		const postURL = 'https://localhost:5001/api/genre';
+
+		const postURL = "https://localhost:5001/api/genre";
 		fetch(postURL, {
 			method: 'POST',
 			headers: {
@@ -89,6 +105,10 @@ export default function FormDialog(props) {
 	};
 
 	const updateGenre = () => {
+		if (checkEmptyValue()) {
+			return;
+		}
+
 		let genre = { id: managerState.currentGenreId, value: managerState.value };
 		const postURL = `https://localhost:5001/api/genre/${genre.id}`;
 		fetch(postURL, {
@@ -156,12 +176,12 @@ export default function FormDialog(props) {
 
 	return (
 		<>
-			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
+			<Button variant="outlined" color="primary" onClick={handleOpenDialog}>
 				Управление жанрами
 			</Button>
 
-			<Dialog open={open} onClose={handleClose} aria-labelledby="genres-form-dialog-title">
-				<DialogTitle id="genres-form-dialog-title" variant='h6'>Диалог управления фильмами</DialogTitle>
+			<Dialog open={open} aria-labelledby="genres-form-dialog-title">
+				<DialogTitle id="genres-form-dialog-title" variant='h6'>Диалог управления жанрами</DialogTitle>
 				<DialogContent>
 					<MyAlerter msg={managerState.msg} error={managerState.error} />
 					<Box className={classes.item}>
@@ -217,7 +237,7 @@ export default function FormDialog(props) {
 						<AddIcon />
 						Режим добавления
 					</Button>
-					<Button onClick={handleClose} color="primary">
+					<Button onClick={handleCloseDialog} color="primary">
 						Закрыть
 					</Button>
 				</DialogActions>

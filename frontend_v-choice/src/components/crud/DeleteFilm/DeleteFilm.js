@@ -24,10 +24,12 @@ function DeleteFilm(props) {
 
 	const handleClose = () => {
 		setOpen(false);
+		setError(null);
+		setMsg(null);
 	};
 
 	const handleSubmit = () => {
-		const postURL = `https://localhost:5001/api/films/${film.Id}`;
+		const postURL = `https://localhost:5001/api/film/${film.id}`;
 		console.log(postURL);
 		fetch(postURL, {
 			method: 'DELETE'
@@ -38,12 +40,13 @@ function DeleteFilm(props) {
 				}
 				if (response.status === 204) {
 					setMsg("Фильм успешно удален");
+					props.onDelete(film);
 				}
 			});
 	};
 
 	return (
-		<div>
+		<>
 			<Button
 				variant="outlined"
 				color="secondary"
@@ -64,14 +67,14 @@ function DeleteFilm(props) {
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} color="primary">
-						Отменить
+						Закрыть
 					</Button>
 					<Button onClick={handleSubmit} color="primary">
 						Удалить
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</div>
+		</>
 	)
 }
 

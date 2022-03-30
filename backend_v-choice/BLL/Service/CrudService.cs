@@ -240,9 +240,15 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call GetFilmRate.");
-                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
-                var res = await _rateRepository.GetFilmRate(filmId, userId);
+                UserDTO currentUser = await _autorizationService.GetCurrentUserAsync(user);
+                if (currentUser == null)
+                {
+                    _logger.LogInformation("Get film rate of current user: no user.");
 
+                    return null;
+                }
+
+                var res = await _rateRepository.GetFilmRate(filmId, currentUser.Id);
                 if (res == null)
                 {
                     _logger.LogInformation($"Get film rate of current user: rate of film with Id equal {filmId} not found.");

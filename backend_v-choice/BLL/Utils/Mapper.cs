@@ -29,23 +29,35 @@ namespace BLL.Utils
                 CountRate = film.CountRate,
                 TotalRate = film.TotalRate,
                 CreatedAt = film.CreatedAt,
-
-                Comments = new HashSet<Comment>(film.Comments
-                .Select(e => CommentDTOtoModel(e))
-                .ToList()),
-
-                Genres = new HashSet<Genre>(film.Genres
-                .Select(e => GenreDTOtoModel(e))
-                .ToList()),
-
-                InFavorites = new HashSet<Favorite>(film.InFavorites
-                .Select(e => FavoriteDTOtoModel(e))
-                .ToList()),
-
-                RateCollection = new HashSet<Rate>(film.RateCollection
-                .Select(e => RateDTOtoModel(e))
-                .ToList())
             };
+
+            if (film.Comments != null)
+            {
+                model.Comments = new HashSet<Comment>(film.Comments
+                .Select(e => CommentDTOtoModel(e))
+                .ToList());
+            }
+
+            if (film.InFavorites != null)
+            {
+                model.InFavorites = new HashSet<Favorite>(film.InFavorites
+                .Select(e => FavoriteDTOtoModel(e))
+                .ToList());
+            }
+
+            if (film.Genres != null)
+            {
+                model.Genres = new HashSet<Genre>(film.Genres
+                .Select(e => GenreDTOtoModel(e))
+                .ToList());
+            }
+
+            if (film.RateCollection != null)
+            {
+                model.RateCollection = new HashSet<Rate>(film.RateCollection
+                .Select(e => RateDTOtoModel(e))
+                .ToList());
+            }
 
             _logger.LogInformation("Finish mapping FilmDTO to Model.");
 

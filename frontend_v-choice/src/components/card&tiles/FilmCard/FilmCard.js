@@ -1,12 +1,11 @@
-import React, { Component } from 'react'
-import { Box, Card, Typography } from '@material-ui/core'
-import { withStyles } from "@material-ui/core/styles"
+import { useState } from 'react'
+import { createStyles, makeStyles, Box, Card, Typography } from '@material-ui/core'
 
 import UpdateFilmDialog from './../../crud/UpdateFilmDialog/UpdateFilmDialog'
 import DeleteFilm from './../../crud/DeleteFilm/DeleteFilm'
 import { Link } from 'react-router-dom'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => createStyles({
 	btns: {
 		display: 'flex',
 	},
@@ -54,62 +53,62 @@ const styles = (theme) => ({
 		width: '100%',
 		padding: theme.spacing(0.5)
 	}
-});
+}));
 
-class FilmCard extends Component {
-	constructor(props) {
-		super(props);
+function FilmCard(props) {
+	const classes = useStyles();
+	const [film, setFilm] = useState({ ...props.film });
+
+	const handleOnUpdateFilm = (film) => {
+		setFilm({ ...film });
+		props.onUpdate(film);
 	}
 
-	film = this.props.film;
-	classes = this.props.classes;
-
-	render() {
-		return (
-			<Card className={this.classes.filmCard}>
-				<Box className={this.classes.cardItem && this.classes.cardVerticalSection}>
-					<Typography variant='h4' className={this.classes.filmTitle}>
-						{this.film.title}
-					</Typography>
-					<Typography className={this.classes.filmYear}>
-						{this.film.year}
-					</Typography>
-				</Box>
-				<Typography className={this.classes.cardItem && this.classes.filmDescription}>
-					{this.film.description}
+	return (
+		<Card className={classes.filmCard}>
+			<Box className={classes.cardItem && classes.cardVerticalSection}>
+				<Typography variant='h4' className={classes.filmTitle}>
+					{film.title}
 				</Typography>
-				<Box className={this.classes.cardItem && this.classes.cardVerticalSection}>
-					{
-						(this.film.genres !== undefined) && (this.film.genres.lenght !== 0)
-							? <Box className={this.classes.genresBox}>
-								{
-									this.film.genres.map(genre => {
-										return (
-											<Typography key={genre.Id} className={this.classes.filmGenre}>
-												{genre.value}
-											</Typography>
-										)
-									})
-								}
-							</Box>
-							: <Typography className={this.classes.filmGenre}>
-								Жанры не выбраны
-							</Typography>
-					}
+				<Typography className={classes.filmYear}>
+					{film.year}
+				</Typography>
+			</Box>
+			<Typography className={classes.cardItem && classes.filmDescription}>
+				{film.description}
+			</Typography>
+			<Box className={classes.cardItem && classes.cardVerticalSection}>
+				{
+					(film.genres !== undefined) && (film.genres.lenght !== 0)
+						? <Box className={classes.genresBox}>
+							{
+								film.genres.map(genre => {
+									return (
+										<Typography key={genre.Id} className={classes.filmGenre}>
+											{genre.value}
+										</Typography>
+									)
+								})
+							}
+						</Box>
+						: <Typography className={classes.filmGenre}>
+							Жанры не выбраны
+						</Typography>
+				}
+			</Box>
+			<Box className={classes.controlsContainer}>
+				<Link to={`/film/${film.id}`}>Подробнее</Link >
+				<Box className={classes.btns}>
+					<UpdateFilmDialog film={film} onUpdate={handleOnUpdateFilm} />
+					<DeleteFilm
+						film={film}
+						btnStyle={classes.btnDelete}
+						onDelete={props.onDelete}
+					/>
 				</Box>
-				<Box className={this.classes.controlsContainer}>
-					<Link to={`/film/${this.film.id}`}>Подробнее</Link >
-					<Box className={this.classes.btns}>
-						<UpdateFilmDialog film={this.film} />
-						<DeleteFilm
-							film={this.film}
-							btnStyle={this.classes.btnDelete}
-						/>
-					</Box>
-				</Box>
-			</Card >
-		)
-	}
+			</Box>
+		</Card >
+	)
 }
 
-export default withStyles(styles)(FilmCard)
+export default FilmCard

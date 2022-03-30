@@ -60,16 +60,18 @@ export default function FormDialog(props) {
 
 	const [checked, setChecked] = React.useState(getAllUnchecked());
 
-	const handleClickOpen = () => {
+	const handleOpenDialog = () => {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleCloseDialog = () => {
 		setOpen(false);
+		setError(null);
+		setMsg(null);
 	};
 
 	const handleSubmit = () => {
-		const postURL = 'https://localhost:5001/api/films';
+		const postURL = 'https://localhost:5001/api/film';
 		fetch(postURL, {
 			method: 'POST',
 			headers: {
@@ -80,6 +82,9 @@ export default function FormDialog(props) {
 			.then(response => {
 				if (response.status === 401) {
 					setError("Недостаточно прав для выполнения операции");
+				}
+				if (response.status === 400) {
+					setError("Проверьте корректность введенных данных");
 				}
 				if (response.status === 201) {
 					setMsg("Фильм успешно создан");
@@ -109,12 +114,12 @@ export default function FormDialog(props) {
 
 	return (
 		<div>
-			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
+			<Button variant="outlined" color="primary" onClick={handleOpenDialog}>
 				<AddIcon />
 				Добавить фильм
 			</Button>
 
-			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+			<Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Добавить новый фильм</DialogTitle>
 				<DialogContent>
 					<MyAlerter msg={msg} error={error} />
@@ -150,7 +155,7 @@ export default function FormDialog(props) {
 						onChange={handleChangeDescription}
 						fullWidth
 					/>
-					<Box className={classes.item}>
+					{/* <Box className={classes.item}>
 						<Typography>Жанры</Typography>
 						{
 							genres.map((g, index) => {
@@ -170,10 +175,10 @@ export default function FormDialog(props) {
 								);
 							})
 						}
-					</Box>
+					</Box> */}
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose} color="primary">
+					<Button onClick={handleCloseDialog} color="primary">
 						Закрыть
 					</Button>
 					<Button onClick={handleSubmit} color="primary">

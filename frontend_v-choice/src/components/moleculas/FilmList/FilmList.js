@@ -157,6 +157,19 @@ function FilmList(props) {
 		return value * state.onPage === state.totalFilms ? value : value + 1;
 	}
 
+	const handleUpdateFilm = (film) => {
+		let arr = [...state.films];
+		let found = arr.find(f => f.id === film.id);
+		if (found) {
+			found = { ...film };
+		}
+		setState({ ...state, films: [...arr] });
+	}
+
+	const handleDeleteFilm = (film) => {
+		setState({ ...state, films: state.films.filter(f => f.id !== film.id) });
+	}
+
 	return (
 		<>
 			{
@@ -189,7 +202,7 @@ function FilmList(props) {
 														className={classes.filmListItem}
 														key={film.id}
 													>
-														<FilmCard film={film} />
+														<FilmCard film={film} onUpdate={handleUpdateFilm} onDelete={handleDeleteFilm} />
 													</ListItem>
 												)
 											})

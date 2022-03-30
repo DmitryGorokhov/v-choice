@@ -68,8 +68,8 @@ namespace DAL.Repository
 
         public async Task<Rate> GetFilmRate(int filmId, string userId)
         {
-            User u = await _context.User.FirstOrDefaultAsync(e => e.Id == userId);
-            Rate rate = await _context.Rate.FirstOrDefaultAsync(e => e.FilmId == filmId && e.AuthorId == u.Id);
+            // User u = await _context.User.FirstOrDefaultAsync(e => e.Id == userId);
+            Rate rate = await _context.Rate.FirstOrDefaultAsync(e => e.FilmId == filmId && e.AuthorId == userId);
 
             return rate;
         }
