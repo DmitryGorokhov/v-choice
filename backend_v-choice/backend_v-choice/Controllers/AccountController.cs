@@ -137,17 +137,34 @@ namespace backend_v_choice.Controllers
 
         [HttpPost]
         [Route("api/Account/isAuthenticated")]
-        public async Task<IActionResult> LoginAuthenticatedOff()
+        public async Task<IActionResult> CheckAuthenticatedUser()
         {
             _logger.LogInformation("Check authenticated user email");
             
-            string message = await _autorizationService.GetCurrentUserEmailAsync(HttpContext.User);
-            var msg = new
+            string userName = await _autorizationService.GetCurrentUserNameAsync(HttpContext.User);
+
+            if (userName == null) return StatusCode(500);
+            var res = new
             {
-                message
+                userName
             };
 
-            return Ok(msg);
+            return Ok(res);
+        }
+
+        [HttpPost]
+        [Route("api/Account/isAdmin")]
+        public async Task<IActionResult> CheckIfCurrentUserIsAdmin()
+        {
+            _logger.LogInformation("Check authenticated user ");
+
+            bool isAdmin = await _autorizationService.CheckIfCurrentUserIsAdmin(HttpContext.User);
+            var res = new
+            {
+                isAdmin
+            };
+
+            return Ok(res);
         }
     }
 }

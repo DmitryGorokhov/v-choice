@@ -1,7 +1,8 @@
-﻿using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using BLL.DTO;
+using DAL.Model;
 using Microsoft.AspNetCore.Identity;
-using BLL.DTO;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BLL.Interface
 {
@@ -10,7 +11,8 @@ namespace BLL.Interface
         Task<IdentityResult> RegisterUserAsync(RegisterQuery reg);
         Task<SignInResult> LogInUserAsync(LoginQuery log);
         Task UserSignOutAsync();
-        Task<UserDTO> GetCurrentUserAsync(ClaimsPrincipal user);
-        Task<string> GetCurrentUserEmailAsync(ClaimsPrincipal user);
+        Task<User> GetCurrentUserModelAsync(ClaimsPrincipal user);
+        Task<bool> CheckIfCurrentUserIsAdmin(ClaimsPrincipal user);
+        Task<string> GetCurrentUserNameAsync(ClaimsPrincipal user);
     }
 }

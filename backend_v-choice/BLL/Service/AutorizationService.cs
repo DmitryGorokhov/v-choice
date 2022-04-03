@@ -23,41 +23,38 @@ namespace BLL.Service
             _mapper = mapper;
         }
 
-        public async Task<UserDTO> GetCurrentUserAsync(ClaimsPrincipal user)
+        public async Task<string> GetCurrentUserNameAsync(ClaimsPrincipal user)
         {
-            _logger.LogInformation("Starting get current user.");
+            _logger.LogInformation("Starting get name of current user.");
             try
             {
-                _logger.LogInformation("Call GetCurrentUserAsync.");
-                User usr = await _userRepository.GetCurrentUserAsync(user);
-                
-                if (usr == null)
+                _logger.LogInformation("Call GetCurrentUserModelAsync.");
+                User u = await GetCurrentUserModelAsync(user);
+
+                if (u == null)
                 {
-                    _logger.LogInformation($"Authenticated: guest");
-                    
-                    return null;
+                    _logger.LogInformation($"Current user: guest");
+
+                    return "guest";
                 }
-
-                UserDTO u = _mapper.UserModelToDTO(usr);
-
+            
                 _logger.LogInformation($"Authenticated: {u.Email}");
-                
-                return u;
+
+                return u.Email;
             }
             catch (Exception e)
             {
-                _logger.LogError($"Get current user has thrown an exception: {e.Message}.");
+                _logger.LogError($"Get current user name has thrown an exception: {e.Message}.");
 
                 return null;
             }
         }
 
-        public async Task<string> GetCurrentUserEmailAsync(ClaimsPrincipal user)
+        public async Task<User> GetCurrentUserModelAsync(ClaimsPrincipal user)
         {
-            _logger.LogInformation("Starting get email of current user.");
-            UserDTO u = await GetCurrentUserAsync(user);
+            _logger.LogInformation("Get current user model.");
             
-            return u != null ? u.UserName : "guest";
+            return await _userRepository.GetCurrentUserAsync(user);
         }
 
         public async Task<SignInResult> LogInUserAsync(LoginQuery log)
@@ -116,6 +113,35 @@ namespace BLL.Service
         {
             _logger.LogInformation("Call UserSignOutAsync.");
             await _userRepository.UserSignOutAsync();
+        }
+
+        public async Task<bool> CheckIfCurrentUserIsAdmin(ClaimsPrincipal user)
+        {
+            _logger.LogInformation("Starting check if current user is admin.");
+            try
+            {
+                _logger.LogInformation("Call GetCurrentUserModelAsync.");
+                User u = await GetCurrentUserModelAsync(user);
+
+                if (u == null)
+                {
+                    _logger.LogInformation($"Current user: guest, not admin");
+
+                    return false;
+                }
+
+                bool res = await _userRepository.CheckUserHasAdminRoleAsync(u);
+
+                _logger.LogInformation($"Authenticated: {u.Email} as {(res ? "an admin" : "an user")}");
+
+                return res;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Get current user info has thrown an exception: {e.Message}.");
+
+                return false;
+            }
         }
     }
 }

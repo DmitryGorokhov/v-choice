@@ -98,14 +98,18 @@ function FilmCard(props) {
 			</Box>
 			<Box className={classes.controlsContainer}>
 				<Link to={`/film/${film.id}`}>Подробнее</Link >
-				<Box className={classes.btns}>
-					<UpdateFilmDialog film={film} onUpdate={handleOnUpdateFilm} />
-					<DeleteFilm
-						film={film}
-						btnStyle={classes.btnDelete}
-						onDelete={props.onDelete}
-					/>
-				</Box>
+				{
+					props.shouldShowControls
+						? <Box className={classes.btns}>
+							<UpdateFilmDialog film={film} onUpdate={handleOnUpdateFilm} />
+							<DeleteFilm
+								film={film}
+								btnStyle={classes.btnDelete}
+								onDelete={props.onDelete}
+							/>
+						</Box>
+						: <div></div>
+				}
 			</Box>
 		</Card >
 	)

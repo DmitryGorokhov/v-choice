@@ -41,7 +41,7 @@ namespace BLL.Service
                 
                 _logger.LogInformation("Call CreateCommentAsync.");
 
-                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                 c = await _commentsRepository.CreateCommentAsync(c, userId);
                 
                 _logger.LogInformation($"Create comment: comment with Id equal {comment.Id} was created.");
@@ -108,7 +108,7 @@ namespace BLL.Service
                 Rate r = _mapper.RateDTOtoModel(rate);
 
                 _logger.LogInformation("Call CreateRateAsync.");
-                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                 r = await _rateRepository.CreateRateAsync(r, userId);
 
                 _logger.LogInformation($"Create rate: rate with Id equal {rate.Id} was created.");
@@ -240,7 +240,7 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call GetFilmRate.");
-                UserDTO currentUser = await _autorizationService.GetCurrentUserAsync(user);
+                User currentUser = await _autorizationService.GetCurrentUserModelAsync(user);
                 if (currentUser == null)
                 {
                     _logger.LogInformation("Get film rate of current user: no user.");

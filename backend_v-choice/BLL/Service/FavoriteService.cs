@@ -27,7 +27,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call AddFavoriteFilmAsync.");
                 
-                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                 await _favoriteRepository.AddFavoriteFilmAsync(filmId, userId);
                 
                 _logger.LogInformation($"Add film in favorites: film with id={filmId} was added to favorite films.");
@@ -45,7 +45,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call CheckFilmIsAdded.");
                 
-                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                 var res = await _favoriteRepository.CheckFilmIsAdded(filmId, userId);
                 
                 string message = res == null
@@ -70,7 +70,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call RemoveFilmFromFavorite.");
                 
-                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                 await _favoriteRepository.RemoveFilmFromFavorite(filmId, userId);
                 
                 _logger.LogInformation($"Delete film from favorites: film with id={filmId} was deleted from favorite films.");

@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme) => createStyles({
 	item: {
 		margin: theme.spacing(2, 0)
 	},
+	mainButton: {
+		margin: theme.spacing(1)
+	},
 }));
 
 export default function FormDialog(props) {
@@ -114,7 +117,7 @@ export default function FormDialog(props) {
 
 	return (
 		<div>
-			<Button variant="outlined" color="primary" onClick={handleOpenDialog}>
+			<Button variant="outlined" color="primary" onClick={handleOpenDialog} className={classes.mainButton}>
 				<AddIcon />
 				Добавить фильм
 			</Button>

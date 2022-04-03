@@ -35,10 +35,12 @@ export class NavMenu extends Component {
     })
       .then(response => response.json())
       .then(result => {
-        result.message === "guest"
+        console.log(result);
+        result.userName === "guest"
           ? this.setState({ userEmail: null })
-          : this.setState({ userEmail: result.message })
-      });
+          : this.setState({ userEmail: result.userName })
+      })
+      .catch(_ => this.setState({ userEmail: null }));
   }
 
   handleClickLogout = () => {
@@ -49,8 +51,12 @@ export class NavMenu extends Component {
       },
     })
       .then(response => response.json())
-      .then(result => this.setState({ userEmail: null })
+      .then(_ => this.setState({ userEmail: null })
       );
+
+    if (this.props.onLogout && this.props.onLogout !== undefined) {
+      this.props.onLogout();
+    }
   }
 
   render() {

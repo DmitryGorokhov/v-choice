@@ -33,7 +33,10 @@ const useStyles = makeStyles((theme) => createStyles({
 	list: {
 		height: theme.spacing(50),
 		overflowY: "scroll"
-	}
+	},
+	mainButton: {
+		margin: theme.spacing(1)
+	},
 }));
 
 export default function FormDialog(props) {
@@ -176,7 +179,7 @@ export default function FormDialog(props) {
 
 	return (
 		<>
-			<Button variant="outlined" color="primary" onClick={handleOpenDialog}>
+			<Button variant="outlined" color="primary" onClick={handleOpenDialog} className={classes.mainButton}>
 				Управление жанрами
 			</Button>
 

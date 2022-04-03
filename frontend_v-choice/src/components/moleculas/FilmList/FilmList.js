@@ -30,10 +30,18 @@ const useStyles = makeStyles((theme) => createStyles({
 	},
 	tools: {
 		display: 'flex',
-		justifyContent: 'space-between',
+		justifyContent: 'center',
 		alignItems: 'center',
 		margin: theme.spacing(0, 2),
-	}
+	},
+	controls: {
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'center',
+	},
+	control: {
+		marginBottom: theme.spacing(1)
+	},
 }));
 
 function FilmList(props) {
@@ -179,19 +187,34 @@ function FilmList(props) {
 					</Typography >
 					: <>
 						<Box>
-							<Box className={classes.tools}>
-								<FilmsFilter
-									onFilter={handleFiltersChanged}
-									genres={props.genres}
-									loadAll={showAll}
-									selectedGenre={state.byGenreId}
-								/>
-								<AddFilmDialog genres={props.genres} />
-								<GenreManager genres={props.genres}
-									onCreate={props.onGenreCreate}
-									onUpdate={props.onGenreUpdate}
-									onDelete={props.onGenreDelete} />
-							</Box>
+							{
+								props.shouldShowControls
+									? <Box>
+										<Box className={classes.tools}>
+											<FilmsFilter
+												onFilter={handleFiltersChanged}
+												genres={props.genres}
+												loadAll={showAll}
+												selectedGenre={state.byGenreId}
+											/>
+										</Box>
+										<Box className={classes.tools} >
+											<AddFilmDialog genres={props.genres} />
+											<GenreManager genres={props.genres}
+												onCreate={props.onGenreCreate}
+												onUpdate={props.onGenreUpdate}
+												onDelete={props.onGenreDelete} />
+										</Box>
+									</Box>
+									: <Box className={classes.tools}>
+										<FilmsFilter
+											onFilter={handleFiltersChanged}
+											genres={props.genres}
+											loadAll={showAll}
+											selectedGenre={state.byGenreId}
+										/>
+									</Box>
+							}
 							<Box>
 								<List>
 									{
@@ -202,7 +225,7 @@ function FilmList(props) {
 														className={classes.filmListItem}
 														key={film.id}
 													>
-														<FilmCard film={film} onUpdate={handleUpdateFilm} onDelete={handleDeleteFilm} />
+														<FilmCard film={film} onUpdate={handleUpdateFilm} onDelete={handleDeleteFilm} shouldShowControls={props.shouldShowControls} />
 													</ListItem>
 												)
 											})

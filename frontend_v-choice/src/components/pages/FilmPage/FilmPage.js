@@ -31,9 +31,9 @@ function FilmPage() {
 		})
 			.then(response => response.json())
 			.then(result => {
-				result.message === "guest"
+				result.userName === "guest"
 					? setUserEmail(null)
-					: setUserEmail(result.message)
+					: setUserEmail(result.userName)
 			})
 			.catch();
 		fetch(`https://localhost:5001/api/favorite/${slug}`)
@@ -66,7 +66,7 @@ function FilmPage() {
 	}
 
 	return (
-		<div>
+		<>
 			<NavMenu />
 			<Box className={styles.container}>
 				<Box className={styles.marginItem}>
@@ -74,7 +74,7 @@ function FilmPage() {
 						film !== null
 							?
 							<>
-								<FilmCard film={film} />
+								<FilmCard film={film} shouldShowControls={false} />
 								<RateArea
 									filmId={film.id}
 									filmRate={film.averageRate}
@@ -121,7 +121,7 @@ function FilmPage() {
 				</Typography>
 				<CommentsList className={styles.marginItem} filmId={slug} userEmail={userEmail} />
 			</Box>
-		</div>
+		</>
 	)
 }
 

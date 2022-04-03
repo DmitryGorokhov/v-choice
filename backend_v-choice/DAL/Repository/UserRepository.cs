@@ -21,7 +21,11 @@ namespace DAL.Repository
             _signInManager = signInManager;
         }
 
-        public async Task<User> GetCurrentUserAsync(ClaimsPrincipal user) => await _userManager.GetUserAsync(user);
+        public async Task<User> GetCurrentUserAsync(ClaimsPrincipal user)
+            => await _userManager.GetUserAsync(user);
+
+        public async Task<bool> CheckUserHasAdminRoleAsync(User user)
+            => (await _userManager.GetRolesAsync(user)).Contains("admin");
 
         public async Task<SignInResult> UserLogInAsync(LoginModel model)
             => await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
@@ -42,6 +46,7 @@ namespace DAL.Repository
             return result;
         }
 
-        public async Task UserSignOutAsync() => await _signInManager.SignOutAsync();
+        public async Task UserSignOutAsync()
+            => await _signInManager.SignOutAsync();
     }
 }

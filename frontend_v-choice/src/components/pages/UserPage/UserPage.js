@@ -26,7 +26,8 @@ function UserPage() {
 			},
 		})
 			.then(response => response.json())
-			.then(result => setUserEmail(result.message));
+			.then(result => setUserEmail(result.userName))
+			.catch(_ => setUserEmail("guest"));
 	}, [])
 
 	return (

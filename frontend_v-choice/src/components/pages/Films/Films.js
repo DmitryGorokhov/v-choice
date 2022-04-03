@@ -16,11 +16,22 @@ const useStyles = makeStyles((theme) => createStyles({
 
 function Films() {
 	const [genres, setGenres] = useState([]);
+	const [isAdmin, setIsAdmin] = useState(false);
+
 
 	useEffect(() => {
 		fetch('https://localhost:5001/api/genre')
 			.then(response => response.json())
 			.then(result => setGenres(result));
+		fetch("https://localhost:5001/api/account/isAdmin", {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		})
+			.then(response => response.json())
+			.then(result => setIsAdmin(result.isAdmin))
+			.catch(_ => setIsAdmin(false));
 	}, [])
 
 	let { page, count, genre, type, order, onlyc, norate } = useParams();
@@ -58,9 +69,13 @@ function Films() {
 		setGenres(genres.filter(g => g.id !== genre.id));
 	}
 
+	const handleLogout = () => {
+		setIsAdmin(false);
+	}
+
 	return (
 		<div>
-			<NavMenu />
+			<NavMenu onLogout={handleLogout} />
 			<Container>
 				<Box className={classes.headerContainer}>
 					<Typography variant="h2">
@@ -73,6 +88,7 @@ function Films() {
 					onGenreCreate={handleCreateGenre}
 					onGenreUpdate={handleUpdateGenre}
 					onGenreDelete={handleDeleteGenre}
+					shouldShowControls={isAdmin}
 				/>
 			</Container>
 		</div>

@@ -41,7 +41,7 @@ namespace BLL.Service
 
                 if (query.MyCommentsFirst ?? false)
                 {
-                    string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                    string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                     answer = query.CommonOrder switch
                     {
                         true => await _commentsRepository.GetByDateDescendingUserFirstAsync(query.PageNumber, query.OnPageCount, query.FilmId, userId),
@@ -78,7 +78,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call GetFavoriteFilmsByPageAsync.");
 
-                string userId = (await _autorizationService.GetCurrentUserAsync(user)).Id;
+                string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                 
                 Pagination<Film> answer = (query.CommonOrder ?? true) switch
                 {
@@ -109,7 +109,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call GetFilmsByPageAsync.");
 
-                string userId = (await _autorizationService.GetCurrentUserAsync(user))?.Id;
+                string userId = (await _autorizationService.GetCurrentUserModelAsync(user))?.Id;
 
                 Pagination<Film> answer = await _filmRepository.GetFilmsByPageAsync(
                     query.PageNumber,
