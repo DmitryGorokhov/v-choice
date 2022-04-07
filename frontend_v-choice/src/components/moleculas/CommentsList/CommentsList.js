@@ -73,55 +73,62 @@ function CommentsList(props) {
 	}
 
 	return (
-		<div>
+		<>
 			{
 				state.loading
 					? <Typography>Загрузка...</Typography>
 					:
 					<>
-						<List className={styles.list}>
-							{
-								state.comments.length !== 0
-									? state.comments.map(comment => {
-										return (
-											<ListItem className={styles.listItem} key={comment.Id}>
-												<CommentTile
-													comment={comment}
-													userEmail={props.userEmail}
-													onUpdateMethod={updateComment}
-													onDeleteMethod={deleteComment}
-												/>
-											</ListItem>
-										)
-									})
-									: <Typography variant='h5'>Пока нет комментариев</Typography>
-							}
-						</List>
-						<Pagination
-							page={Number(state.currentPage)}
-							count={calculatePagesCount()}
-							variant="outlined"
-							color="primary"
-							onChange={handleChangePage}
-						/>
-						<Button
-							variant="primary"
-							onClick={handleSortByDateOrderChanged}
-						>
-							{
-								state.sortByDateInCommonOrder
-									? <ArrowDownwardIcon />
-									: <ArrowUpwardIcon />
-							}
-						</Button>
-						<FormControlLabel
-							control={<Checkbox
-								checked={state.userCommentsFirst}
-								onChange={handleUserCommentsFirstChanged}
-								color="primary" />}
-							label="Сначала мои" />
+						{
+							state.comments.length !== 0
+								? <>
+									<List className={styles.list}>
+										{
+											state.comments.map(comment => {
+												return (
+													<ListItem className={styles.listItem} key={comment.Id}>
+														<CommentTile
+															comment={comment}
+															userEmail={props.userEmail}
+															onUpdateMethod={updateComment}
+															onDeleteMethod={deleteComment}
+														/>
+													</ListItem>
+												)
+											})
+										}
+									</List>
+									<Pagination
+										page={Number(state.currentPage)}
+										count={calculatePagesCount()}
+										variant="outlined"
+										color="primary"
+										onChange={handleChangePage}
+									/>
+									<Button
+										variant="primary"
+										onClick={handleSortByDateOrderChanged}
+									>
+										{
+											state.sortByDateInCommonOrder
+												? <ArrowDownwardIcon />
+												: <ArrowUpwardIcon />
+										}
+									</Button>
+									<FormControlLabel
+										control=
+										{
+											<Checkbox
+												checked={state.userCommentsFirst}
+												onChange={handleUserCommentsFirstChanged}
+												color="primary"
+												disabled={props.userEmail === null} />
+										}
+										label="Сначала мои" />
+								</>
+								: <Typography variant='h5'>Пока нет комментариев</Typography>
+						}
 					</>
-
 			}
 
 			{
@@ -131,7 +138,7 @@ function CommentsList(props) {
 					</Typography>
 					: <CommentArea filmId={filmId} typeMethod="create" />
 			}
-		</div >
+		</>
 	)
 }
 

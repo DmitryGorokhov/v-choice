@@ -66,53 +66,57 @@ function FavoritesList() {
 	}
 
 	return (
-		<div>
+		<>
 			{
 				state.loading
 					? <Typography>Загрузка...</Typography>
 					:
 					<>
-						<List className={styles.list}>
-							{
-								state.favorites.length !== 0
-									? state.favorites.map(film => {
-										return (
-											<ListItem key={film.id} className={styles.item}>
-												<Link to={`/film/${film.id}`}>{film.title}</Link>
-												<Button
-													variant="primary"
-													onClick={() => {
-														return handleRemoveItem(film)
-													}}
-												>
-													<ClearIcon />
-												</Button>
-											</ListItem>
-										)
-									})
-									: <Typography variant='h5'>Список избранных фильмов пуст</Typography>
-							}
-						</List>
-						<Pagination
-							page={Number(state.currentPage)}
-							count={calculatePagesCount()}
-							variant="outlined"
-							color="primary"
-							onChange={handleChangePage}
-						/>
-						<Button
-							variant="primary"
-							onClick={handleSortByDateOrderChanged}
-						>
-							{
-								state.sortByDateInCommonOrder
-									? <ArrowDownwardIcon />
-									: <ArrowUpwardIcon />
-							}
-						</Button>
+						{
+							state.favorites.length !== 0
+								? <>
+									<List className={styles.list}>
+										{
+											state.favorites.map(film => {
+												return (
+													<ListItem key={film.id} className={styles.item}>
+														<Link to={`/film/${film.id}`}>{film.title}</Link>
+														<Button
+															variant="primary"
+															onClick={() => {
+																return handleRemoveItem(film)
+															}}
+														>
+															<ClearIcon />
+														</Button>
+													</ListItem>
+												)
+											})
+										}
+									</List>
+									<Pagination
+										page={Number(state.currentPage)}
+										count={calculatePagesCount()}
+										variant="outlined"
+										color="primary"
+										onChange={handleChangePage}
+									/>
+									<Button
+										variant="primary"
+										onClick={handleSortByDateOrderChanged}
+									>
+										{
+											state.sortByDateInCommonOrder
+												? <ArrowDownwardIcon />
+												: <ArrowUpwardIcon />
+										}
+									</Button>
+								</>
+								: <Typography variant='h5'>Список избранных фильмов пуст</Typography>
+						}
 					</>
 			}
-		</div>
+		</>
 	)
 }
 

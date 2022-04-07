@@ -22,24 +22,21 @@ function FilmPage() {
 			.then(response => response.json())
 			.then(result => setFilm(result))
 			.catch();
+		// fetch("https://localhost:5001/api/account/isAuthenticated", {
+		// 	method: 'POST',
+		// 	headers: {
+		// 		'Content-Type': 'application/json'
+		// 	},
+		// })
+		// 	.then(response => response.json())
+		// 	.then(result => {
 
-		fetch("https://localhost:5001/api/account/isAuthenticated", {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-		})
-			.then(response => response.json())
-			.then(result => {
-				result.userName === "guest"
-					? setUserEmail(null)
-					: setUserEmail(result.userName)
-			})
-			.catch();
+		// 	})
+		// 	.catch();
 		fetch(`https://localhost:5001/api/favorite/${slug}`)
 			.then(response => response.json())
 			.then(result => setDisableAddButton(result))
-			.catch();
+			.catch(_ => setDisableAddButton(true));
 	}, [])
 
 	const handleAddFavorite = () => {
@@ -47,6 +44,14 @@ function FilmPage() {
 			method: 'POST',
 		});
 		setDisableAddButton(true);
+	}
+
+	const handleSetUserEmail = (userName) => {
+		userName === "guest" ? setUserEmail(null) : setUserEmail(userName)
+	}
+
+	const handleLogoutUser = () => {
+		setUserEmail(null);
 	}
 
 	const handleRateChanged = (value, count) => {
@@ -67,7 +72,7 @@ function FilmPage() {
 
 	return (
 		<>
-			<NavMenu />
+			<NavMenu onLoadUser={handleSetUserEmail} onLogout={handleLogoutUser} />
 			<Box className={styles.container}>
 				<Box className={styles.marginItem}>
 					{

@@ -18,21 +18,17 @@ function UserPage() {
 	const [userEmail, setUserEmail] = useState(null);
 	const styles = useStyles();
 
-	useEffect(() => {
-		fetch("https://localhost:5001/api/account/isAuthenticated", {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-		})
-			.then(response => response.json())
-			.then(result => setUserEmail(result.userName))
-			.catch(_ => setUserEmail("guest"));
-	}, [])
+	const handleSetUserEmail = (userName) => {
+		setUserEmail(userName)
+	}
+
+	const handleLogoutUser = () => {
+		setUserEmail("guest");
+	}
 
 	return (
-		<div>
-			<NavMenu />
+		<>
+			<NavMenu onLoadUser={handleSetUserEmail} onLogout={handleLogoutUser} />
 			<Box className={styles.container}>
 				{
 					userEmail !== null
@@ -52,7 +48,7 @@ function UserPage() {
 						: <Typography className={styles.marginItem}>Загрузка...</Typography>
 				}
 			</Box>
-		</div>
+		</>
 	)
 }
 
