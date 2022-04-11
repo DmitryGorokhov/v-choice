@@ -1,22 +1,20 @@
-import React from 'react'
+import { useState } from 'react'
 import {
 	createStyles,
 	makeStyles,
 	Box,
 	Button,
-	Checkbox,
 	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
 	DialogContentText,
-	FormControlLabel,
 	TextField,
-	Typography
 } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
 
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
+import GenresSelector from '../../atoms/GenresSelector/GenresSelector'
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -40,28 +38,15 @@ const useStyles = makeStyles((theme) => createStyles({
 export default function FormDialog(props) {
 	const classes = useStyles();
 
-	const [open, setOpen] = React.useState(false);
-	const [error, setError] = React.useState(null);
-	const [msg, setMsg] = React.useState(null);
-
-	let genres = props.genres;
-
-	let film = {
-		Title: '',
-		Description: '',
-		Year: '',
-		Genres: []
-	}
-
-	const getAllUnchecked = () => {
-		let arr = [];
-		genres.forEach(element => {
-			arr.push(false)
-		});
-		return (arr);
-	};
-
-	const [checked, setChecked] = React.useState(getAllUnchecked());
+	const [open, setOpen] = useState(false);
+	const [error, setError] = useState(null);
+	const [msg, setMsg] = useState(null);
+	const [film, setFilm] = useState({
+		title: '',
+		description: '',
+		year: '',
+		genres: []
+	});
 
 	const handleOpenDialog = () => {
 		setOpen(true);
@@ -71,11 +56,13 @@ export default function FormDialog(props) {
 		setOpen(false);
 		setError(null);
 		setMsg(null);
+		setFilm({ title: '', description: '', year: '', genres: [] });
 	};
 
 	const handleSubmit = () => {
-		const postURL = 'https://localhost:5001/api/film';
-		fetch(postURL, {
+		console.log(film);
+
+		fetch('https://localhost:5001/api/film', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json;charset=utf-8'
@@ -96,27 +83,23 @@ export default function FormDialog(props) {
 	};
 
 	const handleChangeTitle = (event) => {
-		film.Title = event.target.value;
+		setFilm({ ...film, title: event.target.value });
 	};
 
 	const handleChangeYear = (event) => {
-		film.Year = event.target.value;
+		setFilm({ ...film, year: event.target.value });
 	};
 
 	const handleChangeDescription = (event) => {
-		film.Description = event.target.value;
+		setFilm({ ...film, description: event.target.value });
 	};
 
-	const handleChange = (event) => {
-		checked[event.target.name] = !checked[event.target.name];
-		setChecked(checked);
-		checked[event.target.name]
-			? film.genres.push(genres[event.target.name])
-			: film.genres.splice(film.genres.indexOf(genres[event.target.name]), 1);
+	const handleGenresUpdate = (selectedArray) => {
+		setFilm({ ...film, genres: [...selectedArray] });
 	};
 
 	return (
-		<div>
+		<>
 			<Button variant="outlined" color="primary" onClick={handleOpenDialog} className={classes.mainButton}>
 				<AddIcon />
 				Добавить фильм
@@ -138,6 +121,7 @@ export default function FormDialog(props) {
 							type="input"
 							className={classes.inputTitle}
 							onChange={handleChangeTitle}
+							value={film.title}
 						/>
 						<TextField
 							margin="dense"
@@ -146,9 +130,9 @@ export default function FormDialog(props) {
 							type="number"
 							className={classes.inputYear}
 							onChange={handleChangeYear}
+							value={film.year}
 						/>
 					</Box>
-
 					<TextField
 						margin="dense"
 						id="description"
@@ -156,29 +140,10 @@ export default function FormDialog(props) {
 						type="input"
 						className={classes.item}
 						onChange={handleChangeDescription}
+						value={film.description}
 						fullWidth
 					/>
-					{/* <Box className={classes.item}>
-						<Typography>Жанры</Typography>
-						{
-							genres.map((g, index) => {
-								return (
-									<FormControlLabel
-										key={index}
-										control={
-											<Checkbox
-												checked={checked[index]}
-												onChange={handleChange}
-												name={`${index}`}
-												color="primary"
-											/>
-										}
-										label={g.value}
-									/>
-								);
-							})
-						}
-					</Box> */}
+					<GenresSelector genres={props.genres} selected={[]} onChange={handleGenresUpdate} />
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleCloseDialog} color="primary">
@@ -189,6 +154,6 @@ export default function FormDialog(props) {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</div>
+		</>
 	);
 }

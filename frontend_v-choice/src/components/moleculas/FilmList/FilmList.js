@@ -225,7 +225,12 @@ function FilmList(props) {
 														className={classes.filmListItem}
 														key={film.id}
 													>
-														<FilmCard film={film} onUpdate={handleUpdateFilm} onDelete={handleDeleteFilm} shouldShowControls={props.shouldShowControls} />
+														<FilmCard
+															film={film}
+															onUpdate={handleUpdateFilm}
+															onDelete={handleDeleteFilm}
+															shouldShowControls={props.shouldShowControls}
+															genres={props.genres} />
 													</ListItem>
 												)
 											})

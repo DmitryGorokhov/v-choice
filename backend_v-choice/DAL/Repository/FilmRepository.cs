@@ -45,7 +45,8 @@ namespace DAL.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Film> GetFilmAsync(int id) => await _context.Film.SingleOrDefaultAsync(m => m.Id == id);
+        public async Task<Film> GetFilmAsync(int id) 
+            => await _context.Film.Include(e => e.Genres).SingleOrDefaultAsync(m => m.Id == id);
         
         //public async Task<Pagination<Film>> GetAsync(int pageNumber, int onPageCount)
         //{
@@ -271,10 +272,12 @@ namespace DAL.Repository
 
         public async Task UpdateFilmAsync(int id, Film film)
         {
-            Film item = _context.Film.Find(id);
+            Film item = _context.Film.Include(e => e.Genres).First(e => e.Id == film.Id);
             item.Title = film.Title;
             item.Year = film.Year;
             item.Description = film.Description;
+            item.Genres = film.Genres;
+
             _context.Film.Update(item);
             await _context.SaveChangesAsync();
         }

@@ -9,11 +9,12 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
-	TextField
+	TextField,
 } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create'
 
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
+import GenresSelector from '../../atoms/GenresSelector/GenresSelector'
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -35,8 +36,21 @@ export default function UpdateFilmDialog(props) {
 	const classes = useStyles();
 	const [open, setOpen] = useState(false);
 
+	const getSelectedGenres = () => {
+		const arr = [];
+		props.film.genres.map(g => {
+			const found = props.genres.find(i => i.id === g.id);
+			if (found) {
+				arr.push(found);
+			}
+		});
+		console.log(arr);
+		return arr;
+	}
+
 	const [state, setState] = useState({
 		film: { ...props.film },
+		selectedGenres: getSelectedGenres(),
 		error: null,
 		msg: null,
 	});
@@ -51,21 +65,24 @@ export default function UpdateFilmDialog(props) {
 	};
 
 	const handleSubmit = () => {
+		const film = { ...state.film };
+		film.genres = [...state.selectedGenres];
+
 		const postURL = `https://localhost:5001/api/film/${props.film.id}`;
 		fetch(postURL, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(state.film)
+			body: JSON.stringify(film)
 		})
 			.then(response => {
 				if (response.status === 401) {
 					setState({ ...state, error: "Недостаточно прав для выполнения операции", msg: null });
 				}
 				if (response.status === 204) {
-					setState({ ...state, error: null, msg: "Фильм успешно изменён" });
-					props.onUpdate(state.film);
+					setState({ ...state, film: { ...film }, error: null, msg: "Фильм успешно изменён" });
+					props.onUpdate(film);
 				}
 			});
 	};
@@ -82,6 +99,10 @@ export default function UpdateFilmDialog(props) {
 		setState({ ...state, film: { ...state.film, description: event.target.value } });
 	};
 
+	const handleGenresUpdate = (selected) => {
+		setState({ ...state, selectedGenres: [...selected] });
+	};
+
 	return (
 		<>
 			<Button variant="outlined" color="primary" onClick={handleOpenDialog}>
@@ -89,7 +110,7 @@ export default function UpdateFilmDialog(props) {
 				Изменить
 			</Button>
 
-			<Dialog open={open} /*onClose={handleCloseDialog}*/ aria-labelledby="form-dialog-title">
+			<Dialog open={open} aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Изменить информацию о фильме</DialogTitle>
 				<DialogContent>
 					<MyAlerter msg={state.msg} error={state.error} />
@@ -117,7 +138,6 @@ export default function UpdateFilmDialog(props) {
 							onChange={handleChangeYear}
 						/>
 					</Box>
-
 					<TextField
 						margin="dense"
 						id="description"
@@ -128,6 +148,7 @@ export default function UpdateFilmDialog(props) {
 						onChange={handleChangeDescription}
 						fullWidth
 					/>
+					<GenresSelector genres={props.genres} selected={state.selectedGenres} onChange={handleGenresUpdate} />
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleCloseDialog} color="primary">

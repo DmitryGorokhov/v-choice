@@ -101,7 +101,7 @@ function FilmCard(props) {
 				{
 					props.shouldShowControls
 						? <Box className={classes.btns}>
-							<UpdateFilmDialog film={film} onUpdate={handleOnUpdateFilm} />
+							<UpdateFilmDialog film={film} onUpdate={handleOnUpdateFilm} genres={props.genres} />
 							<DeleteFilm
 								film={film}
 								btnStyle={classes.btnDelete}
