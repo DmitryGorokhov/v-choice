@@ -19,6 +19,9 @@ import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import AddFilmDialog from '../../crud/AddFilmDialog/AddFilmDialog'
 import FilmsFilter from '../../atoms/FilmsFilter/FilmsFilter'
 import GenreManager from '../../crud/GenresManager/GenresManager'
+import { SortingType } from '../../enums/SortingType'
+import { FilteringType } from '../../enums/FilteringType'
+import { QueryProps } from '../../enums/QueryProps'
 
 const useStyles = makeStyles((theme) => createStyles({
 	filmListItem: {
@@ -52,13 +55,12 @@ function FilmList(props) {
 		films: [],
 		loading: true,
 		totalFilms: 0,
-		currentPage: props.pageNumber,
-		onPage: props.onPage,
+		currentPage: props.page,
+		onPage: props.count,
 		byGenreId: props.genre,
-		sortType: props.sortType,
-		commonOrder: props.order,
-		hasCommentsOnly: props.onlyComments,
-		withoutUserRate: props.noUserRate
+		sortingType: props.sortingType,
+		withCommentsOnly: props.withCommentsOnly,
+		withRateOnly: props.withRateOnly
 	});
 
 	useEffect(() => {
@@ -66,10 +68,9 @@ function FilmList(props) {
 			`PageNumber=${state.currentPage}` +
 			`&OnPageCount=${state.onPage}` +
 			`&GenreId=${state.byGenreId}` +
-			`&SortBy=${state.sortType}` +
-			`&CommonOrder=${state.commonOrder}` +
-			`&HasCommentsOnly=${state.hasCommentsOnly}` +
-			`&WithoutMyRateOnly=${state.withoutUserRate}`
+			`&SortBy=${state.sortingType}` +
+			`&HasCommentsOnly=${state.withCommentsOnly}` +
+			`&HasRateOnly=${state.withRateOnly}`
 		)
 			.then(response => response.json())
 			.then(result => {
@@ -84,62 +85,70 @@ function FilmList(props) {
 		state.currentPage,
 		state.onPage,
 		state.byGenreId,
-		state.sortType,
+		state.sortingType,
 		state.commonOrder,
-		state.hasCommentsOnly,
-		state.withoutUserRate
+		state.withCommentsOnly,
+		state.withRateOnly
 	])
 
-	const showAll = () => {
-		history.replace({ pathname: `/catalog/${1}/${state.onPage}` });
+	const createCatalogURL = (
+		p,
+		c,
+		g = 0,
+		sort = SortingType['not-set'],
+		withCommentsOnly = false,
+		withRateOnly = false
+	) => {
+		const url = `/catalog/?${QueryProps.Page}=${p}&${QueryProps.Count}=${c}`;
+
+		if (g && g !== 0) {
+			url += `&${QueryProps.GenreId}=${g}`;
+		}
+
+		if (sort && sort !== SortingType['not-set']) {
+			url += `&${QueryProps.SortBy}=${sort}`;
+		}
+
+		let filter = FilteringType.NotSet;
+		if (withCommentsOnly || withRateOnly) {
+			if (withCommentsOnly) {
+				filter = withRateOnly ? FilteringType.RatedCommented : FilteringType.Commented;
+			}
+			else {
+				filter = FilteringType.Rated;
+			}
+		}
+
+		if (filter !== FilteringType.NotSet) {
+			url += `&${QueryProps.Filter}=${filter}`;
+		}
+
+		return url;
+	}
+
+	const handleFiltersChanged = (g, s, cf, rf) => {
+		history.replace({ pathname: createCatalogURL(1, state.onPage, g, s, cf, rf) })
 		setState({
 			...state,
 			currentPage: 1,
-			byGenreId: 0,
-			sortType: 0,
-			commonOrder: true,
-			hasCommentsOnly: false,
-			withoutUserRate: false,
+			byGenreId: g,
+			sortingType: s,
+			withCommentsOnly: cf,
+			withRateOnly: rf,
 			loading: true
 		});
 	}
 
-	const handleFiltersChanged = (genre, type, commonOrder, commentsOnly, withoutUserRate) => {
-		const newType = type > 0 && type < 4 ? type : 0
+	const handleChangePage = (_, newPage) => {
 		history.replace({
-			pathname:
-				'/catalog' +
-				`/${1}` +
-				`/${state.onPage}` +
-				`/${genre}` +
-				`/${newType}` +
-				`/${Number(commonOrder)}` +
-				`/${Number(commentsOnly)}` +
-				`/${Number(withoutUserRate)}`
-		})
-		setState({
-			...state,
-			currentPage: 1,
-			byGenreId: genre,
-			sortType: newType,
-			commonOrder: commonOrder,
-			hasCommentsOnly: commentsOnly,
-			withoutUserRate: withoutUserRate,
-			loading: true
-		});
-	}
-
-	const handleChangePage = (event, newPage) => {
-		history.replace({
-			pathname:
-				'/catalog' +
-				`/${newPage}` +
-				`/${state.onPage}` +
-				`/${state.byGenreId}` +
-				`/${state.sortType}` +
-				`/${Number(state.commonOrder)}` +
-				`/${Number(state.hasCommentsOnly)}` +
-				`/${Number(state.withoutUserRate)}`
+			pathname: createCatalogURL(
+				newPage,
+				state.onPage,
+				state.byGenreId,
+				state.sortingType,
+				state.withCommentsOnly,
+				state.withRateOnly
+			)
 		})
 		setState({ ...state, currentPage: newPage, loading: true })
 	}
@@ -147,16 +156,15 @@ function FilmList(props) {
 	const handleChangeOnPageCount = (event) => {
 		const newCount = event.target.value;
 		history.replace({
-			pathname:
-				'/catalog' +
-				`/${1}` +
-				`/${newCount}` +
-				`/${state.byGenreId}` +
-				`/${state.sortType}` +
-				`/${Number(state.commonOrder)}` +
-				`/${Number(state.hasCommentsOnly)}` +
-				`/${Number(state.withoutUserRate)}`
-		})
+			pathname: createCatalogURL(
+				1,
+				newCount,
+				state.byGenreId,
+				state.sortingType,
+				state.withCommentsOnly,
+				state.withRateOnly
+			)
+		});
 		setState({ ...state, currentPage: 1, onPage: newCount, loading: true });
 	}
 
@@ -192,10 +200,12 @@ function FilmList(props) {
 									? <Box>
 										<Box className={classes.tools}>
 											<FilmsFilter
-												onFilter={handleFiltersChanged}
+												onSubmit={handleFiltersChanged}
 												genres={props.genres}
-												loadAll={showAll}
 												selectedGenre={state.byGenreId}
+												selectedSortType={state.sortingType}
+												selectedCF={state.withCommentsOnly}
+												selectedRF={state.withRateOnly}
 											/>
 										</Box>
 										<Box className={classes.tools} >
@@ -208,10 +218,12 @@ function FilmList(props) {
 									</Box>
 									: <Box className={classes.tools}>
 										<FilmsFilter
-											onFilter={handleFiltersChanged}
+											onSubmit={handleFiltersChanged}
 											genres={props.genres}
-											loadAll={showAll}
 											selectedGenre={state.byGenreId}
+											selectedSortType={state.sortingType}
+											selectedCF={state.withCommentsOnly}
+											selectedRF={state.withRateOnly}
 										/>
 									</Box>
 							}
@@ -261,8 +273,6 @@ function FilmList(props) {
 									<MenuItem value={3}>3</MenuItem>
 									<MenuItem value={5}>5</MenuItem>
 									<MenuItem value={10}>10</MenuItem>
-									<MenuItem value={20}>20</MenuItem>
-									<MenuItem value={50}>50</MenuItem>
 								</Select>
 								<FormHelperText>на странице</FormHelperText>
 							</FormControl>

@@ -9,6 +9,12 @@ namespace DAL.Interface
         Task<Film> CreateFilmAsync(Film film);
         Task UpdateFilmAsync(int id, Film film);
         Task DeleteFilmAsync(int id);
-        Task<Pagination<Film>> GetFilmsByPageAsync(int pageNumber, int onPageCount, int genreId, int sortType, bool commonOrder, bool hasCommentsOnly, bool withoutUserRateOnly, string userId);
+        Task<Pagination<Film>> GetFilmsSortedByCreatedAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
+        Task<Pagination<Film>> GetFilmsSortedByCreatedDescAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
+        Task<Pagination<Film>> GetFilmsSortedByYearAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
+        Task<Pagination<Film>> GetFilmsSortedByYearDescAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
+        Task<Pagination<Film>> GetFilmsSortedByRateAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
+        Task<Pagination<Film>> GetFilmsSortedByRateDescAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
+        Task<Pagination<Film>> GetFilmsAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
     }
 }

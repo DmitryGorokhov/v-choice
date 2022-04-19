@@ -33,7 +33,7 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            var res = await _paginationService.GetFilmsPagination(query, HttpContext.User);
+            var res = await _paginationService.GetFilmsPagination(query);
             if (res == null) return StatusCode(500);
 
             return Ok(res);

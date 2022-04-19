@@ -17,7 +17,7 @@ export default class App extends Component {
     return (
       <Layout>
         <Route exact path='/catalog' component={Films} />
-        <Route path='/catalog/:page/:count/:genre/:type/:order/:onlyc/:norate' component={Films} />
+        <Route path='/catalog/:query' component={Films} />
         <Route path='/sign-in' component={SignIn} />
         <Route path='/sign-up' component={SignUp} />
         <Route path='/film/:slug' component={FilmPage} />

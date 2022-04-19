@@ -4,6 +4,9 @@ import { createStyles, makeStyles, Box, Container, Typography } from '@material-
 
 import FilmList from '../../moleculas/FilmList/FilmList'
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
+import { SortingType } from '../../enums/SortingType'
+import { FilteringType } from '../../enums/FilteringType'
+import { QueryProps } from '../../enums/QueryProps'
 
 const useStyles = makeStyles((theme) => createStyles({
 	headerContainer: {
@@ -15,11 +18,78 @@ const useStyles = makeStyles((theme) => createStyles({
 }));
 
 function Films() {
+	const classes = useStyles();
 	const [genres, setGenres] = useState([]);
 	const [isAdmin, setIsAdmin] = useState(false);
+	const { query } = useParams();
 
+	const params = {
+		page: 1,
+		count: 3,
+		genre: 0,
+		sortingType: SortingType['not-set'],
+		withCommentsOnly: false,
+		withRateOnly: false,
+	}
+
+	const recognizeQuery = () => {
+		if (query && query[0] === '?') {
+			query.slice(1).split('&').forEach(line => {
+				const pair = line.split('=');
+				const failedKeys = [];
+				const failedValues = [];
+
+				switch (pair[0]) {
+					case QueryProps.Page:
+					case QueryProps.Count:
+					case QueryProps.GenreId:
+						!isNaN(Number(pair[1]))
+							? params[pair[0]] = Number(pair[1])
+							: failedValues.push(pair[1]);
+						break;
+
+					case QueryProps.SortBy:
+						SortingType[pair[1]] !== undefined
+							? params[pair[0]] = SortingType[pair[1]]
+							: failedValues.push(pair[1]);
+						break;
+
+					case QueryProps.Filter:
+						switch (pair[1]) {
+							case FilteringType.NotSet:
+								params.withCommentsOnly = false;
+								params.withRateOnly = false;
+								break;
+							case FilteringType.Rated:
+								params.withCommentsOnly = false;
+								params.withRateOnly = true;
+								break;
+							case FilteringType.Commented:
+								params.withCommentsOnly = true;
+								params.withRateOnly = false;
+								break;
+							case FilteringType.RatedCommented:
+								params.withCommentsOnly = true;
+								params.withRateOnly = true;
+								break;
+							default:
+								failedValues.push(pair[1]);
+								break;
+						}
+						break;
+
+					default:
+						failedKeys.push(pair[0]);
+						break;
+				}
+
+				console.log(`Не были распознаны: ${failedKeys} и ${failedValues}`);
+			});
+		}
+	}
 
 	useEffect(() => {
+		recognizeQuery();
 		fetch('https://localhost:5001/api/genre')
 			.then(response => response.json())
 			.then(result => setGenres(result));
@@ -33,24 +103,6 @@ function Films() {
 			.then(result => setIsAdmin(result.isAdmin))
 			.catch(_ => setIsAdmin(false));
 	}, [])
-
-	let { page, count, genre, type, order, onlyc, norate } = useParams();
-
-	// Check url params
-	onlyc = (onlyc === undefined || Number(onlyc) === NaN) ? 0 : Number(onlyc);
-	norate = (norate === undefined || Number(norate) === NaN) ? 0 : Number(norate);
-
-	const classes = useStyles();
-
-	const params = {
-		pageNumber: (page === undefined || Number(page) === NaN) ? 1 : Number(page),
-		onPage: (count === undefined || Number(count) === NaN) ? 3 : Number(count),
-		genre: (genre === undefined || Number(genre) === NaN) ? 0 : Number(genre),
-		sortType: (type === undefined || Number(type) === NaN) ? 0 : Number(type),
-		order: !(Number(order) === 0),
-		onlyComments: Number(order) === 1,
-		noUserRate: Number(order) === 1,
-	}
 
 	const handleCreateGenre = (genre) => {
 		setGenres([...genres, genre]);
@@ -74,7 +126,7 @@ function Films() {
 	}
 
 	return (
-		<div>
+		<>
 			<NavMenu onLogout={handleLogout} />
 			<Container>
 				<Box className={classes.headerContainer}>
@@ -91,7 +143,7 @@ function Films() {
 					shouldShowControls={isAdmin}
 				/>
 			</Container>
-		</div>
+		</>
 	)
 }
 

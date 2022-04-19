@@ -14,7 +14,7 @@ namespace BLL.Service
     {
         private readonly ICommentsRepository _commentsRepository;
         private readonly IFilmRepository _filmRepository;
-        private readonly IFavoriteRepository _favoriteRepository ;
+        private readonly IFavoriteRepository _favoriteRepository;
         private readonly IAutorizationService _autorizationService;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
@@ -56,7 +56,7 @@ namespace BLL.Service
                 };
 
                 _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully. Pack result into object before return.");
-                
+
                 return new PaginationDTO<CommentDTO>(query)
                 {
                     TotalCount = answer.TotalCount,
@@ -79,15 +79,15 @@ namespace BLL.Service
                 _logger.LogInformation("Call GetFavoriteFilmsByPageAsync.");
 
                 string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
-                
+
                 Pagination<Film> answer = (query.CommonOrder ?? true) switch
                 {
                     true => await _favoriteRepository.GetByDateDescendingAsync(query.PageNumber, query.OnPageCount, userId),
                     false => await _favoriteRepository.GetByDateAsync(query.PageNumber, query.OnPageCount, userId)
                 };
-                
+
                 _logger.LogInformation($"Get {query.OnPageCount} favorite films on {query.PageNumber} page successfully. Pack result into object before return.");
-                
+
                 return new PaginationDTO<FilmDTO>(query)
                 {
                     TotalCount = answer.TotalCount,
@@ -102,26 +102,70 @@ namespace BLL.Service
             }
         }
 
-        public async Task<PaginationDTO<FilmDTO>> GetFilmsPagination(PaginationQuery query, ClaimsPrincipal user)
+        public async Task<PaginationDTO<FilmDTO>> GetFilmsPagination(PaginationQuery query)
         {
             _logger.LogInformation($"Starting get {query.OnPageCount} films on {query.PageNumber} page.");
             try
             {
                 _logger.LogInformation("Call GetFilmsByPageAsync.");
 
-                string userId = (await _autorizationService.GetCurrentUserModelAsync(user))?.Id;
+                if (query.SortBy != null)
+                {
+                    query.SortBy = SortingType.NotSet;
+                }
 
-                Pagination<Film> answer = await _filmRepository.GetFilmsByPageAsync(
-                    query.PageNumber,
-                    query.OnPageCount,
-                    query.GenreId ?? 0,
-                    query.SortBy ?? 0,
-                    query.CommonOrder ?? true,
-                    query.HasCommentsOnly ?? false,
-                    query.WithoutMyRateOnly ?? false,
-                    userId
-                    );
-                
+                Pagination<Film> answer = query.SortBy switch
+                {
+                    SortingType.NotSet => answer = await _filmRepository.GetFilmsAsync(
+                        query.PageNumber,
+                        query.OnPageCount,
+                        query.GenreId ?? 0,
+                        query.HasCommentsOnly ?? false,
+                        query.HasRateOnly ?? false),
+                    SortingType.Created => await _filmRepository.GetFilmsSortedByCreatedAsync(
+                        query.PageNumber,
+                        query.OnPageCount,
+                        query.GenreId ?? 0,
+                        query.HasCommentsOnly ?? false,
+                        query.HasRateOnly ?? false),
+                    SortingType.CreatedDesc => await _filmRepository.GetFilmsSortedByCreatedDescAsync(
+                        query.PageNumber,
+                        query.OnPageCount,
+                        query.GenreId ?? 0,
+                        query.HasCommentsOnly ?? false,
+                        query.HasRateOnly ?? false),
+                    SortingType.Year => await _filmRepository.GetFilmsSortedByYearAsync(
+                        query.PageNumber,
+                        query.OnPageCount,
+                        query.GenreId ?? 0,
+                        query.HasCommentsOnly ?? false,
+                        query.HasRateOnly ?? false),
+                    SortingType.YearDesc => await _filmRepository.GetFilmsSortedByYearDescAsync(
+                        query.PageNumber,
+                        query.OnPageCount,
+                        query.GenreId ?? 0,
+                        query.HasCommentsOnly ?? false,
+                        query.HasRateOnly ?? false),
+                    SortingType.Rate => await _filmRepository.GetFilmsSortedByRateAsync(
+                        query.PageNumber,
+                        query.OnPageCount,
+                        query.GenreId ?? 0,
+                        query.HasCommentsOnly ?? false,
+                        query.HasRateOnly ?? false),
+                    SortingType.RateDesc => await _filmRepository.GetFilmsSortedByRateDescAsync(
+                        query.PageNumber,
+                        query.OnPageCount,
+                        query.GenreId ?? 0,
+                        query.HasCommentsOnly ?? false,
+                        query.HasRateOnly ?? false),
+                    _ => answer = await _filmRepository.GetFilmsAsync(
+                        query.PageNumber,
+                        query.OnPageCount,
+                        query.GenreId ?? 0,
+                        query.HasCommentsOnly ?? false,
+                        query.HasRateOnly ?? false)
+                };
+
                 _logger.LogInformation($"Get {query.OnPageCount} films on {query.PageNumber} page successfully. Pack result into object before return.");
                 var res = new PaginationDTO<FilmDTO>(query)
                 {

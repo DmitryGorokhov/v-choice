@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DAL.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace BLL.DTO
 {
@@ -14,7 +15,7 @@ namespace BLL.DTO
 
         public int? FilmId { get; set; }
 
-        public int? SortBy { get; set; }
+        public SortingType? SortBy { get; set; }
 
         public bool? CommonOrder { get; set; }
 
@@ -22,6 +23,6 @@ namespace BLL.DTO
 
         public bool? HasCommentsOnly { get; set; }
 
-        public bool? WithoutMyRateOnly { get; set; }
+        public bool? HasRateOnly { get; set; }
     }
 }

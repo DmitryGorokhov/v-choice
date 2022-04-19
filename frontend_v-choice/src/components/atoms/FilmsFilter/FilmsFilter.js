@@ -11,6 +11,8 @@ import {
 	Select
 } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
+import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
+import { SortingType } from '../../enums/SortingType'
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -29,44 +31,36 @@ const useStyles = makeStyles((theme) => ({
 function FilmsFilter(props) {
 	const classes = useStyles();
 	const [state, setState] = useState({
-		byGenreId: props.selectedGenre !== undefined ? props.selectedGenre : -1,
-		sortType: 0,
-		commonOrder: true,
-		hasCommentsOnly: false,
-		withoutUserRate: false
+		byGenreId: props.selectedGenre,
+		sortingType: props.selectedSortType,
+		withCommentsOnly: props.selectedCF,
+		withRateOnly: props.selectedRF
 	});
 
 	const handleChangeGenreId = (event) => {
 		setState({ ...state, byGenreId: Number(event.target.value) });
 	};
 
+	const handleSortingTypeChanged = (event) => {
+		setState({ ...state, sortingType: event.target.value });
+	};
+
+	const handleCommentsFilterChanged = (_) => {
+		setState({ ...state, withCommentsOnly: !state.withCommentsOnly })
+	};
+
+	const handleRateFilterChanged = (_) => {
+		setState({ ...state, withRateOnly: !state.withRateOnly })
+	};
+
 	const handleSubmit = () => {
-		props.onFilter(
+		props.onSubmit(
 			state.byGenreId,
-			state.sortType,
-			state.commonOrder,
-			state.hasCommentsOnly,
-			state.withoutUserRate);
+			state.sortingType,
+			state.withCommentsOnly,
+			state.withRateOnly
+		);
 	};
-
-	const handleSortTypeChanged = (event) => {
-		const value = Number(event.target.value)
-		if (value !== 0) {
-			setState({
-				...state,
-				commonOrder: Math.floor(value / 10),
-				sortType: Boolean(value % 10)
-			});
-		}
-	};
-
-	const handleWithoutRateChanged = (event) => {
-		setState({ ...state, withoutUserRate: !state.withoutUserRate })
-	}
-
-	const handleHasCommentsOnlyChanged = (event) => {
-		setState({ ...state, hasCommentsOnly: !state.hasCommentsOnly })
-	}
 
 	return (
 		<div className={classes.container}>
@@ -95,33 +89,33 @@ function FilmsFilter(props) {
 				<Select
 					labelId="label-select-sort"
 					id="select-sort"
-					value={-1}
-					onChange={handleSortTypeChanged}
+					value={state.sortingType}
+					onChange={handleSortingTypeChanged}
 				>
-					<MenuItem value="0">Выберите вариант</MenuItem>
-					<MenuItem value="10">По дате создания: сначала старые</MenuItem>
-					<MenuItem value="11">По дате создания: сначала новые</MenuItem>
-					<MenuItem value="20">По году выхода: сначала старые</MenuItem>
-					<MenuItem value="21">По году выхода: сначала новые</MenuItem>
-					<MenuItem value="30">По возрастанию величины рейтинга</MenuItem>
-					<MenuItem value="31">По убыванию величины рейтинга</MenuItem>
-					<MenuItem value="0">Показать все</MenuItem>
+					<MenuItem value={SortingType['not-set']}>Выберите вариант</MenuItem>
+					<MenuItem value={SortingType.created}>По дате создания: сначала старые</MenuItem>
+					<MenuItem value={SortingType['created-desc']}>По дате создания: сначала новые</MenuItem>
+					<MenuItem value={SortingType.year}>По году выхода: сначала старые</MenuItem>
+					<MenuItem value={SortingType['year-desc']}>По году выхода: сначала новые</MenuItem>
+					<MenuItem value={SortingType.rate}>По возрастанию величины рейтинга</MenuItem>
+					<MenuItem value={SortingType['rate-desc']}>По убыванию величины рейтинга</MenuItem>
+					<MenuItem value={SortingType['not-set']}>Показать все</MenuItem>
 				</Select>
 				<FormHelperText>Сортировка каталога</FormHelperText>
 			</FormControl>
 			<FormControl className={classes.formControl}>
 				<FormControlLabel
 					control={<Checkbox
-						checked={state.hasCommentsOnly}
-						onChange={handleHasCommentsOnlyChanged}
+						checked={state.withCommentsOnly}
+						onChange={handleCommentsFilterChanged}
 						color="primary" />}
 					label="Только с комментариями" />
 				<FormControlLabel
 					control={<Checkbox
-						checked={state.withoutUserRate}
-						onChange={handleWithoutRateChanged}
+						checked={state.withRateOnly}
+						onChange={handleRateFilterChanged}
 						color="primary" />}
-					label="Без мой оценки" />
+					label="Только с оценкой" />
 			</FormControl>
 			<Button onClick={handleSubmit}>
 				<SearchIcon />
