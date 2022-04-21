@@ -6,11 +6,6 @@ import {
 	List,
 	ListItem,
 	Typography,
-	InputLabel,
-	MenuItem,
-	FormHelperText,
-	FormControl,
-	Select
 } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
 import { useHistory } from 'react-router-dom'
@@ -22,6 +17,7 @@ import GenreManager from '../../crud/GenresManager/GenresManager'
 import { SortingType } from '../../enums/SortingType'
 import { FilteringType } from '../../enums/FilteringType'
 import { QueryProps } from '../../enums/QueryProps'
+import OnPageCountSwitcher from '../../atoms/OnPageCountSwitcher/OnPageCountSwitcher'
 
 const useStyles = makeStyles((theme) => createStyles({
 	filmListItem: {
@@ -44,6 +40,15 @@ const useStyles = makeStyles((theme) => createStyles({
 	},
 	control: {
 		marginBottom: theme.spacing(1)
+	},
+	pagination: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	paginationLeftItem: {
+		marginRight: theme.spacing(4),
 	},
 }));
 
@@ -99,7 +104,7 @@ function FilmList(props) {
 		withCommentsOnly = false,
 		withRateOnly = false
 	) => {
-		const url = `/catalog/?${QueryProps.Page}=${p}&${QueryProps.Count}=${c}`;
+		const url = `/catalog/${QueryProps.Page}=${p}&${QueryProps.Count}=${c}`;
 
 		if (g && g !== 0) {
 			url += `&${QueryProps.GenreId}=${g}`;
@@ -253,29 +258,17 @@ function FilmList(props) {
 								</List>
 							</Box>
 						</Box>
-						<Box>
-							<Pagination
-								page={Number(state.currentPage)}
-								count={calculatePagesCount()}
-								variant="outlined"
-								color="primary"
-								onChange={handleChangePage}
-							/>
-							<FormControl sx={{ m: 1, minWidth: 120 }}>
-								<InputLabel id="simple-select-helper-label">Количество</InputLabel>
-								<Select
-									labelId="simple-select-helper-label"
-									id="simple-select-helper"
-									value={state.onPage}
-									label="Количество"
-									onChange={handleChangeOnPageCount}
-								>
-									<MenuItem value={3}>3</MenuItem>
-									<MenuItem value={5}>5</MenuItem>
-									<MenuItem value={10}>10</MenuItem>
-								</Select>
-								<FormHelperText>на странице</FormHelperText>
-							</FormControl>
+						<Box className={classes.pagination}>
+							<Box className={classes.paginationLeftItem}>
+								<Pagination
+									page={Number(state.currentPage)}
+									count={calculatePagesCount()}
+									variant="outlined"
+									color="primary"
+									onChange={handleChangePage}
+								/>
+							</Box>
+							<OnPageCountSwitcher count={state.onPage} onChange={handleChangeOnPageCount} />
 						</Box>
 					</>
 			}

@@ -21,20 +21,11 @@ function Films() {
 	const classes = useStyles();
 	const [genres, setGenres] = useState([]);
 	const [isAdmin, setIsAdmin] = useState(false);
-	const { query } = useParams();
-
-	const params = {
-		page: 1,
-		count: 3,
-		genre: 0,
-		sortingType: SortingType['not-set'],
-		withCommentsOnly: false,
-		withRateOnly: false,
-	}
+	const { slug } = useParams();
 
 	const recognizeQuery = () => {
-		if (query && query[0] === '?') {
-			query.slice(1).split('&').forEach(line => {
+		if (slug) {
+			slug.split('&').forEach(line => {
 				const pair = line.split('=');
 				const failedKeys = [];
 				const failedValues = [];
@@ -82,14 +73,22 @@ function Films() {
 						failedKeys.push(pair[0]);
 						break;
 				}
-
-				console.log(`Не были распознаны: ${failedKeys} и ${failedValues}`);
 			});
 		}
 	}
 
+	const params = {
+		page: 1,
+		count: 3,
+		genre: 0,
+		sortingType: SortingType['not-set'],
+		withCommentsOnly: false,
+		withRateOnly: false,
+	}
+
+	recognizeQuery();
+
 	useEffect(() => {
-		recognizeQuery();
 		fetch('https://localhost:5001/api/genre')
 			.then(response => response.json())
 			.then(result => setGenres(result));
