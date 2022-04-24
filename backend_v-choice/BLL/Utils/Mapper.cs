@@ -29,6 +29,7 @@ namespace BLL.Utils
                 CountRate = film.CountRate,
                 TotalRate = film.TotalRate,
                 CreatedAt = film.CreatedAt,
+                PosterPath = film.PosterPath,
             };
 
             if (film.Comments != null)
@@ -164,6 +165,7 @@ namespace BLL.Utils
                 CountRate = film.CountRate,
                 TotalRate = film.TotalRate,
                 CreatedAt = film.CreatedAt,
+                PosterPath = film.PosterPath,
 
                 Comments = new HashSet<CommentDTO>(film.Comments.Select(e => CommentModelToDTO(e)).ToList()),
                 Genres = new HashSet<GenreDTO>(film.Genres.Select(e => GenreModelToDTO(e)).ToList()),

@@ -21,6 +21,7 @@ namespace DAL.Model
         public float AverageRate { get; set; }
         public int CountRate { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string PosterPath { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Favorite> InFavorites { get; set; }

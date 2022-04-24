@@ -54,7 +54,12 @@ namespace DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Year = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalRate = table.Column<int>(type: "int", nullable: false),
+                    AverageRate = table.Column<float>(type: "real", nullable: false),
+                    CountRate = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PosterPath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -210,24 +215,55 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FilmUser",
+                name: "Favorite",
                 columns: table => new
                 {
-                    FavoritesId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AddedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    FilmId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FilmUser", x => new { x.FavoritesId, x.UsersId });
+                    table.PrimaryKey("PK_Favorite", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FilmUser_AspNetUsers_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_Favorite_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FilmUser_Film_FavoritesId",
-                        column: x => x.FavoritesId,
+                        name: "FK_Favorite_Film_FilmId",
+                        column: x => x.FilmId,
+                        principalTable: "Film",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rate",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Value = table.Column<int>(type: "int", nullable: false),
+                    AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    AuthorEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FilmId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rate_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Rate_Film_FilmId",
+                        column: x => x.FilmId,
                         principalTable: "Film",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -307,14 +343,29 @@ namespace DAL.Migrations
                 column: "FilmId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Favorite_AuthorId",
+                table: "Favorite",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorite_FilmId",
+                table: "Favorite",
+                column: "FilmId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FilmGenre_GenresId",
                 table: "FilmGenre",
                 column: "GenresId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FilmUser_UsersId",
-                table: "FilmUser",
-                column: "UsersId");
+                name: "IX_Rate_AuthorId",
+                table: "Rate",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rate_FilmId",
+                table: "Rate",
+                column: "FilmId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -338,10 +389,13 @@ namespace DAL.Migrations
                 name: "Comment");
 
             migrationBuilder.DropTable(
+                name: "Favorite");
+
+            migrationBuilder.DropTable(
                 name: "FilmGenre");
 
             migrationBuilder.DropTable(
-                name: "FilmUser");
+                name: "Rate");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

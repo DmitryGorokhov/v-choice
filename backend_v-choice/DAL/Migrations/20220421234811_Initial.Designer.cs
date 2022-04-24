@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20220117175024_FavFilms")]
-    partial class FavFilms
+    [Migration("20220421234811_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -90,7 +90,13 @@ namespace DAL.Migrations
                     b.Property<int>("CountRate")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PosterPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")

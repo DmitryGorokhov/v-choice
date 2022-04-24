@@ -16,6 +16,7 @@ namespace BLL.DTO
         public float AverageRate { get; set; }
         public int CountRate { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string PosterPath { get; set; }
 
         public ICollection<CommentDTO> Comments { get; set; }
         public ICollection<GenreDTO> Genres { get; set; }

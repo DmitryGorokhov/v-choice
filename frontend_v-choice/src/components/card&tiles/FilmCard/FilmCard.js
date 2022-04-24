@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createStyles, makeStyles, Box, Card, Typography } from '@material-ui/core'
 
 import UpdateFilmDialog from './../../crud/UpdateFilmDialog/UpdateFilmDialog'
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => createStyles({
 		alignItems: 'center'
 	},
 	controlsContainer: {
-		marginTop: theme.spacing(3),
+		marginTop: theme.spacing(1),
 		display: 'flex',
 		justifyContent: 'space-between',
 		alignItems: 'center'
@@ -52,49 +52,73 @@ const useStyles = makeStyles((theme) => createStyles({
 	genresBox: {
 		width: '100%',
 		padding: theme.spacing(0.5)
+	},
+	mediaContainer: {
+		display: 'flex',
+	},
+	image: {
+		width: 180,
+		height: 220,
+		objectFit: 'cover'
+	},
+	textContainer: {
+		marginRight: theme.spacing(4)
 	}
 }));
 
 function FilmCard(props) {
 	const classes = useStyles();
 	const [film, setFilm] = useState({ ...props.film });
+	const baseURL = 'https://localhost:5001/';
+	const [picture, setPicture] = useState(`${baseURL}${film.posterPath}`);
 
 	const handleOnUpdateFilm = (film) => {
 		setFilm({ ...film });
 		props.onUpdate(film);
 	}
 
+	useEffect(() => {
+		let isMounted = true;
+		const img = new Image();
+		img.src = `${baseURL}${film.posterPath}`;
+
+		if (isMounted) {
+			img.onerror = () => setPicture(`${baseURL}img/empty.jpg`);
+		}
+
+		return () => {
+			isMounted = false;
+		};
+	});
+
 	return (
 		<Card className={classes.filmCard}>
-			<Box className={classes.cardItem && classes.cardVerticalSection}>
-				<Typography variant='h4' className={classes.filmTitle}>
-					{film.title}
-				</Typography>
-				<Typography className={classes.filmYear}>
-					{film.year}
-				</Typography>
-			</Box>
-			<Typography className={classes.cardItem && classes.filmDescription}>
-				{film.description}
-			</Typography>
-			<Box className={classes.cardItem && classes.cardVerticalSection}>
-				{
-					(film.genres !== undefined) && (film.genres.lenght !== 0)
-						? <Box className={classes.genresBox}>
+			<Box className={classes.mediaContainer}>
+				<Box className={classes.textContainer}>
+					<Box className={classes.cardItem && classes.cardVerticalSection}>
+						<Typography variant='h4' className={classes.filmTitle}>{film.title}</Typography>
+						<Typography className={classes.filmYear}>{film.year}</Typography>
+					</Box>
+					<Typography className={classes.cardItem && classes.filmDescription}>
+						{film.description}
+					</Typography>
+					<Box className={classes.cardItem && classes.cardVerticalSection}>
+						<Box className={classes.genresBox}>
 							{
-								film.genres.map(genre => {
-									return (
-										<Typography key={genre.Id} className={classes.filmGenre}>
-											{genre.value}
-										</Typography>
-									)
-								})
+								film.genres !== undefined && film.genres.length !== 0
+									? film.genres.map(genre => {
+										return (
+											<Typography key={genre.Id} className={classes.filmGenre}>
+												{genre.value}
+											</Typography>
+										)
+									})
+									: <Typography className={classes.filmGenre}>Жанры не выбраны</Typography>
 							}
 						</Box>
-						: <Typography className={classes.filmGenre}>
-							Жанры не выбраны
-						</Typography>
-				}
+					</Box>
+				</Box>
+				<img className={classes.image} src={picture} alt={film.title} />
 			</Box>
 			<Box className={classes.controlsContainer}>
 				<Link to={`/film/${film.id}`}>Подробнее</Link >
@@ -102,13 +126,9 @@ function FilmCard(props) {
 					props.shouldShowControls
 						? <Box className={classes.btns}>
 							<UpdateFilmDialog film={film} onUpdate={handleOnUpdateFilm} genres={props.genres} />
-							<DeleteFilm
-								film={film}
-								btnStyle={classes.btnDelete}
-								onDelete={props.onDelete}
-							/>
+							<DeleteFilm film={film} btnStyle={classes.btnDelete} onDelete={props.onDelete} />
 						</Box>
-						: <div></div>
+						: null
 				}
 			</Box>
 		</Card >
