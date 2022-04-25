@@ -16,5 +16,6 @@ namespace DAL.Interface
         Task<Pagination<Film>> GetFilmsSortedByRateAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
         Task<Pagination<Film>> GetFilmsSortedByRateDescAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
         Task<Pagination<Film>> GetFilmsAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
+        Task<Film> SetPosterPathAsync(int id, string posterPath);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using BLL.DTO;
 using BLL.Interface;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -14,12 +16,14 @@ namespace backend_v_choice.Controllers
         private readonly ICrudService _crudService;
         private readonly IPaginationService _paginationService;
         private readonly ILogger _logger;
+        private readonly IWebHostEnvironment _appEnvironment;
 
-        public FilmController(ICrudService cs, IPaginationService ps, ILogger<FilmController> logger)
+        public FilmController(ICrudService cs, IPaginationService ps, ILogger<FilmController> logger, IWebHostEnvironment ae)
         {
             _crudService = cs;
             _paginationService = ps;
             _logger = logger;
+            _appEnvironment = ae;
         }
 
         [HttpGet]
@@ -61,17 +65,11 @@ namespace backend_v_choice.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] FilmDTO film)
+        public async Task<IActionResult> Create([FromForm] FilmDTO film)
         {
             _logger.LogInformation("Create film.");
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Create film: model state is not valid.");
-                
-                return BadRequest(ModelState);
-            }
-
-            var filmDTO = await _crudService.CreateFilmAsync(film);
+            
+            var filmDTO = await _crudService.CreateFilmAsync(film, _appEnvironment);
             if (filmDTO == null) return StatusCode(500);
 
             return CreatedAtAction("CreateFilm", new { id = filmDTO.Id }, filmDTO);
@@ -79,7 +77,7 @@ namespace backend_v_choice.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] FilmDTO film)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromForm] FilmDTO film)
         {
             _logger.LogInformation($"Update film with Id equal {id}.");
             if (!ModelState.IsValid)
@@ -89,9 +87,9 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _crudService.UpdateFilmAsync(id, film);
+            string path = await _crudService.UpdateFilmAsync(id, film, _appEnvironment);
             
-            return NoContent();
+            return Ok(new{ path = path });
         }
 
         [Authorize(Roles = "admin")]

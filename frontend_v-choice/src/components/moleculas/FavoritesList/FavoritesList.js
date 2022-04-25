@@ -26,7 +26,6 @@ function FavoritesList() {
 			`&CommonOrder=${state.sortByDateInCommonOrder}`)
 			.then(response => response.json())
 			.then(result => {
-				console.log(result);
 				setState({
 					...state,
 					favorites: result.items,

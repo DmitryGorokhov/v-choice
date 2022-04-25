@@ -1,6 +1,7 @@
 ﻿using DAL.Interface;
 using DAL.Model;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace DAL.Repository
                 }
 
             film.Genres = new HashSet<Genre>();
+            film.CreatedAt = DateTime.Now;
             _context.Film.Add(film);
             await _context.SaveChangesAsync();
 
@@ -64,11 +66,12 @@ namespace DAL.Repository
 
         public async Task UpdateFilmAsync(int id, Film film)
         {
-            Film item = _context.Film.Include(e => e.Genres).First(e => e.Id == film.Id);
+            Film item = _context.Film.Include(e => e.Genres).First(e => e.Id == id);
             item.Title = film.Title;
             item.Year = film.Year;
             item.Description = film.Description;
             item.Genres = film.Genres;
+            item.PosterPath = film.PosterPath;
 
             _context.Film.Update(item);
             await _context.SaveChangesAsync();
@@ -167,6 +170,15 @@ namespace DAL.Repository
             var collection = AcceptFilters(gId, hasCommentsOnly, withRateOnly);
 
             return await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        }
+
+        public async Task<Film> SetPosterPathAsync(int id, string posterPath)
+        {
+            Film film = _context.Film.Find(id);
+            film.PosterPath = posterPath;
+            await _context.SaveChangesAsync();
+            
+            return film;
         }
     }
 }

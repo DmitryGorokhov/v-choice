@@ -8,6 +8,9 @@ using BLL.DTO;
 using BLL.Interface;
 using DAL.Interface;
 using DAL.Model;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace BLL.Service
 {
@@ -38,12 +41,12 @@ namespace BLL.Service
             try
             {
                 Comment c = _mapper.CommentDTOtoModel(comment);
-                
+
                 _logger.LogInformation("Call CreateCommentAsync.");
 
                 string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                 c = await _commentsRepository.CreateCommentAsync(c, userId);
-                
+
                 _logger.LogInformation($"Create comment: comment with Id equal {comment.Id} was created.");
 
                 return _mapper.CommentModelToDTO(c);
@@ -56,24 +59,32 @@ namespace BLL.Service
             }
         }
 
-        public async Task<FilmDTO> CreateFilmAsync(FilmDTO film)
+        public async Task<FilmDTO> CreateFilmAsync(FilmDTO film, IWebHostEnvironment _appEnvironment)
         {
             _logger.LogInformation("Start creating film.");
             try
             {
                 Film f = _mapper.FilmDTOtoModel(film);
-                
+
                 _logger.LogInformation("Call CreateFilmAsync.");
                 f = await _filmRepository.CreateFilmAsync(f);
-                
-                _logger.LogInformation($"Create film: film with Id equal {film.Id} was created.");
+
+                _logger.LogInformation($"Create film: film with Id equal {f.Id} was created.");
+
+                string posterPath = await SavePosterAsync(film.Poster, _appEnvironment);
+
+                if (posterPath != null)
+                {
+                    _logger.LogInformation("Call SetPosterPathAsync.");
+                    f = await _filmRepository.SetPosterPathAsync(f.Id, posterPath);
+                }
 
                 return _mapper.FilmModelToDTO(f);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError($"Create film has thrown an exception: {e.Message}.");
-                
+
                 return null;
             }
         }
@@ -146,7 +157,7 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call DeleteFilmAsync.");
                 await _filmRepository.DeleteFilmAsync(id);
-                
+
                 _logger.LogInformation($"Delete film: film with Id equal {id} was deleted.");
             }
             catch (Exception e)
@@ -218,7 +229,7 @@ namespace BLL.Service
                 if (film == null)
                 {
                     _logger.LogInformation($"Get film: film with Id equal {id} not found.");
-                    
+
                     return null;
                 }
 
@@ -268,6 +279,40 @@ namespace BLL.Service
             }
         }
 
+        private async Task<string> SavePosterAsync(IFormFile poster, IWebHostEnvironment _appEnvironment)
+        {
+            _logger.LogInformation("Start saving poster.");
+            try
+            {
+                if (poster == null)
+                {
+                    _logger.LogInformation("Save poster: poster is null.");
+
+                    return null;
+                }
+
+                string posterName = new string(Path.GetFileNameWithoutExtension(poster.FileName).Take(10).ToArray()).Replace(' ', '-');
+                posterName = posterName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(poster.FileName);
+
+                string path = Path.Combine("img", posterName);
+
+                using (var fileStream = new FileStream(Path.Combine(_appEnvironment.WebRootPath, path), FileMode.Create))
+                {
+                    await poster.CopyToAsync(fileStream);
+                }
+
+                _logger.LogInformation($"Save poster: Ok - path: {path}.");
+
+                return path;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Save poster has thrown an exception: {e.Message}.");
+
+                return null;
+            }
+        }
+
         public async Task UpdateCommentAsync(int id, CommentDTO comment)
         {
             _logger.LogInformation($"Start updating comment with Id equal {id}.");
@@ -277,7 +322,7 @@ namespace BLL.Service
 
                 _logger.LogInformation("Call UpdateCommentAsync.");
                 await _commentsRepository.UpdateCommentAsync(id, c);
-                
+
                 _logger.LogInformation($"Update comment: comment with Id equal {id} was updated.");
             }
             catch (Exception e)
@@ -286,21 +331,33 @@ namespace BLL.Service
             }
         }
 
-        public async Task UpdateFilmAsync(int id, FilmDTO film)
+        public async Task<string> UpdateFilmAsync(int id, FilmDTO film, IWebHostEnvironment _appEnvironment)
         {
             _logger.LogInformation($"Start updating film with Id equal {id}.");
             try
             {
+                _logger.LogInformation("Call SavePosterAsync.");
+                string newPath = await SavePosterAsync(film.Poster, _appEnvironment);
+
+                if (newPath != null)
+                {
+                    film.PosterPath = newPath;
+                }
+
                 Film f = _mapper.FilmDTOtoModel(film);
-                
+
                 _logger.LogInformation("Call UpdateFilmAsync.");
                 await _filmRepository.UpdateFilmAsync(id, f);
-                
+
                 _logger.LogInformation($"Update film: film with Id equal {id} was updated.");
+
+                return newPath;
             }
             catch (Exception e)
             {
                 _logger.LogError($"Update film with id={id} has thrown an exception: {e.Message}.");
+
+                return null;
             }
         }
 

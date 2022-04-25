@@ -30,7 +30,6 @@ function DeleteFilm(props) {
 
 	const handleSubmit = () => {
 		const postURL = `https://localhost:5001/api/film/${film.id}`;
-		console.log(postURL);
 		fetch(postURL, {
 			method: 'DELETE'
 		})

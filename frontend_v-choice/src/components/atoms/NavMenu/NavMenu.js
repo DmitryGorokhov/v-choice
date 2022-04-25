@@ -26,7 +26,6 @@ export class NavMenu extends Component {
     })
       .then(response => response.json())
       .then(result => {
-        // console.log(result);
         result.userName === "guest"
           ? this.setState({ userEmail: null })
           : this.setState({ userEmail: result.userName });

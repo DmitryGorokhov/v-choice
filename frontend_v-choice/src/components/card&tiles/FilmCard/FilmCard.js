@@ -74,6 +74,7 @@ function FilmCard(props) {
 
 	const handleOnUpdateFilm = (film) => {
 		setFilm({ ...film });
+		setPicture(`${baseURL}${film.posterPath}`);
 		props.onUpdate(film);
 	}
 
@@ -89,7 +90,7 @@ function FilmCard(props) {
 		return () => {
 			isMounted = false;
 		};
-	});
+	}, [picture]);
 
 	return (
 		<Card className={classes.filmCard}>

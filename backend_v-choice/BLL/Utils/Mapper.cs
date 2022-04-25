@@ -21,42 +21,18 @@ namespace BLL.Utils
             _logger.LogInformation("Start mapping FilmDTO to Model.");
             Film model = new Film()
             {
-                Id = film.Id,
+                Id = film.Id ?? 0,
                 Title = film.Title,
                 Year = film.Year,
                 Description = film.Description,
-                AverageRate = film.AverageRate,
-                CountRate = film.CountRate,
-                TotalRate = film.TotalRate,
-                CreatedAt = film.CreatedAt,
+                AverageRate = film.AverageRate ?? 0,
                 PosterPath = film.PosterPath,
             };
-
-            if (film.Comments != null)
-            {
-                model.Comments = new HashSet<Comment>(film.Comments
-                .Select(e => CommentDTOtoModel(e))
-                .ToList());
-            }
-
-            if (film.InFavorites != null)
-            {
-                model.InFavorites = new HashSet<Favorite>(film.InFavorites
-                .Select(e => FavoriteDTOtoModel(e))
-                .ToList());
-            }
 
             if (film.Genres != null)
             {
                 model.Genres = new HashSet<Genre>(film.Genres
                 .Select(e => GenreDTOtoModel(e))
-                .ToList());
-            }
-
-            if (film.RateCollection != null)
-            {
-                model.RateCollection = new HashSet<Rate>(film.RateCollection
-                .Select(e => RateDTOtoModel(e))
                 .ToList());
             }
 
@@ -162,15 +138,10 @@ namespace BLL.Utils
                 Year = film.Year,
                 Description = film.Description,
                 AverageRate = film.AverageRate,
-                CountRate = film.CountRate,
-                TotalRate = film.TotalRate,
-                CreatedAt = film.CreatedAt,
                 PosterPath = film.PosterPath,
+                Poster = null,
 
-                Comments = new HashSet<CommentDTO>(film.Comments.Select(e => CommentModelToDTO(e)).ToList()),
                 Genres = new HashSet<GenreDTO>(film.Genres.Select(e => GenreModelToDTO(e)).ToList()),
-                InFavorites = new HashSet<FavoriteDTO>(film.InFavorites.Select(e => FavoriteModelToDTO(e)).ToList()),
-                RateCollection = new HashSet<RateDTO>(film.RateCollection.Select(e => RateModelToDTO(e)).ToList()),
             };
         }
 

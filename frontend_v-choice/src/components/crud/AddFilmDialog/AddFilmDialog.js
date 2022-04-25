@@ -45,8 +45,10 @@ export default function FormDialog(props) {
 		title: '',
 		description: '',
 		year: '',
-		genres: []
+		genres: [],
+		posterPath: "",
 	});
+	const [poster, setPoster] = useState(null);
 
 	const handleOpenDialog = () => {
 		setOpen(true);
@@ -57,19 +59,26 @@ export default function FormDialog(props) {
 		setError(null);
 		setMsg(null);
 		setFilm({ title: '', description: '', year: '', genres: [] });
+		setPoster(null);
 	};
 
 	const handleSubmit = () => {
-		console.log(film);
+		const formData = new FormData();
+		formData.append("title", film.title);
+		formData.append("year", film.year);
+		formData.append("description", film.description);
+		formData.append("poster", poster);
+		film.genres.forEach((genre, index) => {
+			for (const key in genre) {
+				formData.append(`genres[${index}][${key}]`, genre[key]);
+			}
+		});
 
 		fetch('https://localhost:5001/api/film', {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			},
-			body: JSON.stringify(film)
+			body: formData
 		})
-			.then(response => {
+			.then(async (response) => {
 				if (response.status === 401) {
 					setError("Недостаточно прав для выполнения операции");
 				}
@@ -77,7 +86,10 @@ export default function FormDialog(props) {
 					setError("Проверьте корректность введенных данных");
 				}
 				if (response.status === 201) {
-					setMsg("Фильм успешно создан");
+					const data = await response.json();
+					poster === null || (data && poster !== null && data.posterPath !== null)
+						? setMsg("Фильм успешно создан")
+						: setMsg("Создан без постера. Попробуйте изменить постер позже");
 				}
 			});
 	};
@@ -97,6 +109,10 @@ export default function FormDialog(props) {
 	const handleGenresUpdate = (selectedArray) => {
 		setFilm({ ...film, genres: [...selectedArray] });
 	};
+
+	const handleChangeImage = (event) => {
+		setPoster(event.target.files[0]);
+	}
 
 	return (
 		<>
@@ -143,6 +159,7 @@ export default function FormDialog(props) {
 						value={film.description}
 						fullWidth
 					/>
+					<input type="file" className={classes.item} onChange={handleChangeImage} />
 					<GenresSelector genres={props.genres} selected={[]} onChange={handleGenresUpdate} />
 				</DialogContent>
 				<DialogActions>

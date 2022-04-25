@@ -8,6 +8,7 @@ using BLL.DTO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
+using Microsoft.AspNetCore.Hosting;
 
 namespace UnitTests
 {
@@ -16,6 +17,8 @@ namespace UnitTests
         private readonly Mock<ICrudService> crudServiceStub = new();
         private readonly Mock<IPaginationService> paginationServiceStub = new();
         private readonly Mock<ILogger<FilmController>> loggerStub = new();
+        private readonly Mock<IWebHostEnvironment> appEnv = new();
+
 
         [Fact]
         public async Task FilmContorller_GetFilm_ReturnsBadRequest_IfIdIsInvalid()
@@ -24,7 +27,8 @@ namespace UnitTests
             var controller = new FilmController(
                 crudServiceStub.Object,
                 paginationServiceStub.Object,
-                loggerStub.Object);
+                loggerStub.Object,
+                appEnv.Object);
 
             Assert.IsType<BadRequestObjectResult>(await controller.GetFilm(testId));
         }
@@ -40,7 +44,8 @@ namespace UnitTests
             var controller = new FilmController(
                 crudServiceStub.Object, 
                 paginationServiceStub.Object,
-                loggerStub.Object);
+                loggerStub.Object,
+                appEnv.Object);
 
             Assert.IsType<NotFoundResult>(await controller.GetFilm(testId));
         }
@@ -57,7 +62,8 @@ namespace UnitTests
             var controller = new FilmController(
                 crudServiceStub.Object,
                 paginationServiceStub.Object,
-                loggerStub.Object);
+                loggerStub.Object,
+                appEnv.Object);
 
             var result = await controller.GetFilm(testId);
 
