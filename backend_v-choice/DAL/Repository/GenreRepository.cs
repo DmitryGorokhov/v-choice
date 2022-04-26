@@ -16,6 +16,7 @@ namespace DAL.Repository
 
         public async Task<Genre> CreateGenreAsync(Genre g)
         {
+            g.Requested = 0;
             _context.Genre.Add(g);
             await _context.SaveChangesAsync();
 
@@ -26,6 +27,13 @@ namespace DAL.Repository
         {
             Genre item = _context.Genre.Find(id);
             _context.Genre.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task GenreRequestedCounter(int id)
+        {
+            Genre item = _context.Genre.Find(id);
+            item.Requested++;
             await _context.SaveChangesAsync();
         }
 

@@ -14,15 +14,17 @@ namespace BLL.Service
     {
         private readonly ICommentsRepository _commentsRepository;
         private readonly IFilmRepository _filmRepository;
+        private readonly IGenreRepository _genreRepository;
         private readonly IFavoriteRepository _favoriteRepository;
         private readonly IAutorizationService _autorizationService;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
-        public PaginationService(ICommentsRepository cr, IFilmRepository fr, IFavoriteRepository favr, IAutorizationService aus, ILogger<PaginationService> logger, IMapper mapper)
+        public PaginationService(ICommentsRepository cr, IFilmRepository fr, IGenreRepository gr, IFavoriteRepository favr, IAutorizationService aus, ILogger<PaginationService> logger, IMapper mapper)
         {
             _commentsRepository = cr;
             _filmRepository = fr;
+            _genreRepository = gr;
             _favoriteRepository = favr;
             _autorizationService = aus;
             _logger = logger;
@@ -113,6 +115,14 @@ namespace BLL.Service
                 {
                     query.SortBy = SortingType.NotSet;
                 }
+
+                if (query.GenreId != null && query.GenreId > 0)
+                {
+                    _logger.LogInformation($"Write genre with Id={query.GenreId} was requested by catalog filter. Call GenreRequestedCounter.");
+                    await _genreRepository.GenreRequestedCounter((int)query.GenreId);
+                }
+
+
 
                 Pagination<Film> answer = query.SortBy switch
                 {

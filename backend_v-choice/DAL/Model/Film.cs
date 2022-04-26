@@ -22,6 +22,7 @@ namespace DAL.Model
         public int CountRate { get; set; }
         public DateTime CreatedAt { get; set; }
         public string PosterPath { get; set; }
+        public int Requested { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Favorite> InFavorites { get; set; }

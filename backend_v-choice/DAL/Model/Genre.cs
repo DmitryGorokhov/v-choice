@@ -11,6 +11,7 @@ namespace DAL.Model
 
         public int Id { get; set; }
         public string Value { get; set; }
+        public int Requested { get; set; }
 
         public virtual ICollection<Film> Films { get; set; }
     }

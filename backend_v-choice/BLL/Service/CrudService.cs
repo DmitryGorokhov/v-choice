@@ -235,6 +235,10 @@ namespace BLL.Service
 
                 _logger.LogInformation($"Get film with Id equal {id} successfully.");
 
+                _logger.LogInformation($"Write that film with Id equal {id} was requested. Call FilmRequestedCounter.");
+                await _filmRepository.FilmRequestedCounter(film.Id);
+
+
                 return _mapper.FilmModelToDTO(film);
             }
             catch (Exception e)

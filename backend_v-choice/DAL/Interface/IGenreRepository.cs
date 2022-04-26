@@ -10,5 +10,6 @@ namespace DAL.Interface
         Task<Genre> CreateGenreAsync(Genre g);
         Task DeleteGenreAsync(int id);
         Task UpdateGenreAsync(int id, Genre g);
+        Task GenreRequestedCounter(int id);
     }
 }

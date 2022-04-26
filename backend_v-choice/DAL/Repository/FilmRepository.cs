@@ -32,6 +32,7 @@ namespace DAL.Repository
 
             film.Genres = new HashSet<Genre>();
             film.CreatedAt = DateTime.Now;
+            film.Requested = 0;
             _context.Film.Add(film);
             await _context.SaveChangesAsync();
 
@@ -179,6 +180,13 @@ namespace DAL.Repository
             await _context.SaveChangesAsync();
             
             return film;
+        }
+
+        public async Task FilmRequestedCounter(int id)
+        {
+            Film film = _context.Film.Find(id);
+            film.Requested++;
+            await _context.SaveChangesAsync();
         }
     }
 }

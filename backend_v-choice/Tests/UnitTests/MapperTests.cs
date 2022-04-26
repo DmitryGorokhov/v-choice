@@ -24,18 +24,6 @@ namespace UnitTests
                 Title = "Test film title",
                 Year = 2021,
                 Description = "Film for test",
-                Comments = new HashSet<CommentDTO>()
-                {
-                    new CommentDTO()
-                    {
-                        Id = 1001,
-                        Text = "Commet test 1",
-                        CreatedAt = DateTime.Now,
-                        AuthorId = "User200",
-                        AuthorEmail = "User200@mail.com",
-                        FilmId = 100
-                    }
-                },
                 Genres = new HashSet<GenreDTO>()
                 {
                     new GenreDTO() { Id = 10001, Value = "Genre 1" },
@@ -58,7 +46,6 @@ namespace UnitTests
             Assert.Equal(testFilmDTO.Title, film.Title);
             Assert.Equal(testFilmDTO.Year, film.Year);
             Assert.Equal(testFilmDTO.Genres.Count, film.Genres.Count);
-            Assert.Equal(testFilmDTO.Comments.Count, film.Comments.Count);
         }
     }
 }
