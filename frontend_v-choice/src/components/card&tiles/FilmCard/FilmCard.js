@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { createStyles, makeStyles, Box, Card, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Box, Card, Grid, Typography } from '@material-ui/core'
 
 import UpdateFilmDialog from './../../crud/UpdateFilmDialog/UpdateFilmDialog'
 import DeleteFilm from './../../crud/DeleteFilm/DeleteFilm'
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => createStyles({
 		alignItems: 'center'
 	},
 	controlsContainer: {
-		marginTop: theme.spacing(1),
+		marginTop: theme.spacing(2),
 		display: 'flex',
 		justifyContent: 'space-between',
 		alignItems: 'center'
@@ -53,16 +53,10 @@ const useStyles = makeStyles((theme) => createStyles({
 		width: '100%',
 		padding: theme.spacing(0.5)
 	},
-	mediaContainer: {
-		display: 'flex',
-	},
 	image: {
 		width: 180,
 		height: 220,
-		objectFit: 'cover'
-	},
-	textContainer: {
-		marginRight: theme.spacing(4)
+		objectFit: 'cover',
 	}
 }));
 
@@ -94,8 +88,8 @@ function FilmCard(props) {
 
 	return (
 		<Card className={classes.filmCard}>
-			<Box className={classes.mediaContainer}>
-				<Box className={classes.textContainer}>
+			<Grid container spacing={2}>
+				<Grid item xs={10}>
 					<Box className={classes.cardItem && classes.cardVerticalSection}>
 						<Typography variant='h4' className={classes.filmTitle}>{film.title}</Typography>
 						<Typography className={classes.filmYear}>{film.year}</Typography>
@@ -118,9 +112,11 @@ function FilmCard(props) {
 							}
 						</Box>
 					</Box>
-				</Box>
-				<img className={classes.image} src={picture} alt={film.title} />
-			</Box>
+				</Grid>
+				<Grid item xs={2}>
+					<img className={classes.image} src={picture} alt={film.title} />
+				</Grid>
+			</Grid>
 			<Box className={classes.controlsContainer}>
 				<Link to={`/film/${film.id}`}>Подробнее</Link >
 				{
