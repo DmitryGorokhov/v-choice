@@ -1,13 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using BLL.DTO;
-using BLL.Query;
+﻿using BLL.DTO;
 using BLL.Interface;
+using BLL.Query;
+using DAL.Enum;
 using DAL.Interface;
 using DAL.Model;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BLL.Service
 {

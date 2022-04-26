@@ -1,4 +1,4 @@
-﻿namespace DAL.Model
+﻿namespace DAL.Enum
 {
     public enum SortingType
     {
