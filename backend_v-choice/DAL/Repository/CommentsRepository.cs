@@ -48,7 +48,7 @@ namespace DAL.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Pagination<Comment>> GetByDateOnlyAsync(int pageNumber, int onPageCount, int? filmId)
+        public async Task<Pagination<Comment>> GetByDateOnlyAsync(int pageNumber, int onPageCount, int filmId)
         {
             var collection = _context.Comment
                 .Where(c => c.FilmId == filmId)
@@ -57,7 +57,7 @@ namespace DAL.Repository
             return await SplitByPagesAsync(collection, pageNumber, onPageCount);
         }
 
-        public async Task<Pagination<Comment>> GetByDateDescendingOnlyAsync(int pageNumber, int onPageCount, int? filmId)
+        public async Task<Pagination<Comment>> GetByDateDescendingOnlyAsync(int pageNumber, int onPageCount, int filmId)
         {
             var collection = _context.Comment
                 .Where(c => c.FilmId == filmId)
@@ -66,7 +66,7 @@ namespace DAL.Repository
             return await SplitByPagesAsync(collection, pageNumber, onPageCount);
         }
 
-        public async Task<Pagination<Comment>> GetByDateUserFirstAsync(int pageNumber, int onPageCount, int? filmId, string userId)
+        public async Task<Pagination<Comment>> GetByDateUserFirstAsync(int pageNumber, int onPageCount, int filmId, string userId)
         {
             var collection = _context.Comment.Where(c => c.FilmId == filmId);
 
@@ -80,7 +80,7 @@ namespace DAL.Repository
             return await SplitByPagesAsync(collection, pageNumber, onPageCount);
         }
 
-        public async Task<Pagination<Comment>> GetByDateDescendingUserFirstAsync(int pageNumber, int onPageCount, int? filmId, string userId)
+        public async Task<Pagination<Comment>> GetByDateDescendingUserFirstAsync(int pageNumber, int onPageCount, int filmId, string userId)
         {
             var collection = _context.Comment.Where(c => c.FilmId == filmId);
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BLL.DTO
+namespace BLL.Query
 {
     public class RegisterQuery
     {

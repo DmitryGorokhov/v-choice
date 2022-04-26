@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using BLL.DTO;
+using BLL.Query;
 using BLL.Interface;
 using DAL.Interface;
 using DAL.Model;
@@ -31,7 +32,7 @@ namespace BLL.Service
             _mapper = mapper;
         }
 
-        public async Task<PaginationDTO<CommentDTO>> GetCommentsPagination(PaginationQuery query, ClaimsPrincipal user)
+        public async Task<PaginationDTO<CommentDTO>> GetCommentsPagination(PaginationQueryComments query, ClaimsPrincipal user)
         {
             _logger.LogInformation($"Starting get {query.OnPageCount} comments on {query.PageNumber} page.");
             try
@@ -39,9 +40,8 @@ namespace BLL.Service
                 _logger.LogInformation("Call GetCommentsByPageAsync.");
 
                 Pagination<Comment> answer;
-                query.CommonOrder ??= true;
 
-                if (query.MyCommentsFirst ?? false)
+                if (query.MyCommentsFirst)
                 {
                     string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
                     answer = query.CommonOrder switch
@@ -50,12 +50,14 @@ namespace BLL.Service
                         false => await _commentsRepository.GetByDateUserFirstAsync(query.PageNumber, query.OnPageCount, query.FilmId, userId),
                     };
                 }
-
-                answer = query.CommonOrder switch
+                else
                 {
-                    true => await _commentsRepository.GetByDateDescendingOnlyAsync(query.PageNumber, query.OnPageCount, query.FilmId),
-                    false => await _commentsRepository.GetByDateOnlyAsync(query.PageNumber, query.OnPageCount, query.FilmId),
-                };
+                    answer = query.CommonOrder switch
+                    {
+                        true => await _commentsRepository.GetByDateDescendingOnlyAsync(query.PageNumber, query.OnPageCount, query.FilmId),
+                        false => await _commentsRepository.GetByDateOnlyAsync(query.PageNumber, query.OnPageCount, query.FilmId),
+                    };
+                }
 
                 _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully. Pack result into object before return.");
 
@@ -73,7 +75,7 @@ namespace BLL.Service
             }
         }
 
-        public async Task<PaginationDTO<FilmDTO>> GetFavoriteFilmsPagination(PaginationQuery query, ClaimsPrincipal user)
+        public async Task<PaginationDTO<FilmDTO>> GetFavoriteFilmsPagination(PaginationQueryFavorites query, ClaimsPrincipal user)
         {
             _logger.LogInformation($"Starting get {query.OnPageCount} favorite films on {query.PageNumber} page.");
             try
@@ -82,7 +84,7 @@ namespace BLL.Service
 
                 string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
 
-                Pagination<Film> answer = (query.CommonOrder ?? true) switch
+                Pagination<Film> answer = query.CommonOrder switch
                 {
                     true => await _favoriteRepository.GetByDateDescendingAsync(query.PageNumber, query.OnPageCount, userId),
                     false => await _favoriteRepository.GetByDateAsync(query.PageNumber, query.OnPageCount, userId)
@@ -104,7 +106,7 @@ namespace BLL.Service
             }
         }
 
-        public async Task<PaginationDTO<FilmDTO>> GetFilmsPagination(PaginationQuery query)
+        public async Task<PaginationDTO<FilmDTO>> GetFilmsPagination(PaginationQueryFilms query)
         {
             _logger.LogInformation($"Starting get {query.OnPageCount} films on {query.PageNumber} page.");
             try
@@ -121,8 +123,6 @@ namespace BLL.Service
                     _logger.LogInformation($"Write genre with Id={query.GenreId} was requested by catalog filter. Call GenreRequestedCounter.");
                     await _genreRepository.GenreRequestedCounter((int)query.GenreId);
                 }
-
-
 
                 Pagination<Film> answer = query.SortBy switch
                 {

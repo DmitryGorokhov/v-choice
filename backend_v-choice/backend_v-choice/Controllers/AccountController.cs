@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.Interface;
+using BLL.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Linq;

@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.Interface;
+using BLL.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace backend_v_choice.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCommentsPagination([FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetCommentsPagination([FromQuery] PaginationQueryComments query)
         {
             _logger.LogInformation("Get pagination comments.");
             if (!ModelState.IsValid || query == null)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BLL.Query;
+using System.Collections.Generic;
 
 namespace BLL.DTO
 {
@@ -6,7 +7,7 @@ namespace BLL.DTO
     {
         public PaginationDTO() { }
 
-        public PaginationDTO(PaginationQuery query)
+        public PaginationDTO(PaginationQueryBase query)
         {
             Page = query.PageNumber;
             OnPageCount = query.OnPageCount;

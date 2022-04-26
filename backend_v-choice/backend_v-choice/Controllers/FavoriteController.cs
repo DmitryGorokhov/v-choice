@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.Interface;
+using BLL.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ namespace backend_v_choice.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetFavoriteFilmsPagination([FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetFavoriteFilmsPagination([FromQuery] PaginationQueryFavorites query)
         {
             _logger.LogInformation("Get pagination favorite films for authorized user.");
 

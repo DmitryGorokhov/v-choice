@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.Interface;
+using BLL.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +28,7 @@ namespace backend_v_choice.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFilmsPagination([FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetFilmsPagination([FromQuery] PaginationQueryFilms query)
         {
             _logger.LogInformation("Get pagination films");
             if (!ModelState.IsValid)

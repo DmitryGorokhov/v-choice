@@ -7,6 +7,7 @@ using BLL.DTO;
 using BLL.Interface;
 using DAL.Interface;
 using DAL.Model;
+using BLL.Query;
 
 namespace BLL.Service
 {
