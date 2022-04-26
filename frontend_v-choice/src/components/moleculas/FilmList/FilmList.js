@@ -62,11 +62,19 @@ function FilmList(props) {
 		totalFilms: 0,
 		currentPage: props.page,
 		onPage: props.count,
+		countPages: 0,
 		byGenreId: props.genre,
 		sortingType: props.sortingType,
 		withCommentsOnly: props.withCommentsOnly,
-		withRateOnly: props.withRateOnly
+		withRateOnly: props.withRateOnly,
 	});
+
+	const [reload, setReload] = useState(false);
+
+	const calculatePagesCount = (total, onPage) => {
+		let value = Math.floor(total / onPage);
+		return value * onPage === total ? value : value + 1;
+	}
 
 	useEffect(() => {
 		fetch("https://localhost:5001/api/Film?" +
@@ -83,8 +91,10 @@ function FilmList(props) {
 					...state,
 					films: result.items,
 					totalFilms: result.totalCount,
+					countPages: calculatePagesCount(result.totalCount, state.onPage),
 					loading: false
 				});
+				setReload(false);
 			});
 	}, [
 		state.currentPage,
@@ -93,7 +103,8 @@ function FilmList(props) {
 		state.sortingType,
 		state.commonOrder,
 		state.withCommentsOnly,
-		state.withRateOnly
+		state.withRateOnly,
+		reload
 	])
 
 	const createCatalogURL = (
@@ -145,17 +156,23 @@ function FilmList(props) {
 	}
 
 	const handleChangePage = (_, newPage) => {
-		history.replace({
-			pathname: createCatalogURL(
-				newPage,
-				state.onPage,
-				state.byGenreId,
-				state.sortingType,
-				state.withCommentsOnly,
-				state.withRateOnly
-			)
-		})
-		setState({ ...state, currentPage: newPage, loading: true })
+		if (newPage === state.currentPage) {
+			setState({ ...state, loading: true });
+			setReload(true);
+		}
+		else {
+			history.replace({
+				pathname: createCatalogURL(
+					newPage,
+					state.onPage,
+					state.byGenreId,
+					state.sortingType,
+					state.withCommentsOnly,
+					state.withRateOnly
+				)
+			})
+			setState({ ...state, currentPage: newPage, loading: true })
+		}
 	}
 
 	const handleChangeOnPageCount = (event) => {
@@ -173,9 +190,9 @@ function FilmList(props) {
 		setState({ ...state, currentPage: 1, onPage: newCount, loading: true });
 	}
 
-	const calculatePagesCount = () => {
-		let value = Math.floor(state.totalFilms / state.onPage);
-		return value * state.onPage === state.totalFilms ? value : value + 1;
+	const handleCreateFilm = () => {
+		const total = state.totalFilms + 1;
+		setState({ ...state, totalFilms: total, countPages: calculatePagesCount(total, state.onPage) });
 	}
 
 	const handleUpdateFilm = (film) => {
@@ -187,8 +204,11 @@ function FilmList(props) {
 		setState({ ...state, films: [...arr] });
 	}
 
-	const handleDeleteFilm = (film) => {
-		setState({ ...state, films: state.films.filter(f => f.id !== film.id) });
+	const handleDeleteFilm = (_) => {
+		const total = state.totalFilms - 1;
+		const pages = calculatePagesCount(total, state.onPage);
+		const currentPage = pages < state.countPages && state.currentPage > pages ? pages : state.currentPage;
+		handleChangePage({}, currentPage);
 	}
 
 	return (
@@ -214,7 +234,7 @@ function FilmList(props) {
 											/>
 										</Box>
 										<Box className={classes.tools} >
-											<AddFilmDialog genres={props.genres} />
+											<AddFilmDialog genres={props.genres} onCreate={handleCreateFilm} />
 											<GenreManager genres={props.genres}
 												onCreate={props.onGenreCreate}
 												onUpdate={props.onGenreUpdate}
@@ -262,7 +282,7 @@ function FilmList(props) {
 							<Box className={classes.paginationLeftItem}>
 								<Pagination
 									page={Number(state.currentPage)}
-									count={calculatePagesCount()}
+									count={state.countPages}
 									variant="outlined"
 									color="primary"
 									onChange={handleChangePage}

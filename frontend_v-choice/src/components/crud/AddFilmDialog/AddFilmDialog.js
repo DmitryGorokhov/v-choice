@@ -90,6 +90,7 @@ export default function FormDialog(props) {
 					poster === null || (data && poster !== null && data.posterPath !== null)
 						? setMsg("Фильм успешно создан")
 						: setMsg("Создан без постера. Попробуйте изменить постер позже");
+					props.onCreate();
 				}
 			});
 	};
