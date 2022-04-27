@@ -2,7 +2,6 @@
 using DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DAL.Repository
@@ -48,39 +47,7 @@ namespace DAL.Repository
 
             return item != null;
         }
-
-        public async Task<Pagination<Film>> GetByDateAsync(int pageNumber, int onPageCount, string userId)
-        {
-            var collection = _context.Favorite
-                .Where(c => c.AuthorId == userId)
-                .OrderBy(c => c.AddedAt);
-
-            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
-        }
-
-        public async Task<Pagination<Film>> GetByDateDescendingAsync(int pageNumber, int onPageCount, string userId)
-        {
-            var collection = _context.Favorite
-                .Where(c => c.AuthorId == userId)
-                .OrderByDescending(c => c.AddedAt);
-
-            return await SplitByPagesAsync(collection, pageNumber, onPageCount);
-        }
-
-        private async Task<Pagination<Film>> SplitByPagesAsync(IQueryable<Favorite> collection, int pageNumber, int onPageCount)
-        {
-            var favFilms = collection.Select(fav => _context.Film.FirstOrDefault(f => f.Id == fav.FilmId));
-
-            var total = await favFilms.CountAsync();
-            var items = await favFilms.Skip((pageNumber - 1) * onPageCount).Take(onPageCount).ToListAsync();
-
-            return new Pagination<Film>()
-            {
-                Items = items,
-                TotalCount = total
-            };
-        }
-
+                
         public async Task RemoveFilmFromFavorite(int filmId, string userId)
         {
             Favorite item = await _context.Favorite
