@@ -1,6 +1,7 @@
 ﻿using BLL.DTO;
 using BLL.Interface;
 using BLL.Query;
+using DAL.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -22,11 +23,11 @@ namespace backend_v_choice.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetGeneralStatistic()
+        public IActionResult GetGeneralStatistic()
         {
             _logger.LogInformation("Get general statistic");
-            GeneralStatisticDTO res = await _statisticService.GetGeneralStatisticAsync();
-            
+            GeneralStatistic res = _statisticService.GetGeneralStatistic();
+
             return Ok(res);
         }
 
@@ -41,7 +42,7 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            ICollection<FilmStatisticDTO> res = await _statisticService.GetFilmStatisticAsync(query);
+            PaginationDTO<FilmStatisticDTO> res = await _statisticService.GetFilmStatisticAsync(query);
 
             return Ok(res);
         }
@@ -57,7 +58,7 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            ICollection<GenreStatisticDTO> res = await _statisticService.GetGenreStatisticAsync(query);
+            PaginationDTO<GenreStatisticDTO> res = await _statisticService.GetGenreStatisticAsync(query);
 
             return Ok(res);
         }

@@ -1,6 +1,6 @@
-﻿namespace BLL.DTO
+﻿namespace DAL.Model
 {
-    public class GeneralStatisticDTO
+    public class GeneralStatistic
     {
         public int FilmsTotal { get; set; }
         public int FilmsRated { get; set; }

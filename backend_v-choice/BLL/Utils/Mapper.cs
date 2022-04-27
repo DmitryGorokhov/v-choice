@@ -238,5 +238,61 @@ namespace BLL.Utils
                 FilmId = comment.FilmId
             };
         }
+
+        public GenreStatisticDTO GenreModelToStatisticDTO(Genre genre)
+        {
+            _logger.LogInformation("Convert to DTO before return.");
+            if (genre == null)
+            {
+                _logger.LogInformation("Model instance is null. Skip creating DTO.");
+
+                return null;
+            }
+
+            if (genre.Films == null)
+            {
+                _logger.LogInformation("Model instance has no Films collection (null). Set films count equals 0.");
+            }
+
+            return new GenreStatisticDTO()
+            {
+                Id = genre.Id,
+                Value = genre.Value,
+                Requested = genre.Requested,
+                CountFilms = genre.Films?.Count ?? 0
+            };
+        }
+
+        public FilmStatisticDTO FilmModelToStatisticDTO(Film film)
+        {
+            _logger.LogInformation("Convert to DTO before return.");
+            if (film == null)
+            {
+                _logger.LogInformation("Model instance is null. Skip creating DTO.");
+
+                return null;
+            }
+
+            if (film.Comments == null)
+            {
+                _logger.LogInformation("Model instance has no Comments collection (null). Set comments count equals 0.");
+            }
+
+            if (film.InFavorites == null)
+            {
+                _logger.LogInformation("Model instance has no InFavorites collection (null). Set favorites count equals 0.");
+            }
+
+            return new FilmStatisticDTO()
+            {
+                Id = film.Id,
+                Title = film.Title,
+                Requested = film.Requested,
+                AvRate = film.AverageRate,
+                CountRate = film.CountRate,
+                CountComment = film.Comments?.Count ?? 0,
+                CountFavorite = film.InFavorites?.Count ?? 0
+            };
+        }
     }
 }

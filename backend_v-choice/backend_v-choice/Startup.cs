@@ -40,18 +40,23 @@ namespace backend_v_choice
             
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<DBContext>(opt => opt.UseSqlServer(connection));
+            services.AddScoped<ICommentsRepository, CommentsRepository>();
+            services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             services.AddScoped<IFilmRepository, FilmRepository>();
             services.AddScoped<IGenreRepository, GenreRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<ICommentsRepository, CommentsRepository>();
+            services.AddScoped<IPaginationRepository, PaginationRepository>();
             services.AddScoped<IRateRepository, RateRepository>();
-            services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+            services.AddScoped<IStatisticRepository, StatisticRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAutorizationService, AutorizationService>();
             services.AddScoped<ICrudService, CrudService>();
-            services.AddScoped<IPaginationService, PaginationService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<IMapper, Mapper>();
+            services.AddScoped<IPaginationService, PaginationService>();
+            services.AddScoped<IStatisticService, StatisticService>();
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
+
+
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

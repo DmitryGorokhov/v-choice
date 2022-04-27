@@ -6,6 +6,6 @@
         Rate,
         CountRate,
         Comments,
-        Favoites
+        Favorites
     }
 }

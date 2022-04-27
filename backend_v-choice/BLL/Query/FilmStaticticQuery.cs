@@ -4,6 +4,6 @@ namespace BLL.Query
 {
     public class FilmStaticticQuery : PaginationQueryBase
     {
-        public FilmStatisticSortingType query { get; set; }
+        public FilmStatisticSortingType SortingType { get; set; }
     }
 }
