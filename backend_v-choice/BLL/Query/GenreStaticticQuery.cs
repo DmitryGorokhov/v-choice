@@ -4,6 +4,6 @@ namespace BLL.Query
 {
     public class GenreStaticticQuery : PaginationQueryBase
     {
-        public GenreStatisticSortingType query { get; set; }
+        public GenreStatisticSortingType SortingType { get; set; }
     }
 }

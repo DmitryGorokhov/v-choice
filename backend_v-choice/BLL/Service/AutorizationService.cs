@@ -15,13 +15,11 @@ namespace BLL.Service
     {
         private readonly IUserRepository _userRepository;
         private readonly ILogger _logger;
-        private readonly IMapper _mapper;
 
-        public AutorizationService(IUserRepository ur, ILogger<AutorizationService> logger, IMapper mapper)
+        public AutorizationService(IUserRepository ur, ILogger<AutorizationService> logger)
         {
             _userRepository = ur;
             _logger = logger;
-            _mapper = mapper;
         }
 
         public async Task<string> GetCurrentUserNameAsync(ClaimsPrincipal user)
