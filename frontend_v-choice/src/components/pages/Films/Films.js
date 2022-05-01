@@ -10,10 +10,8 @@ import { QueryProps } from '../../enums/QueryProps'
 
 const useStyles = makeStyles((theme) => createStyles({
 	headerContainer: {
-		display: 'flex',
 		margin: theme.spacing(2),
 		padding: theme.spacing(1),
-		justifyContent: 'space-between'
 	},
 }));
 
@@ -129,8 +127,8 @@ function Films() {
 			<NavMenu onLogout={handleLogout} />
 			<Container>
 				<Box className={classes.headerContainer}>
-					<Typography variant="h2">
-						Фильмы
+					<Typography variant="h3">
+						Каталог фильмов
 					</Typography>
 				</Box>
 				<FilmList

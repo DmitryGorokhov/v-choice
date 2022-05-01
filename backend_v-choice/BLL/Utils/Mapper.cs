@@ -256,7 +256,6 @@ namespace BLL.Utils
 
             return new GenreStatisticDTO()
             {
-                Id = genre.Id,
                 Value = genre.Value,
                 Requested = genre.Requested,
                 CountFilms = genre.Films?.Count ?? 0

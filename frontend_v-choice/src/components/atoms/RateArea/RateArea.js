@@ -13,7 +13,7 @@ function RateArea(props) {
 			fetch(`https://localhost:5001/api/rate/${props.filmId}`)
 				.then(response => response.json())
 				.then(result => setUserRate(result))
-				.catch()
+				.catch(_ => _);
 		}
 	}, [])
 

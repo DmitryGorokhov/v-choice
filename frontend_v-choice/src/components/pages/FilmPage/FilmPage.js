@@ -21,18 +21,7 @@ function FilmPage() {
 		fetch(`https://localhost:5001/api/film/${slug}`)
 			.then(response => response.json())
 			.then(result => setFilm(result))
-			.catch();
-		// fetch("https://localhost:5001/api/account/isAuthenticated", {
-		// 	method: 'POST',
-		// 	headers: {
-		// 		'Content-Type': 'application/json'
-		// 	},
-		// })
-		// 	.then(response => response.json())
-		// 	.then(result => {
-
-		// 	})
-		// 	.catch();
+			.catch(_ => _);
 		fetch(`https://localhost:5001/api/favorite/${slug}`)
 			.then(response => response.json())
 			.then(result => setDisableAddButton(result))

@@ -17,6 +17,7 @@ export class NavMenu extends Component {
   componentDidMount() {
     this.checkUserAuth();
   }
+
   checkUserAuth() {
     fetch("https://localhost:5001/api/account/isAuthenticated", {
       method: 'POST',

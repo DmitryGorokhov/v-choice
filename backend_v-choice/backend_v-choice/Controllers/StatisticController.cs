@@ -11,7 +11,7 @@ namespace backend_v_choice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatisticController : ControllerBase
+    public class StatisticController : Controller
     {
         private readonly IStatisticService _statisticService;
         private readonly ILogger _logger;
@@ -31,8 +31,9 @@ namespace backend_v_choice.Controllers
             return Ok(res);
         }
 
+        [Route("film")]
         [HttpGet]
-        public async Task<IActionResult> GetFilmStatistic([FromBody] FilmStaticticQuery query)
+        public async Task<IActionResult> GetFilmStatistic([FromQuery] FilmStaticticQuery query)
         {
             _logger.LogInformation("Get film statistic");
             if (!ModelState.IsValid)
@@ -47,8 +48,9 @@ namespace backend_v_choice.Controllers
             return Ok(res);
         }
 
+        [Route("genre")]
         [HttpGet]
-        public async Task<IActionResult> GetGenreStatistic([FromBody] GenreStaticticQuery query)
+        public async Task<IActionResult> GetGenreStatistic([FromQuery] GenreStaticticQuery query)
         {
             _logger.LogInformation("Get genre statistic");
             if (!ModelState.IsValid)
