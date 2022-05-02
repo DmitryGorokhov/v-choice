@@ -9,11 +9,10 @@ namespace BLL.Interface
 {
     public interface IAutorizationService
     {
-        Task<IdentityResult> RegisterUserAsync(RegisterQuery reg);
-        Task<SignInResult> LogInUserAsync(LoginQuery log);
+        Task<(LoginDTO,IdentityResult)> RegisterUserAsync(RegisterQuery reg);
+        Task<LoginDTO> LogInUserAsync(LoginQuery log);
         Task UserSignOutAsync();
         Task<User> GetCurrentUserModelAsync(ClaimsPrincipal user);
-        Task<bool> CheckIfCurrentUserIsAdmin(ClaimsPrincipal user);
-        Task<string> GetCurrentUserNameAsync(ClaimsPrincipal user);
+        Task<AuthenticatedUserDTO> GetAuthenticatedUserAsync(ClaimsPrincipal user);
     }
 }

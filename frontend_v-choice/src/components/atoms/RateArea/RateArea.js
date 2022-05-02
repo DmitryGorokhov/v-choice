@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Box, Button, Typography } from '@material-ui/core'
 import { Rating } from '@material-ui/lab'
 import ClearIcon from '@material-ui/icons/Clear'
-
+import UserContext from '../../../context'
 
 function RateArea(props) {
+	const { user, setUser } = useContext(UserContext);
 	const [userRate, setUserRate] = useState(null)
 
 	useEffect(() => {
@@ -18,7 +19,7 @@ function RateArea(props) {
 	}, [])
 
 	const handleDeleteUserRate = () => {
-		const oldValue = userRate.value
+		const oldValue = userRate.value;
 		fetch(`https://localhost:5001/api/rate/${userRate.id}`, {
 			method: 'DELETE'
 		})
@@ -65,12 +66,12 @@ function RateArea(props) {
 	}
 
 	return (
-		<div>
+		<>
 			<Typography>Рейтинг фильма:</Typography>
 			<Typography>{props.filmRate}</Typography>
 			<Box>
 				{
-					props.user && props.user !== null
+					user.userName
 						? <>
 							<Typography>
 								Ваша оценка{userRate === null ? "" : `:${userRate.value}`}
@@ -86,9 +87,7 @@ function RateArea(props) {
 						: <Typography><Link to="/sign-in">Войдите</Link>, чтобы оценить фильм.</Typography>
 				}
 			</Box>
-
-
-		</div>
+		</>
 	)
 }
 

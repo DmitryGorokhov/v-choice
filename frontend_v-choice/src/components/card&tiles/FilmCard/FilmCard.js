@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { createStyles, makeStyles, Box, Card, Grid, Typography } from '@material-ui/core'
+import { Link } from 'react-router-dom'
 
 import UpdateFilmDialog from './../../crud/UpdateFilmDialog/UpdateFilmDialog'
 import DeleteFilm from './../../crud/DeleteFilm/DeleteFilm'
-import { Link } from 'react-router-dom'
+import UserContext from '../../../context'
 
 const useStyles = makeStyles((theme) => createStyles({
 	btns: {
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) => createStyles({
 
 function FilmCard(props) {
 	const classes = useStyles();
+	const { user, setUser } = useContext(UserContext);
 	const [film, setFilm] = useState({ ...props.film });
 	const baseURL = 'https://localhost:5001/';
 	const [picture, setPicture] = useState(`${baseURL}${film.posterPath}`);
@@ -120,7 +122,7 @@ function FilmCard(props) {
 			<Box className={classes.controlsContainer}>
 				<Link to={`/film/${film.id}`}>Подробнее</Link >
 				{
-					props.shouldShowControls
+					user.isAdmin
 						? <Box className={classes.btns}>
 							<UpdateFilmDialog film={film} onUpdate={handleOnUpdateFilm} genres={props.genres} />
 							<DeleteFilm film={film} btnStyle={classes.btnDelete} onDelete={props.onDelete} />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
 	createStyles,
 	makeStyles,
@@ -18,6 +18,7 @@ import { SortingType } from '../../enums/SortingType'
 import { FilteringType } from '../../enums/FilteringType'
 import { QueryProps } from '../../enums/QueryProps'
 import OnPageCountSwitcher from '../../atoms/OnPageCountSwitcher/OnPageCountSwitcher'
+import UserContext from '../../../context';
 
 const useStyles = makeStyles((theme) => createStyles({
 	filmListItem: {
@@ -55,6 +56,7 @@ const useStyles = makeStyles((theme) => createStyles({
 function FilmList(props) {
 	const classes = useStyles();
 	const history = useHistory();
+	const { user, setUser } = useContext(UserContext);
 
 	const [state, setState] = useState({
 		films: [],
@@ -221,7 +223,7 @@ function FilmList(props) {
 					: <>
 						<Box>
 							{
-								props.shouldShowControls
+								user.isAdmin
 									? <Box>
 										<Box className={classes.tools}>
 											<FilmsFilter
@@ -266,7 +268,6 @@ function FilmList(props) {
 															film={film}
 															onUpdate={handleUpdateFilm}
 															onDelete={handleDeleteFilm}
-															shouldShowControls={props.shouldShowControls}
 															genres={props.genres} />
 													</ListItem>
 												)

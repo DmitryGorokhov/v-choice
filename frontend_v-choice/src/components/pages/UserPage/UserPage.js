@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import { createStyles, makeStyles, Box, Typography } from '@material-ui/core'
 
-import { NavMenu } from '../../atoms/NavMenu/NavMenu'
 import FavoritesList from '../../moleculas/FavoritesList/FavoritesList'
+import UserContext from '../../../context';
 
 const useStyles = makeStyles((theme) => createStyles({
 	marginItem: {
@@ -15,40 +15,27 @@ const useStyles = makeStyles((theme) => createStyles({
 }));
 
 function UserPage() {
-	const [userEmail, setUserEmail] = useState(null);
 	const styles = useStyles();
-
-	const handleSetUserEmail = (userName) => {
-		setUserEmail(userName)
-	}
-
-	const handleLogoutUser = () => {
-		setUserEmail("guest");
-	}
+	const { user, setUser } = useContext(UserContext);
 
 	return (
-		<>
-			<NavMenu onLoadUser={handleSetUserEmail} onLogout={handleLogoutUser} />
-			<Box className={styles.container}>
-				{
-					userEmail !== null
-						? userEmail === "guest"
-							? <Typography variant="h5" className={styles.marginItem}>
-								Авторизируйтесь, чтобы просматривать профиль
-							</Typography>
-							: <Box>
-								<Typography variant="h3" className={styles.marginItem}>
-									Привет, {userEmail}!
-								</Typography>
-								<Typography variant="h5" className={styles.marginItem}>
-									Вот твои избранные фильмы
-								</Typography>
-								<FavoritesList />
-							</Box>
-						: <Typography className={styles.marginItem}>Загрузка...</Typography>
-				}
-			</Box>
-		</>
+		<Box className={styles.container}>
+			{
+				user.userName
+					? <Box>
+						<Typography variant="h3" className={styles.marginItem}>
+							Привет, {user.userName}!
+						</Typography>
+						<Typography variant="h5" className={styles.marginItem}>
+							Вот твои избранные фильмы
+						</Typography>
+						<FavoritesList />
+					</Box>
+					: <Typography variant="h5" className={styles.marginItem}>
+						Авторизируйтесь, чтобы просматривать профиль
+					</Typography>
+			}
+		</Box>
 	)
 }
 

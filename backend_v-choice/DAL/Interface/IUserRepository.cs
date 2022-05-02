@@ -12,5 +12,6 @@ namespace DAL.Interface
         Task UserSignOutAsync();
         Task<User> GetCurrentUserAsync(ClaimsPrincipal user);
         Task<bool> CheckUserHasAdminRoleAsync(User user);
+        Task<User> GetUserByEmailAsync(string email);
     }
 }

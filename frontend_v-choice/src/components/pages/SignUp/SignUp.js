@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {
 	Avatar,
 	Box,
@@ -14,8 +14,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Redirect } from 'react-router'
-
-import { NavMenu } from '../../atoms/NavMenu/NavMenu'
+import UserContext from '../../../context'
 
 function Copyright() {
 	return (
@@ -52,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function SignUp() {
 	const classes = useStyles();
+	const { _, setUser } = useContext(UserContext);
 
 	let user = {
 		Email: "",
@@ -72,11 +72,13 @@ export function SignUp() {
 		})
 			.then(response => response.json())
 			.then(answer => {
-				if (typeof (answer.error) === 'undefined') {
+				if (answer.result) {
 					setMsg(answer.message);
+					setUser({ userName: answer.user.userName, isAdmin: answer.user.isAdmin });
 				}
 				else {
 					setError(answer.error);
+					setUser({ userName: null, isAdmin: false });
 				}
 			});
 	};
@@ -100,12 +102,10 @@ export function SignUp() {
 	}
 
 	return (
-		<div>
-			<NavMenu />
+		<>
 			<Container component="main" maxWidth="xs">
 				<CssBaseline />
 				<div className={classes.paper}>
-
 					<Avatar className={classes.avatar}>
 						<LockOutlinedIcon />
 					</Avatar>
@@ -191,6 +191,6 @@ export function SignUp() {
 				</Box>
 
 			</Container>
-		</div >
+		</>
 	);
 }

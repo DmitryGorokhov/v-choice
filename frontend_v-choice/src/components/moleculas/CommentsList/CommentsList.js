@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button, Checkbox, FormControlLabel, List, ListItem, Typography } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
@@ -7,10 +7,13 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import CommentTile from '../../card&tiles/CommentTile/CommentTile'
 import CommentArea from '../../atoms/CommentArea/CommentArea'
 import styles from './CommentsList.module.css'
+import UserContext from '../../../context'
 
 
 function CommentsList(props) {
 	const filmId = props.filmId;
+	const { user, setUser } = useContext(UserContext);
+
 	const [state, setState] = useState({
 		onPage: 3,
 		comments: [],
@@ -89,7 +92,6 @@ function CommentsList(props) {
 													<ListItem className={styles.listItem} key={comment.Id}>
 														<CommentTile
 															comment={comment}
-															userEmail={props.userEmail}
 															onUpdateMethod={updateComment}
 															onDeleteMethod={deleteComment}
 														/>
@@ -122,7 +124,7 @@ function CommentsList(props) {
 												checked={state.userCommentsFirst}
 												onChange={handleUserCommentsFirstChanged}
 												color="primary"
-												disabled={props.userEmail === null} />
+												disabled={user.userName === null} />
 										}
 										label="Сначала мои" />
 								</>
@@ -130,13 +132,12 @@ function CommentsList(props) {
 						}
 					</>
 			}
-
 			{
-				props.userEmail === null
-					? <Typography variant='h6'>
+				user.userName
+					? <CommentArea filmId={filmId} typeMethod="create" />
+					: <Typography variant='h6'>
 						Авторизируйтесь, чтобы оставить свой комментарий
 					</Typography>
-					: <CommentArea filmId={filmId} typeMethod="create" />
 			}
 		</>
 	)

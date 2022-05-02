@@ -1,13 +1,13 @@
-﻿using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using BLL.DTO;
+﻿using BLL.DTO;
 using BLL.Interface;
+using BLL.Query;
 using DAL.Interface;
 using DAL.Model;
-using BLL.Query;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BLL.Service
 {
@@ -22,41 +22,14 @@ namespace BLL.Service
             _logger = logger;
         }
 
-        public async Task<string> GetCurrentUserNameAsync(ClaimsPrincipal user)
-        {
-            _logger.LogInformation("Starting get name of current user.");
-            try
-            {
-                _logger.LogInformation("Call GetCurrentUserModelAsync.");
-                User u = await GetCurrentUserModelAsync(user);
-
-                if (u == null)
-                {
-                    _logger.LogInformation($"Current user: guest");
-
-                    return "guest";
-                }
-            
-                _logger.LogInformation($"Authenticated: {u.Email}");
-
-                return u.Email;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Get current user name has thrown an exception: {e.Message}.");
-
-                return null;
-            }
-        }
-
         public async Task<User> GetCurrentUserModelAsync(ClaimsPrincipal user)
         {
             _logger.LogInformation("Get current user model.");
-            
+
             return await _userRepository.GetCurrentUserAsync(user);
         }
 
-        public async Task<SignInResult> LogInUserAsync(LoginQuery log)
+        public async Task<LoginDTO> LogInUserAsync(LoginQuery log)
         {
             _logger.LogInformation("Starting login user.");
             try
@@ -72,23 +45,48 @@ namespace BLL.Service
                 _logger.LogInformation("Call UserLogInAsync.");
                 var result = await _userRepository.UserLogInAsync(model);
 
-                return result;
+                LoginDTO answer = new LoginDTO();
+
+                if (result != null && result.Succeeded)
+                {
+                    answer.Result = true;
+                    answer.Message = "Выполнен вход пользователем: " + log.Email;
+
+                    _logger.LogInformation("Call GetUserByEmailAsync");
+                    User u = await _userRepository.GetUserByEmailAsync(log.Email);
+                    _logger.LogInformation("Call CheckUserHasAdminRoleAsync");
+
+                    answer.User = new AuthenticatedUserDTO()
+                    {
+                        UserName = log.Email,
+                        IsAdmin = await _userRepository.CheckUserHasAdminRoleAsync(u)
+                    };
+
+                    _logger.LogInformation($"Login: login user with email equal {log.Email}.");
+                }
+                else
+                {
+                    answer.Result = false;
+                    answer.Message = "Вход не выполнен.";
+                }
+
+                return answer;
             }
             catch (Exception e)
             {
                 _logger.LogError($"Login user has thrown an exception: {e.Message}.");
 
-                return null;
+                return new LoginDTO() { Result = false, Message = "Вход не выполнен." };
             }
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(RegisterQuery reg)
+        public async Task<(LoginDTO, IdentityResult)> RegisterUserAsync(RegisterQuery reg)
         {
             _logger.LogInformation("Starting register.");
             try
             {
                 _logger.LogInformation("Convert to model.");
-                RegisterModel model = new RegisterModel() 
+                RegisterModel model = new RegisterModel()
                 {
                     Email = reg.Email,
                     Password = reg.Password,
@@ -98,13 +96,29 @@ namespace BLL.Service
                 _logger.LogInformation("Call UserRegisterAsync.");
                 var result = await _userRepository.UserRegisterAsync(model);
 
-                return result;
+                LoginDTO answer = new LoginDTO();
+
+                if (result != null && result.Succeeded)
+                {
+                    answer.Result = true;
+                    answer.Message = "Добавлен новый пользователь: " + reg.Email;
+                    answer.User = new AuthenticatedUserDTO() { UserName = reg.Email, IsAdmin = false };
+
+                    _logger.LogInformation($"Register: added user with email equal {reg.Email}.");
+                }
+                else
+                {
+                    answer.Result = false;
+                    answer.Message = "Пользователь не добавлен.";
+                }
+
+                return (answer, result);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Register has thrown an exception: {e.Message}.");
 
-                return null;
+                return (new LoginDTO() { Result = false, Message = "Пользователь не добавлен." }, null);
             }
         }
 
@@ -114,32 +128,31 @@ namespace BLL.Service
             await _userRepository.UserSignOutAsync();
         }
 
-        public async Task<bool> CheckIfCurrentUserIsAdmin(ClaimsPrincipal user)
+        public async Task<AuthenticatedUserDTO> GetAuthenticatedUserAsync(ClaimsPrincipal user)
         {
-            _logger.LogInformation("Starting check if current user is admin.");
+            _logger.LogInformation("Starting get authenticated user.");
             try
             {
-                _logger.LogInformation("Call GetCurrentUserModelAsync.");
                 User u = await GetCurrentUserModelAsync(user);
 
                 if (u == null)
                 {
-                    _logger.LogInformation($"Current user: guest, not admin");
+                    _logger.LogInformation("Current user: guest, is not admin");
 
-                    return false;
+                    return new AuthenticatedUserDTO() { UserName = "guest", IsAdmin = false };
                 }
 
                 bool res = await _userRepository.CheckUserHasAdminRoleAsync(u);
 
                 _logger.LogInformation($"Authenticated: {u.Email} as {(res ? "an admin" : "an user")}");
 
-                return res;
+                return new AuthenticatedUserDTO() { UserName = u.Email, IsAdmin = res };
             }
             catch (Exception e)
             {
-                _logger.LogError($"Get current user info has thrown an exception: {e.Message}.");
+                _logger.LogError($"Get authenticated user has thrown an exception: {e.Message}.");
 
-                return false;
+                return null;
             }
         }
     }

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { createStyles, makeStyles, Box, Tab, Tabs, Typography } from '@material-ui/core'
 
 import { NavMenu } from '../../atoms/NavMenu/NavMenu'
 import GeneralStat from '../../moleculas/GeneralStat/GeneralStat';
 import GenreStatisticTable from '../../moleculas/GenreStatisticTable/GenreStatisticTable';
 import FilmStatisticTable from '../../moleculas/FilmStatisticTable/FilmStatisticTable';
+import UserContext from '../../../context';
 
 
 const useStyles = makeStyles((theme) => createStyles({
@@ -49,8 +50,8 @@ function a11yProps(index) {
 function Statistic() {
 	const statURL = "https://localhost:5001/api/Statistic";
 	const classes = useStyles();
+	const { user, setUser } = useContext(UserContext);
 
-	const [isAdmin, setIsAdmin] = useState(false);
 	const [tab, setTab] = React.useState(0);
 	const [general, setGeneral] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -72,16 +73,6 @@ function Statistic() {
 	};
 
 	useEffect(() => {
-		fetch("https://localhost:5001/api/account/isAdmin", {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-		})
-			.then(response => response.json())
-			.then(result => setIsAdmin(result.isAdmin))
-			.catch(_ => setIsAdmin(false));
-
 		fetch(statURL)
 			.then(response => response.json())
 			.then(result => {
@@ -120,15 +111,10 @@ function Statistic() {
 			.catch(_ => _);
 	}, [genreStatQuery])
 
-	const handleLogout = () => {
-		setIsAdmin(false);
-	}
-
 	return (
 		<>
-			<NavMenu onLogout={handleLogout} />
 			{
-				isAdmin
+				user.isAdmin
 					? <>
 						<Tabs
 							value={tab}

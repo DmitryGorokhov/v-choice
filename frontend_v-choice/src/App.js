@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Route } from 'react-router'
 import './custom.css'
 import 'fontsource-roboto'
@@ -10,12 +10,34 @@ import FilmPage from './components/pages/FilmPage/FilmPage'
 import { Layout } from './components/atoms/Layout/Layout'
 import UserPage from './components/pages/UserPage/UserPage'
 import Statistic from './components/pages/Statistic/Statistic'
+import UserContext from './context'
+import { NavMenu } from './components/atoms/NavMenu/NavMenu'
 
-export default class App extends Component {
-  static displayName = App.name;
+export default function App() {
+  const [user, setUser] = useState({
+    userName: null,
+    isAdmin: false,
+  });
 
-  render() {
-    return (
+  useEffect(() => {
+    fetch("https://localhost:5001/api/account/isAuthenticated", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+      .then(response => response.json())
+      .then(result => {
+        result.userName === "guest"
+          ? setUser({ userName: null, isAdmin: false })
+          : setUser({ userName: result.user.userName, isAdmin: result.user.isAdmin });
+      })
+      .catch(_ => setUser({ userName: null, isAdmin: false }));
+  }, [])
+
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      <NavMenu />
       <Layout>
         <Route exact path='/catalog' component={Films} />
         <Route path='/catalog/:slug' component={Films} />
@@ -25,6 +47,6 @@ export default class App extends Component {
         <Route path='/user' component={UserPage} />
         <Route path='/stat' component={Statistic} />
       </Layout>
-    );
-  }
+    </UserContext.Provider>
+  );
 }

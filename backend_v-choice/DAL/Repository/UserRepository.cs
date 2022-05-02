@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using DAL.Interface;
+using DAL.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using DAL.Interface;
-using DAL.Model;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace DAL.Repository
 {
@@ -48,5 +47,8 @@ namespace DAL.Repository
 
         public async Task UserSignOutAsync()
             => await _signInManager.SignOutAsync();
+
+        public async Task<User> GetUserByEmailAsync(string email)
+            => await _context.User.FirstOrDefaultAsync(u => u.UserName == email);
     }
 }

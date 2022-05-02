@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom"
 import { createStyles, makeStyles, Box, Container, Typography } from '@material-ui/core'
 
 import FilmList from '../../moleculas/FilmList/FilmList'
-import { NavMenu } from '../../atoms/NavMenu/NavMenu'
 import { SortingType } from '../../enums/SortingType'
 import { FilteringType } from '../../enums/FilteringType'
 import { QueryProps } from '../../enums/QueryProps'
@@ -18,7 +17,6 @@ const useStyles = makeStyles((theme) => createStyles({
 function Films() {
 	const classes = useStyles();
 	const [genres, setGenres] = useState([]);
-	const [isAdmin, setIsAdmin] = useState(false);
 	const { slug } = useParams();
 
 	const recognizeQuery = () => {
@@ -90,15 +88,6 @@ function Films() {
 		fetch('https://localhost:5001/api/genre')
 			.then(response => response.json())
 			.then(result => setGenres(result));
-		fetch("https://localhost:5001/api/account/isAdmin", {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-		})
-			.then(response => response.json())
-			.then(result => setIsAdmin(result.isAdmin))
-			.catch(_ => setIsAdmin(false));
 	}, [])
 
 	const handleCreateGenre = (genre) => {
@@ -117,14 +106,8 @@ function Films() {
 	const handleDeleteGenre = (genre) => {
 		setGenres(genres.filter(g => g.id !== genre.id));
 	}
-
-	const handleLogout = () => {
-		setIsAdmin(false);
-	}
-
 	return (
 		<>
-			<NavMenu onLogout={handleLogout} />
 			<Container>
 				<Box className={classes.headerContainer}>
 					<Typography variant="h3">
@@ -137,7 +120,6 @@ function Films() {
 					onGenreCreate={handleCreateGenre}
 					onGenreUpdate={handleUpdateGenre}
 					onGenreDelete={handleDeleteGenre}
-					shouldShowControls={isAdmin}
 				/>
 			</Container>
 		</>
