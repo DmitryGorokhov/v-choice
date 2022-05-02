@@ -30,7 +30,7 @@ export default function App() {
       .then(result => {
         result.userName === "guest"
           ? setUser({ userName: null, isAdmin: false })
-          : setUser({ userName: result.user.userName, isAdmin: result.user.isAdmin });
+          : setUser({ userName: result.userName, isAdmin: result.isAdmin });
       })
       .catch(_ => setUser({ userName: null, isAdmin: false }));
   }, [])
