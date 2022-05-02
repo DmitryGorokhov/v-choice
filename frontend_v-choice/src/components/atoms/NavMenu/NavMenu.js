@@ -26,6 +26,13 @@ export function NavMenu() {
           {
             user.userName
               ? <ul className="navbar-nav flex-grow" >
+                {
+                  user.isAdmin
+                    ? < NavItem >
+                      <NavLink tag={Link} className="text-dark" to="/stat">cтатистика</NavLink>
+                    </NavItem>
+                    : null
+                }
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/user">{user.userName}</NavLink>
                 </NavItem>
@@ -36,7 +43,7 @@ export function NavMenu() {
                     onClick={handleLogout}
                     to="/catalog"
                   >
-                    Выйти
+                    выйти
                   </NavLink>
                 </NavItem>
               </ul>
