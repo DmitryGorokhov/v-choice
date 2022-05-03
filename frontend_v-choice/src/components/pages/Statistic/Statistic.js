@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { createStyles, makeStyles, Box, Tab, Tabs, Typography } from '@material-ui/core'
 
-import { NavMenu } from '../../atoms/NavMenu/NavMenu'
 import GeneralStat from '../../moleculas/GeneralStat/GeneralStat';
 import GenreStatisticTable from '../../moleculas/GenreStatisticTable/GenreStatisticTable';
 import FilmStatisticTable from '../../moleculas/FilmStatisticTable/FilmStatisticTable';
 import UserContext from '../../../context';
+import ExportStatistic from '../../moleculas/ExportStatistic/ExportStatistic'
 
 
 const useStyles = makeStyles((theme) => createStyles({
@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => createStyles({
 	header: {
 		marginBottom: theme.spacing(2),
 		textIndent: theme.spacing(1),
+	},
+	export: {
+		marginLeft: theme.spacing(2),
 	}
 }));
 
@@ -50,7 +53,7 @@ function a11yProps(index) {
 function Statistic() {
 	const statURL = "https://localhost:5001/api/Statistic";
 	const classes = useStyles();
-	const { user, setUser } = useContext(UserContext);
+	const { user } = useContext(UserContext);
 
 	const [tab, setTab] = React.useState(0);
 	const [general, setGeneral] = useState(null);
@@ -68,7 +71,9 @@ function Statistic() {
 		page: 1, onPage: 10, filter: 0
 	});
 
-	const handleChangeTab = (event, newValue) => {
+	const [statLink, setStatLink] = useState(null);
+
+	const handleChangeTab = (_, newValue) => {
 		setTab(newValue);
 	};
 
@@ -127,6 +132,7 @@ function Statistic() {
 							<Tab label="Общая статистика" {...a11yProps(0)} />
 							<Tab label="Статистика по фильмам" {...a11yProps(1)} />
 							<Tab label="Статистика по жанрам" {...a11yProps(2)} />
+							<Tab label="Выгрузить статистику" {...a11yProps(3)} />
 						</Tabs>
 
 						<TabPanel value={tab} index={0} >
@@ -158,6 +164,10 @@ function Statistic() {
 								params={genreStatQuery}
 								setParams={setGenreStatQuery}
 							/>
+						</TabPanel>
+						<TabPanel value={tab} index={3}>
+							<Typography variant='h4' className={classes.header}>Выгрузить статистику</Typography>
+							<ExportStatistic link={statLink} saveLink={setStatLink} />
 						</TabPanel>
 					</>
 					: <Typography variant='subtitle1'>Для просмотра страницы необходимо войти как администратор</Typography>

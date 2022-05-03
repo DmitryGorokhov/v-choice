@@ -1,7 +1,10 @@
 ﻿using BLL.DTO;
 using BLL.Interface;
 using BLL.Query;
+using DAL.Enum;
 using DAL.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -15,13 +18,16 @@ namespace backend_v_choice.Controllers
     {
         private readonly IStatisticService _statisticService;
         private readonly ILogger _logger;
+        private readonly IWebHostEnvironment _appEnvironment;
 
-        public StatisticController(IStatisticService ss, ILogger<StatisticController> logger)
+        public StatisticController(IStatisticService ss, ILogger<StatisticController> logger, IWebHostEnvironment ae)
         {
             _statisticService = ss;
             _logger = logger;
+            _appEnvironment = ae;
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public IActionResult GetGeneralStatistic()
         {
@@ -31,6 +37,7 @@ namespace backend_v_choice.Controllers
             return Ok(res);
         }
 
+        [Authorize(Roles = "admin")]
         [Route("film")]
         [HttpGet]
         public async Task<IActionResult> GetFilmStatistic([FromQuery] FilmStaticticQuery query)
@@ -48,6 +55,7 @@ namespace backend_v_choice.Controllers
             return Ok(res);
         }
 
+        [Authorize(Roles = "admin")]
         [Route("genre")]
         [HttpGet]
         public async Task<IActionResult> GetGenreStatistic([FromQuery] GenreStaticticQuery query)
@@ -63,6 +71,17 @@ namespace backend_v_choice.Controllers
             PaginationDTO<GenreStatisticDTO> res = await _statisticService.GetGenreStatisticAsync(query);
 
             return Ok(res);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        public IActionResult ExportStatistic([FromBody] ExportStatisticQuery exportStatisticQuery)
+        {
+            _logger.LogInformation("Export statistic");
+
+            string link = _statisticService.ExportStatisticAsync(exportStatisticQuery, _appEnvironment);
+
+            return Ok(new { link = link });
         }
     }
 }
