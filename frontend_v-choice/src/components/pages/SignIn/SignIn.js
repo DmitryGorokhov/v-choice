@@ -59,45 +59,55 @@ export function SignIn() {
 	const classes = useStyles();
 	const { _, setUser } = useContext(UserContext);
 
-	let user = {
-		Email: "",
-		Password: "",
-		RememberMe: false
-	};
+	const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [rememberMe, setRememberMe] = useState(false);
 
 	const [error, setError] = useState(null);
 	const [msg, setMsg] = useState(null);
 
 	const handleSubmit = () => {
-		fetch('https://localhost:5001/api/account/login', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(user)
-		})
-			.then(response => response.json())
-			.then(answer => {
-				if (answer.result) {
-					setMsg(answer.message);
-					setUser({ userName: answer.user.userName, isAdmin: answer.user.isAdmin });
-				}
-				else {
-					setError(answer.error);
-					setUser({ userName: null, isAdmin: false });
-				}
-			});
+		if (emailRegExp.test(email)) {
+			fetch('https://localhost:5001/api/account/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					email: email,
+					password: password,
+					rememberMe: rememberMe,
+				})
+			})
+				.then(response => response.json())
+				.then(answer => {
+					if (answer.result) {
+						setMsg(answer.message);
+						setUser({ userName: answer.user.userName, isAdmin: answer.user.isAdmin });
+					}
+					else {
+						setError(answer.error);
+						setUser({ userName: null, isAdmin: false });
+					}
+				});
+		}
+		else {
+			setError(["Email некорректен. Проверьте правильность и повторите попытку.",]);
+		}
 	};
 
-	const handleChanged = (event) => {
-		if (event.target.name === 'email')
-			user.Email = event.target.value;
-		if (event.target.name === 'password')
-			user.Password = event.target.value;
+	const handleEmailChanged = (event) => {
+		setEmail(event.target.value);
+	};
+
+	const handlePasswordChanged = (event) => {
+		setPassword(event.target.value);
 	};
 
 	const handleChecked = (event) => {
-		user.RememberMe = event.target.checked;
+		setRememberMe(event.target.checked);
 	}
 
 	const logoutAction = () => {
@@ -133,13 +143,14 @@ export function SignIn() {
 								: <Redirect to="/catalog" />
 						}
 					</Box>
-					<form className={classes.form} noValidate>
+					<form className={classes.form}>
 						<TextField
 							variant="outlined"
+							value={email}
 							margin="normal"
 							required
 							fullWidth
-							onChange={handleChanged}
+							onChange={handleEmailChanged}
 							label="Email"
 							name="email"
 							autoComplete="email"
@@ -147,10 +158,11 @@ export function SignIn() {
 						/>
 						<TextField
 							variant="outlined"
+							value={password}
 							margin="normal"
 							required
 							fullWidth
-							onChange={handleChanged}
+							onChange={handlePasswordChanged}
 							name="password"
 							label="Пароль"
 							type="password"
@@ -160,7 +172,7 @@ export function SignIn() {
 						<FormControlLabel
 							control={
 								<Checkbox
-									value="remember"
+									value={rememberMe}
 									color="primary"
 									onChange={handleChecked}
 								/>}

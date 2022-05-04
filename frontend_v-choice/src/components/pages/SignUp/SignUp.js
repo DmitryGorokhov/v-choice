@@ -53,43 +53,55 @@ export function SignUp() {
 	const classes = useStyles();
 	const { _, setUser } = useContext(UserContext);
 
-	let user = {
-		Email: "",
-		Password: "",
-		PasswordConfirm: ""
-	};
+	const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [passwordConfirm, setPasswordConfirm] = useState("");
 
 	const [error, setError] = useState(null);
 	const [msg, setMsg] = useState(null);
 
 	const handleSubmit = () => {
-		fetch('https://localhost:5001/api/account/register', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(user)
-		})
-			.then(response => response.json())
-			.then(answer => {
-				if (answer.result) {
-					setMsg(answer.message);
-					setUser({ userName: answer.user.userName, isAdmin: answer.user.isAdmin });
-				}
-				else {
-					setError(answer.error);
-					setUser({ userName: null, isAdmin: false });
-				}
-			});
+		if (emailRegExp.test(email)) {
+			fetch('https://localhost:5001/api/account/register', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					email: email,
+					password: password,
+					passwordConfirm: passwordConfirm,
+				})
+			})
+				.then(response => response.json())
+				.then(answer => {
+					if (answer.result) {
+						setMsg(answer.message);
+						setUser({ userName: answer.user.userName, isAdmin: answer.user.isAdmin });
+					}
+					else {
+						setError(answer.error);
+						setUser({ userName: null, isAdmin: false });
+					}
+				});
+		}
+		else {
+			setError(["Email некорректен. Проверьте правильность и повторите попытку.",]);
+		}
 	};
 
-	const handleChanged = (event) => {
-		if (event.target.name === 'email')
-			user.Email = event.target.value;
-		if (event.target.name === 'password')
-			user.Password = event.target.value;
-		if (event.target.name === 'passwordConfirm')
-			user.PasswordConfirm = event.target.value;
+	const handleEmailChanged = (event) => {
+		setEmail(event.target.value);
+	};
+
+	const handlePasswordChanged = (event) => {
+		setPassword(event.target.value);
+	};
+
+	const handlePasswordConfirmChanged = (event) => {
+		setPasswordConfirm(event.target.value);
 	};
 
 	const logoutAction = () => {
@@ -126,14 +138,14 @@ export function SignUp() {
 								: <Redirect to="/catalog" />
 						}
 					</Box>
-					<form className={classes.form} noValidate>
+					<form className={classes.form}>
 						<Grid container spacing={2}>
 							<Grid item xs={12}>
 								<TextField
 									variant="outlined"
 									required
 									fullWidth
-									onChange={handleChanged}
+									onChange={handleEmailChanged}
 									id="email"
 									label="Email"
 									name="email"
@@ -145,7 +157,7 @@ export function SignUp() {
 									variant="outlined"
 									required
 									fullWidth
-									onChange={handleChanged}
+									onChange={handlePasswordChanged}
 									name="password"
 									label="Пароль"
 									type="password"
@@ -158,7 +170,7 @@ export function SignUp() {
 									variant="outlined"
 									required
 									fullWidth
-									onChange={handleChanged}
+									onChange={handlePasswordConfirmChanged}
 									name="passwordConfirm"
 									label="Повторите пароль"
 									type="password"
