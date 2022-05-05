@@ -1,25 +1,8 @@
 import React, { useState } from 'react'
-import {
-	createStyles,
-	makeStyles,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	Grid,
-	TextField
-} from '@material-ui/core'
-import CreateIcon from '@material-ui/icons/Create'
-
-const useStyles = makeStyles((theme) => createStyles({
-	header: {
-		margin: theme.spacing(2),
-	},
-}));
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField } from '@material-ui/core'
+import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined'
 
 function UpdateCommentDialog(props) {
-	const classes = useStyles();
 	const [open, setOpen] = useState(false);
 	const [text, setText] = useState(props.comment.text)
 
@@ -51,8 +34,8 @@ function UpdateCommentDialog(props) {
 
 	return (
 		<>
-			<Button variant="outlined" color="primary" onClick={handleClickOpen}>
-				<CreateIcon /> Редактировать
+			<Button size="small" onClick={handleClickOpen} className={props.className}>
+				<CreateOutlinedIcon />
 			</Button>
 			<Dialog
 				fullWidth

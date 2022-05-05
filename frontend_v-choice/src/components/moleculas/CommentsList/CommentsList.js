@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
 	createStyles,
 	makeStyles,
@@ -20,13 +21,13 @@ import UserContext from '../../../context'
 
 const useStyles = makeStyles((theme) => createStyles({
 	header: {
-		margin: theme.spacing(0, 2),
+		display: 'flex',
+		justifyContent: 'space-between',
 	},
 	list: {
 		width: '100%',
-		height: '400px',
+		height: '250px',
 		overflowY: 'scroll',
-		margin: theme.spacing(0, 2),
 	},
 	listNavigation: {
 		display: 'flex',
@@ -141,16 +142,44 @@ function CommentsList(props) {
 
 	return (
 		<>
-			<Typography variant="h5" className={classes.header}>
-				Мнения пользователей о фильме
-			</Typography>
+			<Box className={classes.header}>
+				<Typography variant="h5">Мнения пользователей о фильме</Typography>
+				{
+					state.comments.length !== 0
+						? <Box className={classes.listNavigation}>
+							<Pagination
+								page={Number(state.currentPage)}
+								count={state.countPages}
+								variant="outlined"
+								color="primary"
+								onChange={handleChangePage}
+							/>
+							<Button variant="primary" onClick={handleSortByDateOrderChanged}>
+								{
+									state.sortByDateInCommonOrder
+										? <ArrowDownwardIcon />
+										: <ArrowUpwardIcon />
+								}
+							</Button>
+							<FormControlLabel
+								control=
+								{
+									<Checkbox
+										checked={state.userCommentsFirst}
+										onChange={handleUserCommentsFirstChanged}
+										color="primary"
+										disabled={user.userName === null} />
+								}
+								label="Сначала мои" />
+						</Box>
+						: null
+				}
+			</Box>
 			{
 				state.loading
 					? <Typography>Загрузка...</Typography>
-					:
-					<>
+					: <>
 						{
-
 							state.comments.length !== 0
 								? <>
 									<List className={classes.list}>
@@ -168,32 +197,6 @@ function CommentsList(props) {
 											})
 										}
 									</List>
-									<Box className={classes.listNavigation}>
-										<Pagination
-											page={Number(state.currentPage)}
-											count={state.countPages}
-											variant="outlined"
-											color="primary"
-											onChange={handleChangePage}
-										/>
-										<Button variant="primary" onClick={handleSortByDateOrderChanged}>
-											{
-												state.sortByDateInCommonOrder
-													? <ArrowDownwardIcon />
-													: <ArrowUpwardIcon />
-											}
-										</Button>
-										<FormControlLabel
-											control=
-											{
-												<Checkbox
-													checked={state.userCommentsFirst}
-													onChange={handleUserCommentsFirstChanged}
-													color="primary"
-													disabled={user.userName === null} />
-											}
-											label="Сначала мои" />
-									</Box>
 								</>
 								: <Typography variant='subtitle1'>Пока нет комментариев</Typography>
 						}
@@ -203,7 +206,7 @@ function CommentsList(props) {
 				user.userName
 					? <CommentArea filmId={props.filmId} onAdd={handleCreateComment} />
 					: <Typography variant='subtitle1'>
-						Авторизируйтесь, чтобы оставить свой комментарий
+						<Link to="/sign-in">Авторизируйтесь</Link>, чтобы оставить свой комментарий
 					</Typography>
 			}
 		</>

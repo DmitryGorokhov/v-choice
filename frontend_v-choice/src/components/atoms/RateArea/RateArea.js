@@ -1,12 +1,35 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Box, Button, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Box, Button, Grid, Typography } from '@material-ui/core'
 import { Rating } from '@material-ui/lab'
-import ClearIcon from '@material-ui/icons/Clear'
+import HighlightOffIcon from '@material-ui/icons/HighlightOff'
 import UserContext from '../../../context'
 
+const useStyles = makeStyles((theme) => createStyles({
+	main: {
+		margin: theme.spacing(2, 0),
+	},
+	container: {
+		display: 'flex',
+		alignContent: 'center',
+	},
+	rightContainer: {
+		display: 'flex',
+		alignContent: 'center',
+		justifyContent: 'right',
+	},
+	text: {
+		fontSize: '18px',
+		lineHeight: "150%",
+	},
+	stars: {
+		marginLeft: theme.spacing(1),
+	}
+}));
+
 function RateArea(props) {
-	const { user, setUser } = useContext(UserContext);
+	const classes = useStyles();
+	const { user, _ } = useContext(UserContext);
 	const [userRate, setUserRate] = useState(null)
 
 	useEffect(() => {
@@ -31,7 +54,7 @@ function RateArea(props) {
 			})
 	}
 
-	const handleUserRateChanged = (event, newValue) => {
+	const handleUserRateChanged = (_, newValue) => {
 		if (userRate === null) {
 			fetch("https://localhost:5001/api/rate", {
 				method: 'POST',
@@ -66,28 +89,35 @@ function RateArea(props) {
 	}
 
 	return (
-		<>
-			<Typography>Рейтинг фильма:</Typography>
-			<Typography>{props.filmRate}</Typography>
-			<Box>
-				{
-					user.userName
-						? <>
-							<Typography>
-								Ваша оценка{userRate === null ? "" : `:${userRate.value}`}
-							</Typography>
-							<Rating
-								value={userRate === null ? null : userRate.value}
-								max={10}
-								onChange={handleUserRateChanged} />
-							<Button variant="primary" onClick={handleDeleteUserRate}>
-								<ClearIcon />
-							</Button>
-						</>
-						: <Typography><Link to="/sign-in">Войдите</Link>, чтобы оценить фильм.</Typography>
-				}
-			</Box>
-		</>
+		<Box className={classes.main}>
+			<Grid container>
+				<Grid item xs={6}>
+					<Box className={classes.container}>
+						<Typography className={classes.text}>Рейтинг фильма: {props.filmRate}</Typography>
+						<Rating value={props.filmRate} max={10} disabled className={classes.stars} />
+					</Box>
+				</Grid>
+				<Grid item xs={6}>
+					<Box className={classes.rightContainer}>
+						{
+							user.userName
+								? <>
+									<Typography className={classes.text}>Ваша оценка:</Typography>
+									<Rating
+										value={userRate === null ? null : userRate.value}
+										max={10}
+										className={classes.stars}
+										onChange={handleUserRateChanged} />
+									<Button variant="primary" onClick={handleDeleteUserRate}>
+										<HighlightOffIcon />
+									</Button>
+								</>
+								: <Typography><Link to="/sign-in">Авторизируйтесь</Link>, чтобы оценить фильм</Typography>
+						}
+					</Box>
+				</Grid>
+			</Grid>
+		</Box>
 	)
 }
 

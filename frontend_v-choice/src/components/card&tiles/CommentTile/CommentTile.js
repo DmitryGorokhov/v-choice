@@ -1,12 +1,36 @@
 import React, { useContext } from 'react'
-import { Box, Card, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Box, Card, Grid, Typography } from '@material-ui/core'
 
-import styles from './CommentTile.module.css'
 import UpdateCommentDialog from '../../crud/UpdateCommentDialog/UpdateCommentDialog'
 import DeleteComment from '../../crud/DeleteComment/DeleteComment'
 import UserContext from '../../../context'
 
+const useStyles = makeStyles((theme) => createStyles({
+	card: {
+		width: '100%',
+		padding: theme.spacing(2, 3),
+	},
+	container: {
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'center',
+	},
+	controls: {
+		margin: theme.spacing(2, 0, 0),
+	},
+	controlsContainer: {
+		display: 'flex',
+		justifyContent: 'center',
+	},
+	text: {
+		fontSize: '18px',
+		lineHeight: "150%",
+		marginTop: theme.spacing(2),
+	},
+}));
+
 function CommentTile(props) {
+	const classes = useStyles();
 	const { user, _ } = useContext(UserContext);
 
 	const dateFormat = (date) => {
@@ -15,31 +39,30 @@ function CommentTile(props) {
 	}
 
 	return (
-		<Card className={styles.card}>
-			<Box>
-				<Box className={styles.dateContainer}>
-					<Typography className={styles.contentDate}>
-						{dateFormat(props.comment.createdAt)}
-					</Typography>
-				</Box>
-				<Box className={styles.textContainer}>
-					<Typography variant='h6' className={styles.contentText}>
-						{props.comment.text}
-					</Typography>
-				</Box>
-			</Box>
-			{
-				user.userName === props.comment.authorEmail
-					? <Box className={styles.controlsContainer}>
-						<UpdateCommentDialog onUpdate={props.onUpdate} comment={props.comment} />
-						<DeleteComment onDelete={props.onDelete} commentId={props.comment.id} />
+		<Card className={classes.card}>
+			<Grid container spacing={2}>
+				<Grid item xs={10}>
+					<Typography>{props.comment.authorEmail}</Typography>
+					<Typography className={classes.text}>{props.comment.text}</Typography>
+				</Grid>
+				<Grid item xs={2}>
+					<Box className={classes.container}>
+						<Typography>{dateFormat(props.comment.createdAt)}</Typography>
+						{
+							user.userName === props.comment.authorEmail
+								? <Box className={classes.controlsContainer}>
+									<UpdateCommentDialog className={classes.controls} onUpdate={props.onUpdate} comment={props.comment} />
+									<DeleteComment className={classes.controls} onDelete={props.onDelete} commentId={props.comment.id} />
+								</Box>
+								: user.isAdmin
+									? <Box className={classes.controlsContainer}>
+										<DeleteComment className={classes.controls} onDelete={props.onDelete} commentId={props.comment.id} />
+									</Box>
+									: null
+						}
 					</Box>
-					: user.isAdmin
-						? <Box className={styles.controlsContainer}>
-							<DeleteComment onDelete={props.onDelete} commentId={props.comment.id} />
-						</Box>
-						: null
-			}
+				</Grid>
+			</Grid>
 		</Card>
 	)
 }

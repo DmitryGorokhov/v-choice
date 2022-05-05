@@ -1,13 +1,6 @@
 import React, { useState } from 'react'
-import {
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	Typography,
-} from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, } from '@material-ui/core'
+import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
 
 function DeleteComment(props) {
 	const [open, setOpen] = useState(false);
@@ -33,13 +26,8 @@ function DeleteComment(props) {
 
 	return (
 		<>
-			<Button
-				variant="outlined"
-				color="secondary"
-				onClick={handleClickOpen}
-			>
-				<DeleteIcon />
-				Удалить
+			<Button size="small" onClick={handleClickOpen} className={props.className}>
+				<DeleteOutlineOutlinedIcon />
 			</Button>
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Удалить комментарий</DialogTitle>

@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
-import { Button, Grid, TextField, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Button, Grid, TextField, Typography } from '@material-ui/core'
+
+const useStyles = makeStyles((theme) => createStyles({
+	header: {
+		margin: theme.spacing(2, 0),
+	},
+}));
 
 function CommentArea(props) {
+	const classes = useStyles();
 	const [text, setText] = useState("")
 
 	const handleTextChanged = (event) => {
@@ -23,14 +30,14 @@ function CommentArea(props) {
 
 	return (
 		<>
-			<Typography variant='h6'>Есть мнение? Оставьте комментарий</Typography>
-			<Grid container spacing={2}>
+			<Typography variant='h5' className={classes.header}>Есть мнение? Оставьте комментарий</Typography>
+			<Grid container spacing={3}>
 				<Grid item xs={11}>
 					<TextField
 						id="outlined-multiline-static"
 						label="Поделитесь: чем вас поразил этот фильм?"
 						multiline
-						rows={4}
+						rows={3}
 						variant="outlined"
 						value={text}
 						onChange={handleTextChanged}
@@ -38,9 +45,7 @@ function CommentArea(props) {
 					/>
 				</Grid>
 				<Grid item xs={1}>
-					<Button variant="outlined" onClick={handleSubmit}>
-						Отправить
-					</Button>
+					<Button variant="outlined" onClick={handleSubmit}>Ок</Button>
 				</Grid>
 			</Grid>
 		</>
