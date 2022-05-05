@@ -12,17 +12,25 @@ import UserContext from '../../../context'
 
 function CommentsList(props) {
 	const filmId = props.filmId;
-	const { user, setUser } = useContext(UserContext);
+	const { user, _ } = useContext(UserContext);
 
 	const [state, setState] = useState({
 		onPage: 3,
 		comments: [],
 		loading: true,
 		totalCount: 0,
+		countPages: 0,
 		currentPage: 1,
 		sortByDateInCommonOrder: true,
 		userCommentsFirst: false
 	});
+
+	const [reload, setReload] = useState(false);
+
+	const calculatePagesCount = (total, onPage) => {
+		let value = Math.floor(total / onPage);
+		return value * onPage === total ? value : value + 1;
+	}
 
 	useEffect(() => {
 		fetch(
@@ -33,10 +41,24 @@ function CommentsList(props) {
 			`&CommonOrder=${state.sortByDateInCommonOrder}` +
 			`&MyCommentsFirst=${state.userCommentsFirst}`)
 			.then(response => response.json())
-			.then(result => setState({ ...state, comments: result.items, loading: false, totalCount: result.totalCount }));
-	}, [state.currentPage, state.sortByDateInCommonOrder, state.userCommentsFirst])
+			.then(result => {
+				setState({
+					...state,
+					comments: result.items,
+					loading: false,
+					countPages: calculatePagesCount(result.totalCount, state.onPage),
+					totalCount: result.totalCount
+				});
+				setReload(false);
+			});
+	}, [
+		state.currentPage,
+		state.sortByDateInCommonOrder,
+		state.userCommentsFirst,
+		reload
+	])
 
-	const updateComment = (updComment) => {
+	const handleUpdateComment = (updComment) => {
 		const arr = [...state.comments];
 		let found = arr.find(c => c.id === updComment.id);
 		if (found) {
@@ -45,22 +67,24 @@ function CommentsList(props) {
 		setState({ ...state, comments: [...arr] });
 	}
 
-	const deleteComment = (commentId) => {
-		let ind = state.comments.findIndex(c => c.id === commentId);
-		state.comments.splice(ind, 1);
-		setState({ ...state, comments: state.comments });
+	const handleChangePage = (_, newPage) => {
+		if (state.currentPage === newPage) {
+			setState({ ...state, loading: true });
+			setReload(true);
+		}
+		else {
+			setState({ ...state, currentPage: newPage, loading: true });
+		}
 	}
 
-	const calculatePagesCount = () => {
-		let value = Math.floor(state.totalCount / state.onPage)
-		return value * state.onPage === state.totalCount ? value : value + 1
+	const handleDeleteComment = (_) => {
+		const total = state.totalCount - 1;
+		const pages = calculatePagesCount(total, state.onPage);
+		const currentPage = pages < state.countPages && state.currentPage > pages ? pages : state.currentPage;
+		handleChangePage({}, currentPage);
 	}
 
-	const handleChangePage = (event, newPage) => {
-		setState({ ...state, currentPage: newPage, loading: true });
-	}
-
-	const handleSortByDateOrderChanged = (event) => {
+	const handleSortByDateOrderChanged = (_) => {
 		setState({
 			...state,
 			currentPage: 1,
@@ -69,7 +93,7 @@ function CommentsList(props) {
 		});
 	}
 
-	const handleUserCommentsFirstChanged = (event) => {
+	const handleUserCommentsFirstChanged = (_) => {
 		setState({
 			...state,
 			currentPage: 1,
@@ -95,8 +119,8 @@ function CommentsList(props) {
 													<ListItem className={styles.listItem} key={comment.Id}>
 														<CommentTile
 															comment={comment}
-															onUpdate={updateComment}
-															onDelete={deleteComment}
+															onUpdate={handleUpdateComment}
+															onDelete={handleDeleteComment}
 														/>
 													</ListItem>
 												)
@@ -105,7 +129,7 @@ function CommentsList(props) {
 									</List>
 									<Pagination
 										page={Number(state.currentPage)}
-										count={calculatePagesCount()}
+										count={state.countPages}
 										variant="outlined"
 										color="primary"
 										onChange={handleChangePage}
@@ -138,7 +162,7 @@ function CommentsList(props) {
 			{
 				user.userName
 					? <CommentArea filmId={filmId} typeMethod="create" />
-					: <Typography variant='h6'>
+					: <Typography variant='subtitle1'>
 						Авторизируйтесь, чтобы оставить свой комментарий
 					</Typography>
 			}

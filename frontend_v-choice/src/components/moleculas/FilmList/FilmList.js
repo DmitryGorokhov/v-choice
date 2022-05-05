@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => createStyles({
 function FilmList(props) {
 	const classes = useStyles();
 	const history = useHistory();
-	const { user, setUser } = useContext(UserContext);
+	const { user, _ } = useContext(UserContext);
 
 	const [state, setState] = useState({
 		films: [],

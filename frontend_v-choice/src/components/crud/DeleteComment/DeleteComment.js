@@ -27,7 +27,7 @@ function DeleteComment(props) {
 				'Content-Type': 'application/json;charset=utf-8'
 			},
 		});
-		props.onDeleteMethod(props.commentId);
+		props.onDelete(props.commentId);
 		setOpen(false);
 	};
 
