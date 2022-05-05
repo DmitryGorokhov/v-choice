@@ -1,17 +1,42 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Button, Checkbox, FormControlLabel, List, ListItem, Typography } from '@material-ui/core'
+import {
+	createStyles,
+	makeStyles,
+	Box,
+	Button,
+	Checkbox,
+	FormControlLabel,
+	List,
+	ListItem,
+	Typography
+} from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 
 import CommentTile from '../../card&tiles/CommentTile/CommentTile'
 import CommentArea from '../../atoms/CommentArea/CommentArea'
-import styles from './CommentsList.module.css'
 import UserContext from '../../../context'
 
+const useStyles = makeStyles((theme) => createStyles({
+	header: {
+		margin: theme.spacing(0, 2),
+	},
+	list: {
+		width: '100%',
+		height: '400px',
+		overflowY: 'scroll',
+		margin: theme.spacing(0, 2),
+	},
+	listNavigation: {
+		display: 'flex',
+		alignContent: 'center',
+		alignItems: 'center',
+	},
+}));
 
 function CommentsList(props) {
-	const filmId = props.filmId;
+	const classes = useStyles();
 	const { user, _ } = useContext(UserContext);
 
 	const [state, setState] = useState({
@@ -37,7 +62,7 @@ function CommentsList(props) {
 			'https://localhost:5001/api/Comment' +
 			`?PageNumber=${state.currentPage}` +
 			`&OnPageCount=${state.onPage}` +
-			`&FilmId=${filmId}` +
+			`&FilmId=${props.filmId}` +
 			`&CommonOrder=${state.sortByDateInCommonOrder}` +
 			`&MyCommentsFirst=${state.userCommentsFirst}`)
 			.then(response => response.json())
@@ -57,8 +82,6 @@ function CommentsList(props) {
 		state.userCommentsFirst,
 		reload
 	])
-
-
 
 	const handleChangePage = (_, newPage) => {
 		if (state.currentPage === newPage) {
@@ -118,19 +141,23 @@ function CommentsList(props) {
 
 	return (
 		<>
+			<Typography variant="h5" className={classes.header}>
+				Мнения пользователей о фильме
+			</Typography>
 			{
 				state.loading
 					? <Typography>Загрузка...</Typography>
 					:
 					<>
 						{
+
 							state.comments.length !== 0
 								? <>
-									<List className={styles.list}>
+									<List className={classes.list}>
 										{
 											state.comments.map(comment => {
 												return (
-													<ListItem className={styles.listItem} key={comment.Id}>
+													<ListItem key={comment.Id}>
 														<CommentTile
 															comment={comment}
 															onUpdate={handleUpdateComment}
@@ -141,41 +168,40 @@ function CommentsList(props) {
 											})
 										}
 									</List>
-									<Pagination
-										page={Number(state.currentPage)}
-										count={state.countPages}
-										variant="outlined"
-										color="primary"
-										onChange={handleChangePage}
-									/>
-									<Button
-										variant="primary"
-										onClick={handleSortByDateOrderChanged}
-									>
-										{
-											state.sortByDateInCommonOrder
-												? <ArrowDownwardIcon />
-												: <ArrowUpwardIcon />
-										}
-									</Button>
-									<FormControlLabel
-										control=
-										{
-											<Checkbox
-												checked={state.userCommentsFirst}
-												onChange={handleUserCommentsFirstChanged}
-												color="primary"
-												disabled={user.userName === null} />
-										}
-										label="Сначала мои" />
+									<Box className={classes.listNavigation}>
+										<Pagination
+											page={Number(state.currentPage)}
+											count={state.countPages}
+											variant="outlined"
+											color="primary"
+											onChange={handleChangePage}
+										/>
+										<Button variant="primary" onClick={handleSortByDateOrderChanged}>
+											{
+												state.sortByDateInCommonOrder
+													? <ArrowDownwardIcon />
+													: <ArrowUpwardIcon />
+											}
+										</Button>
+										<FormControlLabel
+											control=
+											{
+												<Checkbox
+													checked={state.userCommentsFirst}
+													onChange={handleUserCommentsFirstChanged}
+													color="primary"
+													disabled={user.userName === null} />
+											}
+											label="Сначала мои" />
+									</Box>
 								</>
-								: <Typography variant='h5'>Пока нет комментариев</Typography>
+								: <Typography variant='subtitle1'>Пока нет комментариев</Typography>
 						}
 					</>
 			}
 			{
 				user.userName
-					? <CommentArea filmId={filmId} onAdd={handleCreateComment} />
+					? <CommentArea filmId={props.filmId} onAdd={handleCreateComment} />
 					: <Typography variant='subtitle1'>
 						Авторизируйтесь, чтобы оставить свой комментарий
 					</Typography>

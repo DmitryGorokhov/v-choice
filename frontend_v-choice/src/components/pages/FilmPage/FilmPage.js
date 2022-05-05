@@ -99,9 +99,7 @@ function FilmPage() {
 
 					}
 				</Box>
-				<Typography variant="h4" className={styles.marginItem}>
-					Мнения пользователей о фильме
-				</Typography>
+
 				<CommentsList className={styles.marginItem} filmId={slug} />
 			</Box>
 		</>
