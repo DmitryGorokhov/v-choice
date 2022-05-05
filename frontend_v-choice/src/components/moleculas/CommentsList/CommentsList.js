@@ -58,14 +58,7 @@ function CommentsList(props) {
 		reload
 	])
 
-	const handleUpdateComment = (updComment) => {
-		const arr = [...state.comments];
-		let found = arr.find(c => c.id === updComment.id);
-		if (found) {
-			found.text = updComment.text;
-		}
-		setState({ ...state, comments: [...arr] });
-	}
+
 
 	const handleChangePage = (_, newPage) => {
 		if (state.currentPage === newPage) {
@@ -75,6 +68,27 @@ function CommentsList(props) {
 		else {
 			setState({ ...state, currentPage: newPage, loading: true });
 		}
+	}
+
+	const handleCreateComment = () => {
+		const total = state.totalCount + 1;
+
+		if (state.sortByDateInCommonOrder) {
+			setState({ ...state, totalCount: total, countPages: calculatePagesCount(total, state.onPage), loading: true });
+			setReload(true);
+		}
+		else {
+			setState({ ...state, totalCount: total, countPages: calculatePagesCount(total, state.onPage) });
+		}
+	}
+
+	const handleUpdateComment = (updComment) => {
+		const arr = [...state.comments];
+		let found = arr.find(c => c.id === updComment.id);
+		if (found) {
+			found.text = updComment.text;
+		}
+		setState({ ...state, comments: [...arr] });
 	}
 
 	const handleDeleteComment = (_) => {
@@ -161,7 +175,7 @@ function CommentsList(props) {
 			}
 			{
 				user.userName
-					? <CommentArea filmId={filmId} typeMethod="create" />
+					? <CommentArea filmId={filmId} onAdd={handleCreateComment} />
 					: <Typography variant='subtitle1'>
 						Авторизируйтесь, чтобы оставить свой комментарий
 					</Typography>

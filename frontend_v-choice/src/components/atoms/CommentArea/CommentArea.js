@@ -1,67 +1,49 @@
 import React, { useState } from 'react'
-import { Box, Button, TextField, Typography } from '@material-ui/core'
-import styles from './CommentArea.module.css'
+import { Button, Grid, TextField, Typography } from '@material-ui/core'
 
 function CommentArea(props) {
-	const [text, setText] = useState('')
+	const [text, setText] = useState("")
 
 	const handleTextChanged = (event) => {
 		setText(event.target.value);
 	}
 
 	const handleSubmit = () => {
-		let comment = {
-			Text: text,
-			FilmId: props.filmId
-		};
-		if (props.typeMethod === "create") {
-			fetch('https://localhost:5001/api/comment', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json;charset=utf-8'
-				},
-				body: JSON.stringify(comment)
-			})
-				.then(response => response.json());
-			setText('');
-		};
-		if (props.typeMethod === "update") {
-			comment.Id = props.commentId;
-			fetch(`https://localhost:5001/api/comment/${props.commentId}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json;charset=utf-8'
-				},
-				body: JSON.stringify(comment)
-			});
-			props.method(comment);
-			setText('');
-		};
+		fetch('https://localhost:5001/api/comment', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json;charset=utf-8'
+			},
+			body: JSON.stringify({ text: text, filmId: props.filmId })
+		})
+			.then(response => response.json());
+		setText("");
+		props.onAdd();
 	}
 
 	return (
-		<div>
-			<Typography variant='h5' className={styles.header}>
-				Есть мнение? Оставьте комментарий
-			</Typography>
-			<Box className={styles.container}>
-				<TextField
-					id="outlined-multiline-static"
-					label="Поделитесь: чем вас поразил этот фильм?"
-					multiline
-					rows={4}
-					variant="outlined"
-					className={styles.textField}
-					value={text}
-					onChange={handleTextChanged}
-				/>
-				<Box>
+		<>
+			<Typography variant='h6'>Есть мнение? Оставьте комментарий</Typography>
+			<Grid container spacing={2}>
+				<Grid item xs={11}>
+					<TextField
+						id="outlined-multiline-static"
+						label="Поделитесь: чем вас поразил этот фильм?"
+						multiline
+						rows={4}
+						variant="outlined"
+						value={text}
+						onChange={handleTextChanged}
+						fullWidth
+					/>
+				</Grid>
+				<Grid item xs={1}>
 					<Button variant="outlined" onClick={handleSubmit}>
 						Отправить
 					</Button>
-				</Box>
-			</Box>
-		</div>
+				</Grid>
+			</Grid>
+		</>
 	)
 }
 
