@@ -37,9 +37,12 @@ function CommentsList(props) {
 	}, [state.currentPage, state.sortByDateInCommonOrder, state.userCommentsFirst])
 
 	const updateComment = (updComment) => {
-		let ind = state.comments.findIndex(c => c.id === updComment.id);
-		state.comments[ind].text = updComment.text;
-		setState({ ...state, comments: state.comments });
+		const arr = [...state.comments];
+		let found = arr.find(c => c.id === updComment.id);
+		if (found) {
+			found.text = updComment.text;
+		}
+		setState({ ...state, comments: [...arr] });
 	}
 
 	const deleteComment = (commentId) => {
@@ -92,8 +95,8 @@ function CommentsList(props) {
 													<ListItem className={styles.listItem} key={comment.Id}>
 														<CommentTile
 															comment={comment}
-															onUpdateMethod={updateComment}
-															onDeleteMethod={deleteComment}
+															onUpdate={updateComment}
+															onDelete={deleteComment}
 														/>
 													</ListItem>
 												)

@@ -31,12 +31,12 @@ function CommentTile(props) {
 			{
 				user.userName === props.comment.authorEmail
 					? <Box className={styles.controlsContainer}>
-						<UpdateCommentDialog filmId={props.comment.filmId} onUpdateMethod={props.onUpdateMethod} commentId={props.comment.id} />
-						<DeleteComment onDeleteMethod={props.onDeleteMethod} commentId={props.comment.id} />
+						<UpdateCommentDialog onUpdate={props.onUpdate} comment={props.comment} />
+						<DeleteComment onDeleteMethod={props.onDelete} commentId={props.comment.id} />
 					</Box>
 					: user.isAdmin
 						? <Box className={styles.controlsContainer}>
-							<DeleteComment onDeleteMethod={props.onDeleteMethod} commentId={props.comment.id} />
+							<DeleteComment onDeleteMethod={props.onDelete} commentId={props.comment.id} />
 						</Box>
 						: null
 			}
