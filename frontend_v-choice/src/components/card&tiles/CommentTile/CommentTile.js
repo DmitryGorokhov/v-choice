@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Box, Card, Collapse, Typography } from '@material-ui/core'
+import { Box, Card, Typography } from '@material-ui/core'
 
 import styles from './CommentTile.module.css'
 import UpdateCommentDialog from '../../crud/UpdateCommentDialog/UpdateCommentDialog'
@@ -7,7 +7,7 @@ import DeleteComment from '../../crud/DeleteComment/DeleteComment'
 import UserContext from '../../../context'
 
 function CommentTile(props) {
-	const { user, setUser } = useContext(UserContext);
+	const { user, _ } = useContext(UserContext);
 
 	const dateFormat = (date) => {
 		const toDate = new Date(date);
@@ -28,14 +28,18 @@ function CommentTile(props) {
 					</Typography>
 				</Box>
 			</Box>
-			<Collapse in={props.comment.AuthorEmail === user.userName}>
-				{
-					<Box className={styles.controlsContainer}>
+			{
+				user.userName === props.comment.authorEmail
+					? <Box className={styles.controlsContainer}>
 						<UpdateCommentDialog filmId={props.comment.filmId} onUpdateMethod={props.onUpdateMethod} commentId={props.comment.id} />
 						<DeleteComment onDeleteMethod={props.onDeleteMethod} commentId={props.comment.id} />
 					</Box>
-				}
-			</Collapse>
+					: user.isAdmin
+						? <Box className={styles.controlsContainer}>
+							<DeleteComment onDeleteMethod={props.onDeleteMethod} commentId={props.comment.id} />
+						</Box>
+						: null
+			}
 		</Card>
 	)
 }

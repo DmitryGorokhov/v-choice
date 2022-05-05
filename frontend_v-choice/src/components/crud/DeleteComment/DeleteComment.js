@@ -32,7 +32,7 @@ function DeleteComment(props) {
 	};
 
 	return (
-		<div>
+		<>
 			<Button
 				variant="outlined"
 				color="secondary"
@@ -55,7 +55,7 @@ function DeleteComment(props) {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</div>
+		</>
 	)
 }
 
