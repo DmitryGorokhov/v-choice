@@ -137,6 +137,8 @@ namespace BLL.Utils
                 Title = film.Title,
                 Year = film.Year,
                 Description = film.Description,
+                TotalRate = film.TotalRate,
+                CountRate = film.CountRate,
                 AverageRate = film.AverageRate,
                 PosterPath = film.PosterPath,
                 Poster = null,

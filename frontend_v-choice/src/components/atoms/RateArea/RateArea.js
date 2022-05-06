@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { createStyles, makeStyles, Box, Button, Grid, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Box, Grid, IconButton, Typography } from '@material-ui/core'
 import { Rating } from '@material-ui/lab'
 import HighlightOffIcon from '@material-ui/icons/HighlightOff'
 import UserContext from '../../../context'
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => createStyles({
 	rightContainer: {
 		display: 'flex',
 		alignContent: 'center',
-		justifyContent: 'right',
+		justifyContent: 'right'
 	},
 	text: {
 		fontSize: '18px',
@@ -30,32 +30,39 @@ const useStyles = makeStyles((theme) => createStyles({
 function RateArea(props) {
 	const classes = useStyles();
 	const { user, _ } = useContext(UserContext);
-	const [userRate, setUserRate] = useState(null)
+	const [rate, setRate] = useState(null);
 
 	useEffect(() => {
-		if (props.user !== null && props.filmId !== null) {
+		if (props.filmId) {
 			fetch(`https://localhost:5001/api/rate/${props.filmId}`)
 				.then(response => response.json())
-				.then(result => setUserRate(result))
+				.then(result => {
+					if (result && result.rate !== undefined) {
+						setRate(result.rate);
+					}
+				})
 				.catch(_ => _);
 		}
 	}, [])
 
 	const handleDeleteUserRate = () => {
-		const oldValue = userRate.value;
-		fetch(`https://localhost:5001/api/rate/${userRate.id}`, {
-			method: 'DELETE'
-		})
-			.then(response => {
-				if (response.status === 204) {
-					setUserRate(null)
-					props.onAction(-oldValue, -1)
-				}
+		if (rate) {
+			const oldValue = rate.value;
+			fetch(`https://localhost:5001/api/rate/${rate.id}`, {
+				method: 'DELETE',
 			})
+				.then(response => {
+					if (response.status === 204) {
+						setRate(null);
+						props.onAction(-oldValue, -1);
+					}
+				})
+				.catch(_ => _);
+		}
 	}
 
 	const handleUserRateChanged = (_, newValue) => {
-		if (userRate === null) {
+		if (rate === null) {
 			fetch("https://localhost:5001/api/rate", {
 				method: 'POST',
 				headers: {
@@ -65,14 +72,18 @@ function RateArea(props) {
 			})
 				.then(response => response.json())
 				.then(result => {
-					setUserRate(result)
-					props.onAction(result.value, 1)
+					if (result) {
+						setRate(result);
+						props.onAction(newValue, 1);
+					}
 				})
+				.catch(_ => _);
 		}
 		else {
-			const oldValue = userRate.value
-			const updated = { ...userRate, value: newValue }
-			fetch(`https://localhost:5001/api/rate/${userRate.id}`, {
+			const oldValue = rate.value;
+			const updated = { ...rate, value: newValue };
+
+			fetch(`https://localhost:5001/api/rate/${rate.id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json;charset=utf-8'
@@ -80,11 +91,12 @@ function RateArea(props) {
 				body: JSON.stringify(updated)
 			})
 				.then(response => {
-					if (response.status === 201) {
-						setUserRate(updated)
-						props.onAction(newValue - oldValue, 0)
+					if (response.status === 204) {
+						setRate(updated);
+						props.onAction(newValue - oldValue, 0);
 					}
 				})
+				.catch(_ => _);
 		}
 	}
 
@@ -104,13 +116,19 @@ function RateArea(props) {
 								? <>
 									<Typography className={classes.text}>Ваша оценка:</Typography>
 									<Rating
-										value={userRate === null ? null : userRate.value}
 										max={10}
+										value={rate ? rate.value : 0}
 										className={classes.stars}
 										onChange={handleUserRateChanged} />
-									<Button variant="primary" onClick={handleDeleteUserRate}>
+									<IconButton
+										aria-label="reset-rate"
+										variant="primary"
+										size="small"
+										onClick={handleDeleteUserRate}
+										disabled={rate === null}
+									>
 										<HighlightOffIcon />
-									</Button>
+									</IconButton>
 								</>
 								: <Typography><Link to="/sign-in">Авторизируйтесь</Link>, чтобы оценить фильм</Typography>
 						}

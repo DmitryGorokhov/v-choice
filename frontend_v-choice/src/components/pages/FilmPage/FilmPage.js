@@ -56,16 +56,12 @@ function FilmPage() {
 		// Only one func for create, update or delete user rate,
 		// so value can be newRate, newRate - oldRate, - oldRate.
 		// Just add it to TotalRate.
-		const newTotal = film.totalRate + value;
+		const total = film.totalRate + value;
 		// The same about count.
-		const newCount = film.countRate + count;
+		const c = film.countRate + count;
+		const av = c === 0 ? 0 : total / c;
 
-		setFilm({
-			...film,
-			countRate: newCount,
-			totalRate: newTotal,
-			averageRate: newTotal / newCount
-		});
+		setFilm({ ...film, countRate: c, totalRate: total, averageRate: av });
 	}
 
 	return (

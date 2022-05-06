@@ -16,9 +16,6 @@ function DeleteComment(props) {
 	const handleSubmit = () => {
 		fetch(`https://localhost:5001/api/comment/${props.commentId}`, {
 			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			},
 		});
 		props.onDelete(props.commentId);
 		setOpen(false);

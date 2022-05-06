@@ -34,7 +34,7 @@ namespace backend_v_choice.Controllers
 
             var res = await _crudService.GetFilmRate(filmId, HttpContext.User);
             
-            return Ok(res);
+            return Ok(new { rate = res });
         }
 
         [Authorize]
