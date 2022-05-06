@@ -18,11 +18,15 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import CommentTile from '../../card&tiles/CommentTile/CommentTile'
 import CommentArea from '../../atoms/CommentArea/CommentArea'
 import UserContext from '../../../context'
+import OnPageCountSwitcher from '../../atoms/OnPageCountSwitcher/OnPageCountSwitcher'
 
 const useStyles = makeStyles((theme) => createStyles({
 	header: {
 		display: 'flex',
 		justifyContent: 'space-between',
+	},
+	leftMargin: {
+		marginLeft: theme.spacing(2),
 	},
 	list: {
 		width: '100%',
@@ -79,6 +83,7 @@ function CommentsList(props) {
 			});
 	}, [
 		state.currentPage,
+		state.onPage,
 		state.sortByDateInCommonOrder,
 		state.userCommentsFirst,
 		reload
@@ -140,6 +145,11 @@ function CommentsList(props) {
 		});
 	}
 
+	const handleChangeOnPageCount = (event) => {
+		const newCount = event.target.value;
+		setState({ ...state, currentPage: 1, onPage: newCount, loading: true });
+	}
+
 	return (
 		<>
 			<Box className={classes.header}>
@@ -154,6 +164,9 @@ function CommentsList(props) {
 								color="primary"
 								onChange={handleChangePage}
 							/>
+							<Box className={classes.leftMargin}>
+								<OnPageCountSwitcher count={state.onPage} onChange={handleChangeOnPageCount} />
+							</Box>
 							<Button variant="primary" onClick={handleSortByDateOrderChanged}>
 								{
 									state.sortByDateInCommonOrder

@@ -1,17 +1,10 @@
 import React from 'react'
-import {
-	InputLabel,
-	MenuItem,
-	FormHelperText,
-	FormControl,
-	Select
-} from '@material-ui/core'
+import { MenuItem, FormControl, Select } from '@material-ui/core'
 
 function OnPageCountSwitcher(props) {
 	return (
 		<>
 			<FormControl sx={{ m: 1, minWidth: 120 }}>
-				<InputLabel id="simple-select-helper-label">Количество</InputLabel>
 				<Select
 					labelId="simple-select-helper-label"
 					id="simple-select-helper"
@@ -24,7 +17,6 @@ function OnPageCountSwitcher(props) {
 					<MenuItem value={10}>10</MenuItem>
 					<MenuItem value={20}>20</MenuItem>
 				</Select>
-				<FormHelperText>на странице</FormHelperText>
 			</FormControl>
 		</>
 	)
