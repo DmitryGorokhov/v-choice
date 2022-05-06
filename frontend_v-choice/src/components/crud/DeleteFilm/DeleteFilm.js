@@ -51,6 +51,7 @@ function DeleteFilm(props) {
 				color="secondary"
 				className={props.btnStyle}
 				onClick={handleClickOpen}
+				size="small"
 			>
 				<DeleteIcon />
 				Удалить

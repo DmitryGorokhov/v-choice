@@ -117,7 +117,7 @@ export default function FormDialog(props) {
 
 	return (
 		<>
-			<Button variant="outlined" color="primary" onClick={handleOpenDialog} className={classes.mainButton}>
+			<Button variant="outlined" color="primary" onClick={handleOpenDialog} className={classes.mainButton} size='small'>
 				<AddIcon />
 				Добавить фильм
 			</Button>

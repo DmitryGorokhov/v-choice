@@ -132,7 +132,7 @@ export default function UpdateFilmDialog(props) {
 
 	return (
 		<>
-			<Button variant="outlined" color="primary" onClick={handleOpenDialog}>
+			<Button variant="outlined" color="primary" onClick={handleOpenDialog} size="small">
 				<CreateIcon />
 				Изменить
 			</Button>

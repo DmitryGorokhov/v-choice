@@ -1,14 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
-import {
-	createStyles,
-	makeStyles,
-	Box,
-	List,
-	ListItem,
-	Typography,
-} from '@material-ui/core'
+import { createStyles, makeStyles, Box, Button, Collapse, List, ListItem, Typography, } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
 import { useHistory } from 'react-router-dom'
+import ExpandLessIcon from '@material-ui/icons/ExpandLess'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 import FilmCard from '../../card&tiles/FilmCard/FilmCard'
 import AddFilmDialog from '../../crud/AddFilmDialog/AddFilmDialog'
@@ -26,23 +21,14 @@ const useStyles = makeStyles((theme) => createStyles({
 	},
 	loading: {
 		margin: theme.spacing(1),
-		fontSize: '20px'
 	},
 	tools: {
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
-		margin: theme.spacing(0, 2),
-	},
-	controls: {
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-	},
-	control: {
-		marginBottom: theme.spacing(1)
 	},
 	pagination: {
+		margin: theme.spacing(1, 0),
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'center',
@@ -51,6 +37,14 @@ const useStyles = makeStyles((theme) => createStyles({
 	paginationLeftItem: {
 		marginRight: theme.spacing(4),
 	},
+	toolsContainer: {
+		margin: theme.spacing(0, 0, 3),
+	},
+	header: {
+		display: 'flex',
+		justifyContent: 'space-around',
+		alignItems: 'center',
+	}
 }));
 
 function FilmList(props) {
@@ -72,6 +66,7 @@ function FilmList(props) {
 	});
 
 	const [reload, setReload] = useState(false);
+	const [open, setOpen] = useState(true);
 
 	const calculatePagesCount = (total, onPage) => {
 		let value = Math.floor(total / onPage);
@@ -117,7 +112,7 @@ function FilmList(props) {
 		withCommentsOnly = false,
 		withRateOnly = false
 	) => {
-		const url = `/catalog/${QueryProps.Page}=${p}&${QueryProps.Count}=${c}`;
+		let url = `/catalog/${QueryProps.Page}=${p}&${QueryProps.Count}=${c}`;
 
 		if (g && g !== 0) {
 			url += `&${QueryProps.GenreId}=${g}`;
@@ -215,82 +210,99 @@ function FilmList(props) {
 
 	return (
 		<>
+			<Box className={classes.header}>
+				<Typography variant="h4">Каталог фильмов</Typography>
+				<Button onClick={() => setOpen(!open)} size="small">
+					{open ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+					{open ? "Свернуть элементы управления" : "Развернуть элементы управления"}
+				</Button>
+			</Box>
 			{
 				state.loading
-					? <Typography className={classes.loading}>
-						Загрузка...
-					</Typography >
+					? <Typography className={classes.loading} variant='subtitle1'>Загрузка...</Typography >
 					: <>
-						<Box>
-							{
-								user.isAdmin
-									? <Box>
-										<Box className={classes.tools}>
-											<FilmsFilter
-												onSubmit={handleFiltersChanged}
-												genres={props.genres}
-												selectedGenre={state.byGenreId}
-												selectedSortType={state.sortingType}
-												selectedCF={state.withCommentsOnly}
-												selectedRF={state.withRateOnly}
-											/>
-										</Box>
-										<Box className={classes.tools} >
+						<Collapse in={open} timeout="auto">
+							<Box className={classes.toolsContainer}>
+								<Box className={classes.tools}>
+									<FilmsFilter
+										onSubmit={handleFiltersChanged}
+										genres={props.genres}
+										selectedGenre={state.byGenreId}
+										selectedSortType={state.sortingType}
+										selectedCF={state.withCommentsOnly}
+										selectedRF={state.withRateOnly}
+									/>
+								</Box>
+								{
+									user.isAdmin
+										? <Box className={classes.tools}>
 											<AddFilmDialog genres={props.genres} onCreate={handleCreateFilm} />
-											<GenreManager genres={props.genres}
+											<GenreManager
+												genres={props.genres}
 												onCreate={props.onGenreCreate}
 												onUpdate={props.onGenreUpdate}
-												onDelete={props.onGenreDelete} />
+												onDelete={props.onGenreDelete}
+											/>
 										</Box>
+										: null
+								}
+							</Box>
+							{
+								state.films.length !== 0
+									? <Box className={classes.pagination}>
+										<Box className={classes.paginationLeftItem}>
+											<Pagination
+												page={Number(state.currentPage)}
+												count={state.countPages}
+												variant="outlined"
+												color="primary"
+												onChange={handleChangePage}
+											/>
+										</Box>
+										<OnPageCountSwitcher count={state.onPage} onChange={handleChangeOnPageCount} />
 									</Box>
-									: <Box className={classes.tools}>
-										<FilmsFilter
-											onSubmit={handleFiltersChanged}
-											genres={props.genres}
-											selectedGenre={state.byGenreId}
-											selectedSortType={state.sortingType}
-											selectedCF={state.withCommentsOnly}
-											selectedRF={state.withRateOnly}
+									: null
+							}
+						</Collapse>
+
+						<List>
+							{
+								state.films.length !== 0
+									? state.films.map(film => {
+										return (
+											<ListItem
+												className={classes.filmListItem}
+												key={film.id}
+											>
+												<FilmCard
+													film={film}
+													onUpdate={handleUpdateFilm}
+													onDelete={handleDeleteFilm}
+													genres={props.genres} />
+											</ListItem>
+										)
+									})
+									: <Typography variant="h5">
+										Не найдено фильмов по запросу
+									</Typography>
+							}
+						</List>
+						{
+							state.films.length !== 0
+								? <Box className={classes.pagination}>
+									<Box className={classes.paginationLeftItem}>
+										<Pagination
+											page={Number(state.currentPage)}
+											count={state.countPages}
+											variant="outlined"
+											color="primary"
+											onChange={handleChangePage}
 										/>
 									</Box>
-							}
-							<Box>
-								<List>
-									{
-										state.films.length !== 0
-											? state.films.map(film => {
-												return (
-													<ListItem
-														className={classes.filmListItem}
-														key={film.id}
-													>
-														<FilmCard
-															film={film}
-															onUpdate={handleUpdateFilm}
-															onDelete={handleDeleteFilm}
-															genres={props.genres} />
-													</ListItem>
-												)
-											})
-											: <Typography variant="h5">
-												Не найдено фильмов по запросу
-											</Typography>
-									}
-								</List>
-							</Box>
-						</Box>
-						<Box className={classes.pagination}>
-							<Box className={classes.paginationLeftItem}>
-								<Pagination
-									page={Number(state.currentPage)}
-									count={state.countPages}
-									variant="outlined"
-									color="primary"
-									onChange={handleChangePage}
-								/>
-							</Box>
-							<OnPageCountSwitcher count={state.onPage} onChange={handleChangeOnPageCount} />
-						</Box>
+									<OnPageCountSwitcher count={state.onPage} onChange={handleChangeOnPageCount} />
+								</Box>
+								: null
+						}
 					</>
 			}
 		</>

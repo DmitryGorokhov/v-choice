@@ -178,7 +178,7 @@ export default function FormDialog(props) {
 
 	return (
 		<>
-			<Button variant="outlined" color="primary" onClick={handleOpenDialog} className={classes.mainButton}>
+			<Button variant="outlined" color="primary" onClick={handleOpenDialog} className={classes.mainButton} size='small'>
 				Управление жанрами
 			</Button>
 

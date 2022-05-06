@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from "react-router-dom"
-import { createStyles, makeStyles, Box, Container, Typography } from '@material-ui/core'
 
 import FilmList from '../../moleculas/FilmList/FilmList'
 import { SortingType } from '../../enums/SortingType'
 import { FilteringType } from '../../enums/FilteringType'
 import { QueryProps } from '../../enums/QueryProps'
 
-const useStyles = makeStyles((theme) => createStyles({
-	headerContainer: {
-		margin: theme.spacing(2),
-		padding: theme.spacing(1),
-	},
-}));
-
 function Films() {
-	const classes = useStyles();
 	const [genres, setGenres] = useState([]);
 	const { slug } = useParams();
 
@@ -108,20 +99,13 @@ function Films() {
 	}
 	return (
 		<>
-			<Container>
-				<Box className={classes.headerContainer}>
-					<Typography variant="h3">
-						Каталог фильмов
-					</Typography>
-				</Box>
-				<FilmList
-					{...params}
-					genres={genres}
-					onGenreCreate={handleCreateGenre}
-					onGenreUpdate={handleUpdateGenre}
-					onGenreDelete={handleDeleteGenre}
-				/>
-			</Container>
+			<FilmList
+				{...params}
+				genres={genres}
+				onGenreCreate={handleCreateGenre}
+				onGenreUpdate={handleUpdateGenre}
+				onGenreDelete={handleDeleteGenre}
+			/>
 		</>
 	)
 }

@@ -1,38 +1,34 @@
 import React, { useContext } from 'react'
+import { Link } from 'react-router-dom'
 import { createStyles, makeStyles, Box, Typography } from '@material-ui/core'
 
 import FavoritesList from '../../moleculas/FavoritesList/FavoritesList'
 import UserContext from '../../../context';
 
 const useStyles = makeStyles((theme) => createStyles({
-	marginItem: {
-		margin: theme.spacing(2),
-	},
 	container: {
 		margin: theme.spacing(2),
 		padding: theme.spacing(1),
+	},
+	header: {
+		margin: theme.spacing(2, 0, 3),
 	}
 }));
 
 function UserPage() {
-	const styles = useStyles();
-	const { user, setUser } = useContext(UserContext);
+	const classes = useStyles();
+	const { user, _ } = useContext(UserContext);
 
 	return (
-		<Box className={styles.container}>
+		<Box className={classes.container}>
 			{
 				user.userName
-					? <Box>
-						<Typography variant="h3" className={styles.marginItem}>
-							Привет, {user.userName}!
-						</Typography>
-						<Typography variant="h5" className={styles.marginItem}>
-							Вот твои избранные фильмы
-						</Typography>
+					? <>
+						<Typography variant='h4' className={classes.header}>Привет, {user.userName}!</Typography>
 						<FavoritesList />
-					</Box>
-					: <Typography variant="h5" className={styles.marginItem}>
-						Авторизируйтесь, чтобы просматривать профиль
+					</>
+					: <Typography variant='subtitle1'>
+						<Link to="/sign-in">Авторизируйтесь</Link>, чтобы просматривать свой профиль
 					</Typography>
 			}
 		</Box>
