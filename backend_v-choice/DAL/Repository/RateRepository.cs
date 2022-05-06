@@ -26,7 +26,7 @@ namespace DAL.Repository
             {
                 film.CountRate++;
                 film.TotalRate += rate.Value;
-                film.AverageRate = film.TotalRate / film.CountRate;
+                film.AverageRate = (float)film.TotalRate / film.CountRate;
                 film.RateCollection.Add(rate);
                 _context.Film.Update(film);
             }
@@ -56,7 +56,7 @@ namespace DAL.Repository
                 else
                 {
                     film.TotalRate -= item.Value;
-                    film.AverageRate = film.TotalRate / film.CountRate;
+                    film.AverageRate = (float)film.TotalRate / film.CountRate;
                 }
 
                 _context.Film.Update(film);
@@ -82,7 +82,7 @@ namespace DAL.Repository
             if (film != null)
             {
                 film.TotalRate += rate.Value - item.Value;
-                film.AverageRate = film.TotalRate / film.CountRate;
+                film.AverageRate = (float)film.TotalRate / film.CountRate;
                 _context.Film.Update(film);
             }
 
