@@ -145,7 +145,7 @@ namespace BLL.Service
             {
                 table.AddCell(new Phrase(f.Title, font));
                 table.AddCell(new Phrase(f.Requested.ToString(), font));
-                table.AddCell(new Phrase(f.AvRate.ToString(), font));
+                table.AddCell(new Phrase(Math.Round(f.AvRate, 2).ToString(), font));
                 table.AddCell(new Phrase(f.CountRate.ToString(), font));
                 table.AddCell(new Phrase(f.CountComment.ToString(), font));
                 table.AddCell(new Phrase(f.CountFavorite.ToString(), font));

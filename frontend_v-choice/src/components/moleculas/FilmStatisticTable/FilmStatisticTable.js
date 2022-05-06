@@ -95,7 +95,7 @@ function FilmStatisticTable(props) {
 				id: item.id,
 				link: { id: item.id, title: item.title },
 				requested: item.requested,
-				rate: item.avRate,
+				rate: item.avRate.toFixed(2),
 				countRate: item.countRate,
 				countComment: item.countComment,
 				countFavorite: item.countFavorite,

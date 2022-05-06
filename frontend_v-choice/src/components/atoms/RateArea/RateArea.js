@@ -105,8 +105,8 @@ function RateArea(props) {
 			<Grid container>
 				<Grid item xs={6}>
 					<Box className={classes.container}>
-						<Typography className={classes.text}>Рейтинг фильма: {props.filmRate}</Typography>
-						<Rating value={props.filmRate} max={10} disabled className={classes.stars} />
+						<Typography className={classes.text}>Рейтинг фильма: {props.filmRate.toFixed(2)}</Typography>
+						<Rating value={props.filmRate.toFixed(2)} precision={0.25} max={10} disabled className={classes.stars} readOnly />
 					</Box>
 				</Grid>
 				<Grid item xs={6}>
