@@ -30,8 +30,18 @@ export default function ExportStatistic(props) {
 		)
 	}
 
+	const showChanged = (link) => {
+		return (
+			<Typography>
+				Столбцы для сортировок изменены. Вы можете выгрузить новый отчет <br />
+				Прошлый отчет всё ещё доступен по <Link to={`/${link}`} target="_blank">ссылке</Link>
+			</Typography >
+		)
+	}
+
 	const [msg, setMsg] = useState(props.link && props.link !== undefined ? () => showLink(props.link) : null);
 	const [error, setError] = useState(null);
+	const [changed, setChanged] = useState(false);
 
 	const [filmSortingType, setFilmSortingType] = useState(0);
 	const [genreSortingType, setGenreSortingType] = useState(0);
@@ -48,6 +58,7 @@ export default function ExportStatistic(props) {
 			.then(data => {
 				if (data && data.link !== undefined) {
 					setMsg(showLink(data.link));
+					setChanged(false);
 					props.saveLink(data.link);
 				}
 				else {
@@ -59,16 +70,30 @@ export default function ExportStatistic(props) {
 
 	const handleChangeFilmSortingType = (event) => {
 		setFilmSortingType(event.target.value);
+		if (!changed) {
+			setChanged(true);
+
+			if (props.link && props.link !== undefined) {
+				setMsg(() => showChanged(props.link));
+			}
+		}
 	};
 
 	const handleChangeGenreSortingType = (event) => {
 		setGenreSortingType(event.target.value);
+		if (!changed) {
+			setChanged(true);
+
+			if (props.link && props.link !== undefined) {
+				setMsg(() => showChanged(props.link));
+			}
+		}
 	};
 
 	return (
 		<>
 			<MyAlerter msg={msg} error={error} />
-			<Typography variant='subtitle1'>
+			<Typography variant='subtitle1' className={classes.item}>
 				Укажите столбцы сортировки таблиц статистики фильмов и жанров
 			</Typography>
 			<FormControl fullWidth className={classes.item}>
@@ -95,11 +120,11 @@ export default function ExportStatistic(props) {
 					value={genreSortingType}
 					onChange={handleChangeGenreSortingType}
 				>
-					<MenuItem value={0}>Количество запросов для фильтрации</MenuItem>
-					<MenuItem value={1}>Количество фильмов</MenuItem>
+					<MenuItem value={0}>Количество фильмов</MenuItem>
+					<MenuItem value={1}>Количество запросов для фильтрации</MenuItem>
 				</Select>
 			</FormControl>
-			<Button onClick={handleSubmit} color="primary">
+			<Button onClick={handleSubmit} color="primary" disabled={msg !== null && !changed}>
 				Выгрузить
 			</Button>
 		</>

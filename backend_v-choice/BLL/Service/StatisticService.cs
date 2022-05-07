@@ -114,14 +114,14 @@ namespace BLL.Service
             table.AddCell(cell);
 
             table.AddCell(new Phrase("Название", font));
-            table.AddCell(new Phrase("Количество запросов для фильтрации", font));
             table.AddCell(new Phrase("Количество фильмов", font));
+            table.AddCell(new Phrase("Количество запросов для фильтрации", font));
 
             foreach (var g in genreStatistic)
             {
                 table.AddCell(new Phrase(g.Value, font));
-                table.AddCell(new Phrase(g.Requested.ToString(), font));
                 table.AddCell(new Phrase(g.CountFilms.ToString(), font));
+                table.AddCell(new Phrase(g.Requested.ToString(), font));
             }
 
             doc.Add(table);

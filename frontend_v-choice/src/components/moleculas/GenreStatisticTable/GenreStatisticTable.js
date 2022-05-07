@@ -26,8 +26,8 @@ function GenreStatisticTable(props) {
 			width: 700,
 		},
 		{
-			field: 'requested',
-			headerName: 'Запросов в фильтре',
+			field: 'countFilms',
+			headerName: 'Количество фильмов',
 			filterIndex: 0,
 			align: 'center',
 			filterable: false,
@@ -37,8 +37,8 @@ function GenreStatisticTable(props) {
 			width: 200,
 		},
 		{
-			field: 'countFilms',
-			headerName: 'Количество фильмов',
+			field: 'requested',
+			headerName: 'Запросов в фильтре',
 			filterIndex: 1,
 			align: 'center',
 			filterable: false,
