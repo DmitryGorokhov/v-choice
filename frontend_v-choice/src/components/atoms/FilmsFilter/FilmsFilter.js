@@ -11,7 +11,6 @@ import {
 	Select
 } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
-import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
 import { SortingType } from '../../enums/SortingType'
 
 const useStyles = makeStyles((theme) => ({
@@ -37,23 +36,30 @@ function FilmsFilter(props) {
 		withRateOnly: props.selectedRF
 	});
 
+	const [paramsChanged, setParamsChanged] = useState(false);
+
 	const handleChangeGenreId = (event) => {
+		setParamsChanged(true);
 		setState({ ...state, byGenreId: Number(event.target.value) });
 	};
 
 	const handleSortingTypeChanged = (event) => {
+		setParamsChanged(true);
 		setState({ ...state, sortingType: event.target.value });
 	};
 
 	const handleCommentsFilterChanged = (_) => {
+		setParamsChanged(true);
 		setState({ ...state, withCommentsOnly: !state.withCommentsOnly })
 	};
 
 	const handleRateFilterChanged = (_) => {
+		setParamsChanged(true);
 		setState({ ...state, withRateOnly: !state.withRateOnly })
 	};
 
 	const handleSubmit = () => {
+		setParamsChanged(false);
 		props.onSubmit(
 			state.byGenreId,
 			state.sortingType,
@@ -117,7 +123,7 @@ function FilmsFilter(props) {
 						color="primary" />}
 					label="Только с оценкой" />
 			</FormControl>
-			<Button onClick={handleSubmit}>
+			<Button onClick={handleSubmit} disabled={!paramsChanged}>
 				<SearchIcon />
 			</Button>
 		</div>

@@ -67,8 +67,8 @@ function Films() {
 	const params = {
 		page: 1,
 		count: 3,
-		genre: 0,
-		sortingType: SortingType['not-set'],
+		"genre-id": 0,
+		"sort-by": SortingType['not-set'],
 		withCommentsOnly: false,
 		withRateOnly: false,
 	}

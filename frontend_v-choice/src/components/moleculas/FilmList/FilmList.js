@@ -59,8 +59,8 @@ function FilmList(props) {
 		currentPage: props.page,
 		onPage: props.count,
 		countPages: 0,
-		byGenreId: props.genre,
-		sortingType: props.sortingType,
+		byGenreId: props['genre-id'],
+		sortingType: props['sort-by'],
 		withCommentsOnly: props.withCommentsOnly,
 		withRateOnly: props.withRateOnly,
 	});
@@ -119,7 +119,7 @@ function FilmList(props) {
 		}
 
 		if (sort && sort !== SortingType['not-set']) {
-			url += `&${QueryProps.SortBy}=${sort}`;
+			url += `&${QueryProps.SortBy}=${Object.keys(SortingType)[sort]}`;
 		}
 
 		let filter = FilteringType.NotSet;
