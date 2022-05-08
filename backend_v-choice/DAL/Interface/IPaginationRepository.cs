@@ -6,19 +6,22 @@ namespace DAL.Interface
 {
     public interface IPaginationRepository
     {
-        Task<Pagination<Comment>> GetCommentsByDateOnlyAsync(int pageNumber, int onPageCount, int filmId);
-        Task<Pagination<Comment>> GetCommentsByDateDescendingOnlyAsync(int pageNumber, int onPageCount, int filmId);
-        Task<Pagination<Comment>> GetCommentsByDateUserFirstAsync(int pageNumber, int onPageCount, int filmId, string userId);
-        Task<Pagination<Comment>> GetCommentsByDateDescendingUserFirstAsync(int pageNumber, int onPageCount, int filmId, string userId);
-        Task<Pagination<Film>> GetFavoritesByDateAsync(int pageNumber, int onPageCount, string userId);
-        Task<Pagination<Film>> GetFavoritesByDateDescendingAsync(int pageNumber, int onPageCount, string userId);
-        Task<Pagination<Film>> GetFilmsSortedByCreatedAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
-        Task<Pagination<Film>> GetFilmsSortedByCreatedDescAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
-        Task<Pagination<Film>> GetFilmsSortedByYearAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
-        Task<Pagination<Film>> GetFilmsSortedByYearDescAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
-        Task<Pagination<Film>> GetFilmsSortedByRateAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
-        Task<Pagination<Film>> GetFilmsSortedByRateDescAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
-        Task<Pagination<Film>> GetFilmsAsync(int pageNumber, int onPageCount, int v1, bool v2, bool v3);
         Task<(int, IQueryable<T>)> SplitByPagesAsync<T>(IQueryable<T> collection, int pageNumber, int onPageCount);
+        IQueryable<Film> GetFilmsByGenreId(IQueryable<Film> collection, int genreId);
+        IQueryable<Film> GetFilmsWithCommentsOnly(IQueryable<Film> collection);
+        IQueryable<Film> GetFilmsWithRateOnly(IQueryable<Film> collection);
+        IQueryable<Film> GetAllFilms();
+        IQueryable<Film> GetFilmsByCreated(IQueryable<Film> collection);
+        IQueryable<Film> GetFilmsByCreatedDesc(IQueryable<Film> collection);
+        IQueryable<Film> GetFilmsByYear(IQueryable<Film> collection);
+        IQueryable<Film> GetFilmsByYearDesc(IQueryable<Film> collection);
+        IQueryable<Film> GetFilmsByRate(IQueryable<Film> collection);
+        IQueryable<Film> GetFilmsByDesc(IQueryable<Film> collection);
+        IQueryable<Film> GetFavoritesByDateDescending(string userId);
+        IQueryable<Film> GetFavoritesByDate(string userId);
+        IQueryable<Comment> GetCommentsByDateDescendingUserFirst(string userId, int filmId);
+        IQueryable<Comment> GetCommentsByDateUserFirst(string userId, int filmId);
+        IQueryable<Comment> GetCommentsByDateDescendingOnly(int filmId);
+        IQueryable<Comment> GetCommentsByDateOnly(int filmId);
     }
 }

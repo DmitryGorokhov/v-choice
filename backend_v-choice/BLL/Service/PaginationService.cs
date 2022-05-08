@@ -34,34 +34,37 @@ namespace BLL.Service
             _logger.LogInformation($"Starting get {query.OnPageCount} comments on {query.PageNumber} page.");
             try
             {
-                _logger.LogInformation("Call GetCommentsByPageAsync.");
-
-                Pagination<Comment> answer;
+                IQueryable<Comment> collection;
 
                 if (query.MyCommentsFirst)
                 {
+                    _logger.LogInformation("Call GetCurrentUserModelAsync.");
                     string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
-                    answer = query.CommonOrder switch
+
+                    _logger.LogInformation($"Call {(query.CommonOrder ? "GetCommentsByDateDescendingUserFirst" : "GetCommentsByDateUserFirst")}.");
+                    collection = query.CommonOrder switch
                     {
-                        true => await _paginationRepository.GetCommentsByDateDescendingUserFirstAsync(query.PageNumber, query.OnPageCount, query.FilmId, userId),
-                        false => await _paginationRepository.GetCommentsByDateUserFirstAsync(query.PageNumber, query.OnPageCount, query.FilmId, userId),
+                        true => _paginationRepository.GetCommentsByDateDescendingUserFirst(userId, query.FilmId),
+                        false => _paginationRepository.GetCommentsByDateUserFirst(userId, query.FilmId),
                     };
                 }
                 else
                 {
-                    answer = query.CommonOrder switch
+                    _logger.LogInformation($"Call {(query.CommonOrder ? "GetCommentsByDateDescendingOnly" : "GetCommentsByDateOnly")}.");
+                    collection = query.CommonOrder switch
                     {
-                        true => await _paginationRepository.GetCommentsByDateDescendingOnlyAsync(query.PageNumber, query.OnPageCount, query.FilmId),
-                        false => await _paginationRepository.GetCommentsByDateOnlyAsync(query.PageNumber, query.OnPageCount, query.FilmId),
+                        true => _paginationRepository.GetCommentsByDateDescendingOnly(query.FilmId),
+                        false => _paginationRepository.GetCommentsByDateOnly(query.FilmId),
                     };
                 }
 
                 _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully. Pack result into object before return.");
+                (int total, var items) = await _paginationRepository.SplitByPagesAsync(collection, query.PageNumber, query.OnPageCount);
 
                 return new PaginationDTO<CommentDTO>(query)
                 {
-                    TotalCount = answer.TotalCount,
-                    Items = answer.Items.Select(e => _mapper.CommentModelToDTO(e)).ToList(),
+                    TotalCount = total,
+                    Items = items.Select(e => _mapper.CommentModelToDTO(e)).ToList(),
                 };
             }
             catch (Exception e)
@@ -77,22 +80,23 @@ namespace BLL.Service
             _logger.LogInformation($"Starting get {query.OnPageCount} favorite films on {query.PageNumber} page.");
             try
             {
-                _logger.LogInformation("Call GetFavoriteFilmsByPageAsync.");
-
+                _logger.LogInformation("Call GetCurrentUserModelAsync.");
                 string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
 
-                Pagination<Film> answer = query.CommonOrder switch
+                _logger.LogInformation($"Call {(query.CommonOrder ? "GetFavoritesByDateDescending" : "GetFavoritesByDate")}.");
+                IQueryable<Film> collection = query.CommonOrder switch
                 {
-                    true => await _paginationRepository.GetFavoritesByDateDescendingAsync(query.PageNumber, query.OnPageCount, userId),
-                    false => await _paginationRepository.GetFavoritesByDateAsync(query.PageNumber, query.OnPageCount, userId)
+                    true => _paginationRepository.GetFavoritesByDateDescending(userId),
+                    false => _paginationRepository.GetFavoritesByDate(userId)
                 };
 
                 _logger.LogInformation($"Get {query.OnPageCount} favorite films on {query.PageNumber} page successfully. Pack result into object before return.");
+                (int total, var items) = await _paginationRepository.SplitByPagesAsync(collection, query.PageNumber, query.OnPageCount);
 
                 return new PaginationDTO<FilmDTO>(query)
                 {
-                    TotalCount = answer.TotalCount,
-                    Items = answer.Items.Select(e => _mapper.FilmModelToDTO(e)).ToList(),
+                    TotalCount = total,
+                    Items = items.Select(e => _mapper.FilmModelToDTO(e)).ToList(),
                 };
             }
             catch (Exception e)
@@ -110,74 +114,54 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call GetFilmsByPageAsync.");
 
-                if (query.SortBy != null)
-                {
-                    query.SortBy = SortingType.NotSet;
-                }
-
                 if (query.GenreId != null && query.GenreId > 0)
                 {
                     _logger.LogInformation($"Write genre with Id={query.GenreId} was requested by catalog filter. Call GenreRequestedCounter.");
                     await _genreRepository.GenreRequestedCounter((int)query.GenreId);
                 }
 
-                Pagination<Film> answer = query.SortBy switch
+                _logger.LogInformation("Call GetAllFilms.");
+                IQueryable<Film> collection = _paginationRepository.GetAllFilms();
+
+                if ((query.GenreId ?? 0) != 0)
                 {
-                    SortingType.NotSet => answer = await _paginationRepository.GetFilmsAsync(
-                        query.PageNumber,
-                        query.OnPageCount,
-                        query.GenreId ?? 0,
-                        query.HasCommentsOnly ?? false,
-                        query.HasRateOnly ?? false),
-                    SortingType.Created => await _paginationRepository.GetFilmsSortedByCreatedAsync(
-                        query.PageNumber,
-                        query.OnPageCount,
-                        query.GenreId ?? 0,
-                        query.HasCommentsOnly ?? false,
-                        query.HasRateOnly ?? false),
-                    SortingType.CreatedDesc => await _paginationRepository.GetFilmsSortedByCreatedDescAsync(
-                        query.PageNumber,
-                        query.OnPageCount,
-                        query.GenreId ?? 0,
-                        query.HasCommentsOnly ?? false,
-                        query.HasRateOnly ?? false),
-                    SortingType.Year => await _paginationRepository.GetFilmsSortedByYearAsync(
-                        query.PageNumber,
-                        query.OnPageCount,
-                        query.GenreId ?? 0,
-                        query.HasCommentsOnly ?? false,
-                        query.HasRateOnly ?? false),
-                    SortingType.YearDesc => await _paginationRepository.GetFilmsSortedByYearDescAsync(
-                        query.PageNumber,
-                        query.OnPageCount,
-                        query.GenreId ?? 0,
-                        query.HasCommentsOnly ?? false,
-                        query.HasRateOnly ?? false),
-                    SortingType.Rate => await _paginationRepository.GetFilmsSortedByRateAsync(
-                        query.PageNumber,
-                        query.OnPageCount,
-                        query.GenreId ?? 0,
-                        query.HasCommentsOnly ?? false,
-                        query.HasRateOnly ?? false),
-                    SortingType.RateDesc => await _paginationRepository.GetFilmsSortedByRateDescAsync(
-                        query.PageNumber,
-                        query.OnPageCount,
-                        query.GenreId ?? 0,
-                        query.HasCommentsOnly ?? false,
-                        query.HasRateOnly ?? false),
-                    _ => answer = await _paginationRepository.GetFilmsAsync(
-                        query.PageNumber,
-                        query.OnPageCount,
-                        query.GenreId ?? 0,
-                        query.HasCommentsOnly ?? false,
-                        query.HasRateOnly ?? false)
+                    _logger.LogInformation("Call GetFilmsByGenreId.");
+                    collection = _paginationRepository.GetFilmsByGenreId(collection, (int)query.GenreId);
+                }
+
+                if (query.HasCommentsOnly ?? false)
+                {
+                    _logger.LogInformation("Call GetFilmsWithCommentsOnly.");
+                    collection = _paginationRepository.GetFilmsWithCommentsOnly(collection);
+                }
+
+                if (query.HasRateOnly ?? false)
+                {
+                    _logger.LogInformation("Call GetFilmsWithRateOnly.");
+                    collection = _paginationRepository.GetFilmsWithRateOnly(collection);
+                }
+
+                _logger.LogInformation($"Film pagination: sort collection by {query.SortBy}.");
+                collection = (query.SortBy ?? SortingType.NotSet) switch
+                {
+                    SortingType.NotSet => collection,
+                    SortingType.Created => _paginationRepository.GetFilmsByCreated(collection),
+                    SortingType.CreatedDesc => _paginationRepository.GetFilmsByCreatedDesc(collection),
+                    SortingType.Year => _paginationRepository.GetFilmsByYear(collection),
+                    SortingType.YearDesc => _paginationRepository.GetFilmsByYearDesc(collection),
+                    SortingType.Rate => _paginationRepository.GetFilmsByRate(collection),
+                    SortingType.RateDesc => _paginationRepository.GetFilmsByDesc(collection),
+                    _ => collection
                 };
+
+                _logger.LogInformation("Call SplitByPagesAsync.");
+                (int total, var items) = await _paginationRepository.SplitByPagesAsync(collection, query.PageNumber, query.OnPageCount);
 
                 _logger.LogInformation($"Get {query.OnPageCount} films on {query.PageNumber} page successfully. Pack result into object before return.");
                 var res = new PaginationDTO<FilmDTO>(query)
                 {
-                    TotalCount = answer.TotalCount,
-                    Items = answer.Items.Select(e => _mapper.FilmModelToDTO(e)).ToList(),
+                    TotalCount = total,
+                    Items = items.Select(e => _mapper.FilmModelToDTO(e)).ToList(),
                 };
 
                 return res;

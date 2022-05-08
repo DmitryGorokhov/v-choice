@@ -15,46 +15,6 @@ namespace DAL.Repository
             _context = dbc;
         }
 
-        public async Task<Pagination<Comment>> GetCommentsByDateDescendingOnlyAsync(int pageNumber, int onPageCount, int filmId)
-        {
-            var collection = _context.Comment.Where(c => c.FilmId == filmId).OrderByDescending(c => c.CreatedAt);
-            
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Comment>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Comment>> GetCommentsByDateDescendingUserFirstAsync(int pageNumber, int onPageCount, int filmId, string userId)
-        {
-            var collection = _context.Comment.Where(c => c.FilmId == filmId);
-            collection = collection.Where(c => c.AuthorId == userId).OrderByDescending(c => c.CreatedAt)
-                .Union(collection.Where(c => c.AuthorId != userId).OrderByDescending(c => c.CreatedAt));
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Comment>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Comment>> GetCommentsByDateOnlyAsync(int pageNumber, int onPageCount, int filmId)
-        {
-            var collection = _context.Comment.Where(c => c.FilmId == filmId).OrderBy(c => c.CreatedAt);
-            
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Comment>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Comment>> GetCommentsByDateUserFirstAsync(int pageNumber, int onPageCount, int filmId, string userId)
-        {
-            var collection = _context.Comment.Where(c => c.FilmId == filmId);
-            collection = collection.Where(c => c.AuthorId == userId).OrderBy(c => c.CreatedAt)
-                .Union(collection.Where(c => c.AuthorId != userId).OrderBy(c => c.CreatedAt));
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Comment>() { TotalCount = total, Items = items };
-        }
-
         public async Task<(int, IQueryable<T>)> SplitByPagesAsync<T>(IQueryable<T> collection, int pageNumber, int onPageCount)
         {
             int total = await collection.CountAsync();
@@ -63,124 +23,59 @@ namespace DAL.Repository
             return (total, items);
         }
 
-        public async Task<Pagination<Film>> GetFavoritesByDateAsync(int pageNumber, int onPageCount, string userId)
-        {
-            var collection = _context.Favorite.Where(c => c.AuthorId == userId).OrderBy(c => c.AddedAt)
+        public IQueryable<Film> GetFilmsByGenreId(IQueryable<Film> collection, int genreId)
+            => collection.Where(e => e.Genres.FirstOrDefault(g => g.Id == genreId) != null);
+
+        public IQueryable<Film> GetFilmsWithCommentsOnly(IQueryable<Film> collection)
+           => collection.Include(e => e.Comments).Where(e => e.Comments.Count != 0);
+
+        public IQueryable<Film> GetFilmsWithRateOnly(IQueryable<Film> collection)
+           => collection.Where(e => e.CountRate != 0);
+
+        public IQueryable<Film> GetAllFilms() 
+            => _context.Film.Include(e => e.Genres);
+
+        public IQueryable<Film> GetFilmsByCreated(IQueryable<Film> collection)
+            => collection.OrderBy(e => e.CreatedAt);
+
+        public IQueryable<Film> GetFilmsByCreatedDesc(IQueryable<Film> collection)
+            => collection.OrderByDescending(e => e.CreatedAt);
+
+        public IQueryable<Film> GetFilmsByYear(IQueryable<Film> collection)
+            => collection.OrderBy(e => e.Year);
+
+        public IQueryable<Film> GetFilmsByYearDesc(IQueryable<Film> collection)
+            => collection.OrderByDescending(e => e.Year);
+
+        public IQueryable<Film> GetFilmsByRate(IQueryable<Film> collection)
+            => collection.OrderBy(e => e.AverageRate);
+
+        public IQueryable<Film> GetFilmsByDesc(IQueryable<Film> collection)
+            => collection.OrderByDescending(e => e.AverageRate);
+
+        public IQueryable<Film> GetFavoritesByDateDescending(string userId)
+            => _context.Favorite.Where(c => c.AuthorId == userId).OrderByDescending(c => c.AddedAt)
                 .Select(fav => _context.Film.FirstOrDefault(f => f.Id == fav.FilmId));
 
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Film>> GetFavoritesByDateDescendingAsync(int pageNumber, int onPageCount, string userId)
-        {
-            var collection = _context.Favorite.Where(c => c.AuthorId == userId).OrderByDescending(c => c.AddedAt)
+        public IQueryable<Film> GetFavoritesByDate(string userId)
+            => _context.Favorite.Where(c => c.AuthorId == userId).OrderBy(c => c.AddedAt)
                 .Select(fav => _context.Film.FirstOrDefault(f => f.Id == fav.FilmId));
 
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
+        private IQueryable<Comment> GetCommentsByFilmId(int filmId)
+            => _context.Comment.Where(c => c.FilmId == filmId);
 
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
+        public IQueryable<Comment> GetCommentsByDateDescendingUserFirst(string userId, int filmId)
+            => GetCommentsByFilmId(filmId).Where(c => c.AuthorId == userId).OrderByDescending(c => c.CreatedAt)
+                .Union(GetCommentsByFilmId(filmId).Where(c => c.AuthorId != userId).OrderByDescending(c => c.CreatedAt));
 
-        private IQueryable<Film> FilterByGenreId(IQueryable<Film> collection, int gId)
-        {
-            return collection.Where(e => e.Genres.FirstOrDefault(g => g.Id == gId) != null);
-        }
+        public IQueryable<Comment> GetCommentsByDateUserFirst(string userId, int filmId)
+            => GetCommentsByFilmId(filmId).Where(c => c.AuthorId == userId).OrderBy(c => c.CreatedAt)
+                .Union(GetCommentsByFilmId(filmId).Where(c => c.AuthorId != userId).OrderBy(c => c.CreatedAt));
 
-        private IQueryable<Film> FilterWithCommentsOnly(IQueryable<Film> collection)
-        {
-            return collection.Include(e => e.Comments).Where(e => e.Comments.Count != 0);
-        }
+        public IQueryable<Comment> GetCommentsByDateDescendingOnly(int filmId)
+            => GetCommentsByFilmId(filmId).OrderByDescending(c => c.CreatedAt);
 
-        private IQueryable<Film> FilterWithRateOnly(IQueryable<Film> collection)
-        {
-            return collection.Where(e => e.CountRate != 0);
-        }
-
-        private IQueryable<Film> AcceptFilmFilters(int gId, bool hasCommentsOnly, bool withRateOnly)
-        {
-            IQueryable<Film> collection = _context.Film.Include(e => e.Genres);
-
-            if (gId > 0)
-            {
-                collection = FilterByGenreId(collection, gId);
-            }
-
-            if (hasCommentsOnly)
-            {
-                collection = FilterWithCommentsOnly(collection);
-            }
-
-            if (withRateOnly)
-            {
-                collection = FilterWithRateOnly(collection);
-            }
-
-            return collection;
-        }
-
-        public async Task<Pagination<Film>> GetFilmsSortedByCreatedAsync(int pageNumber, int onPageCount, int gId, bool hasCommentsOnly, bool withRateOnly)
-        {
-            var collection = AcceptFilmFilters(gId, hasCommentsOnly, withRateOnly).OrderBy(e => e.CreatedAt);
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Film>> GetFilmsSortedByCreatedDescAsync(int pageNumber, int onPageCount, int gId, bool hasCommentsOnly, bool withRateOnly)
-        {
-            var collection = AcceptFilmFilters(gId, hasCommentsOnly, withRateOnly).OrderByDescending(e => e.CreatedAt);
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Film>> GetFilmsSortedByYearAsync(int pageNumber, int onPageCount, int gId, bool hasCommentsOnly, bool withRateOnly)
-        {
-            var collection = AcceptFilmFilters(gId, hasCommentsOnly, withRateOnly).OrderBy(e => e.Year);
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Film>> GetFilmsSortedByYearDescAsync(int pageNumber, int onPageCount, int gId, bool hasCommentsOnly, bool withRateOnly)
-        {
-            var collection = AcceptFilmFilters(gId, hasCommentsOnly, withRateOnly).OrderByDescending(e => e.Year);
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Film>> GetFilmsSortedByRateAsync(int pageNumber, int onPageCount, int gId, bool hasCommentsOnly, bool withRateOnly)
-        {
-            var collection = AcceptFilmFilters(gId, hasCommentsOnly, withRateOnly).OrderBy(e => e.AverageRate);
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Film>> GetFilmsSortedByRateDescAsync(int pageNumber, int onPageCount, int gId, bool hasCommentsOnly, bool withRateOnly)
-        {
-            var collection = AcceptFilmFilters(gId, hasCommentsOnly, withRateOnly).OrderByDescending(e => e.AverageRate);
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
-
-        public async Task<Pagination<Film>> GetFilmsAsync(int pageNumber, int onPageCount, int gId, bool hasCommentsOnly, bool withRateOnly)
-        {
-            var collection = AcceptFilmFilters(gId, hasCommentsOnly, withRateOnly);
-
-            (int total, var items) = await SplitByPagesAsync(collection, pageNumber, onPageCount);
-
-            return new Pagination<Film>() { TotalCount = total, Items = items };
-        }
+        public IQueryable<Comment> GetCommentsByDateOnly(int filmId)
+            => GetCommentsByFilmId(filmId).OrderBy(c => c.CreatedAt);
     }
 }
