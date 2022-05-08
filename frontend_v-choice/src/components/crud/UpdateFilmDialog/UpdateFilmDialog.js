@@ -96,14 +96,19 @@ export default function UpdateFilmDialog(props) {
 				if (response.status === 200) {
 					const data = await response.json();
 					let message = "";
-					if (poster === null || (data && poster !== null && data.path !== null)) {
-						film.posterPath = data.path;
+					if (poster === null) {
+						film.posterPath = state.film.posterPath;
 						message = "Фильм успешно изменён";
 					}
 					else {
-						message = "Выполнено без изменения постера. Попробуйте изменить постер позже";
+						if (data && poster !== null && data.path !== null) {
+							film.posterPath = data.path;
+							message = "Фильм успешно изменён";
+						}
+						else {
+							message = "Выполнено без изменения постера. Попробуйте изменить постер позже";
+						}
 					}
-
 					setState({ ...state, film: { ...film }, error: null, msg: message });
 				}
 				props.onUpdate(film);

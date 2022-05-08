@@ -55,7 +55,22 @@ namespace DAL.Repository
             item.Title = film.Title;
             item.Year = film.Year;
             item.Description = film.Description;
-            item.Genres = film.Genres;
+
+            foreach (var g in item.Genres)
+            {
+                if (film.Genres.FirstOrDefault(e => e.Id == g.Id) == null)
+                {
+                    item.Genres.Remove(g);
+                }
+            }
+            foreach (var g in film.Genres)
+            {
+                if (item.Genres.FirstOrDefault(e => e.Id == g.Id) == null)
+                {
+                    item.Genres.Add(g);
+                }
+            }
+
             item.PosterPath = film.PosterPath;
 
             _context.Film.Update(item);
@@ -67,7 +82,7 @@ namespace DAL.Repository
             Film film = _context.Film.Find(id);
             film.PosterPath = posterPath;
             await _context.SaveChangesAsync();
-            
+
             return film;
         }
 
