@@ -58,8 +58,13 @@ function CommentsList(props) {
 	const [reload, setReload] = useState(false);
 
 	const calculatePagesCount = (total, onPage) => {
-		let value = Math.floor(total / onPage);
-		return value * onPage === total ? value : value + 1;
+		if (total > onPage) {
+			let value = Math.floor(total / onPage);
+			return value * onPage === total ? value : value + 1;
+		}
+		else {
+			return 1;
+		}
 	}
 
 	useEffect(() => {
@@ -101,14 +106,8 @@ function CommentsList(props) {
 
 	const handleCreateComment = () => {
 		const total = state.totalCount + 1;
-
-		if (state.sortByDateInCommonOrder) {
-			setState({ ...state, totalCount: total, countPages: calculatePagesCount(total, state.onPage), loading: true });
-			setReload(true);
-		}
-		else {
-			setState({ ...state, totalCount: total, countPages: calculatePagesCount(total, state.onPage) });
-		}
+		setState({ ...state, totalCount: total, countPages: calculatePagesCount(total, state.onPage), loading: true });
+		setReload(true);
 	}
 
 	const handleUpdateComment = (updComment) => {

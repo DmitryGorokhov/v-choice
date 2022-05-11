@@ -69,8 +69,13 @@ function FilmList(props) {
 	const [open, setOpen] = useState(true);
 
 	const calculatePagesCount = (total, onPage) => {
-		let value = Math.floor(total / onPage);
-		return value * onPage === total ? value : value + 1;
+		if (total > onPage) {
+			let value = Math.floor(total / onPage);
+			return value * onPage === total ? value : value + 1;
+		}
+		else {
+			return 1;
+		}
 	}
 
 	useEffect(() => {

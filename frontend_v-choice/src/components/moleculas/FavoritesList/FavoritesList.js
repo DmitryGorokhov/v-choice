@@ -51,8 +51,13 @@ function FavoritesList() {
 	const [reload, setReload] = useState(false);
 
 	const calculatePagesCount = (total, onPage) => {
-		let value = Math.floor(total / onPage);
-		return value * onPage === total ? value : value + 1;
+		if (total > onPage) {
+			let value = Math.floor(total / onPage);
+			return value * onPage === total ? value : value + 1;
+		}
+		else {
+			return 1;
+		}
 	}
 
 	useEffect(() => {
