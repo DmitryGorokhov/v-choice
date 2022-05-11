@@ -6,6 +6,7 @@ using DAL.Interface;
 using DAL.Model;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -34,38 +35,46 @@ namespace BLL.Service
             _logger.LogInformation($"Starting get {query.OnPageCount} comments on {query.PageNumber} page.");
             try
             {
-                IQueryable<Comment> collection;
-
                 if (query.MyCommentsFirst)
                 {
                     _logger.LogInformation("Call GetCurrentUserModelAsync.");
                     string userId = (await _autorizationService.GetCurrentUserModelAsync(user)).Id;
 
                     _logger.LogInformation($"Call {(query.CommonOrder ? "GetCommentsByDateDescendingUserFirst" : "GetCommentsByDateUserFirst")}.");
-                    collection = query.CommonOrder switch
+                    IEnumerable<Comment> seq = query.CommonOrder switch
                     {
-                        true => _paginationRepository.GetCommentsByDateDescendingUserFirst(userId, query.FilmId),
-                        false => _paginationRepository.GetCommentsByDateUserFirst(userId, query.FilmId),
+                        true => await _paginationRepository.GetCommentsByDateDescendingUserFirst(userId, query.FilmId),
+                        false => await _paginationRepository.GetCommentsByDateUserFirst(userId, query.FilmId),
+                    };
+
+                    int total = seq.Count();
+                    var items = seq.Skip((query.PageNumber - 1) * query.OnPageCount).Take(query.OnPageCount).Select(e => _mapper.CommentModelToDTO(e));
+                    _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully. Pack result into object before return.");
+                    
+                    return new PaginationDTO<CommentDTO>(query)
+                    {
+                        TotalCount = total,
+                        Items = items,
                     };
                 }
                 else
                 {
                     _logger.LogInformation($"Call {(query.CommonOrder ? "GetCommentsByDateDescendingOnly" : "GetCommentsByDateOnly")}.");
-                    collection = query.CommonOrder switch
+                    IQueryable<Comment> collection = query.CommonOrder switch
                     {
                         true => _paginationRepository.GetCommentsByDateDescendingOnly(query.FilmId),
                         false => _paginationRepository.GetCommentsByDateOnly(query.FilmId),
                     };
+
+                    _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully. Pack result into object before return.");
+                    (int total, var items) = await _paginationRepository.SplitByPagesAsync(collection, query.PageNumber, query.OnPageCount);
+
+                    return new PaginationDTO<CommentDTO>(query)
+                    {
+                        TotalCount = total,
+                        Items = items.Select(e => _mapper.CommentModelToDTO(e)).ToList(),
+                    };
                 }
-
-                _logger.LogInformation($"Get {query.OnPageCount} comments on {query.PageNumber} page successfully. Pack result into object before return.");
-                (int total, var items) = await _paginationRepository.SplitByPagesAsync(collection, query.PageNumber, query.OnPageCount);
-
-                return new PaginationDTO<CommentDTO>(query)
-                {
-                    TotalCount = total,
-                    Items = items.Select(e => _mapper.CommentModelToDTO(e)).ToList(),
-                };
             }
             catch (Exception e)
             {

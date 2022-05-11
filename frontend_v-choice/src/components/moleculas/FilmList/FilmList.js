@@ -194,7 +194,8 @@ function FilmList(props) {
 
 	const handleCreateFilm = () => {
 		const total = state.totalFilms + 1;
-		setState({ ...state, totalFilms: total, countPages: calculatePagesCount(total, state.onPage) });
+		setState({ ...state, totalFilms: total, countPages: calculatePagesCount(total, state.onPage), loading: true });
+		setReload(true);
 	}
 
 	const handleUpdateFilm = (film) => {

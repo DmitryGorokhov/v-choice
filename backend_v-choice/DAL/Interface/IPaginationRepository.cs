@@ -1,4 +1,5 @@
 ﻿using DAL.Model;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,8 +20,8 @@ namespace DAL.Interface
         IQueryable<Film> GetFilmsByDesc(IQueryable<Film> collection);
         IQueryable<Film> GetFavoritesByDateDescending(string userId);
         IQueryable<Film> GetFavoritesByDate(string userId);
-        IQueryable<Comment> GetCommentsByDateDescendingUserFirst(string userId, int filmId);
-        IQueryable<Comment> GetCommentsByDateUserFirst(string userId, int filmId);
+        Task<IEnumerable<Comment>> GetCommentsByDateDescendingUserFirst(string userId, int filmId);
+        Task<IEnumerable<Comment>> GetCommentsByDateUserFirst(string userId, int filmId);
         IQueryable<Comment> GetCommentsByDateDescendingOnly(int filmId);
         IQueryable<Comment> GetCommentsByDateOnly(int filmId);
     }

@@ -75,6 +75,7 @@ function FavoritesList() {
 					countPages: calculatePagesCount(result.totalCount, state.onPage),
 					totalCount: result.totalCount
 				});
+				setReload(false);
 			})
 	}, [state.currentPage, state.sortByDateInCommonOrder, state.onPage, reload])
 

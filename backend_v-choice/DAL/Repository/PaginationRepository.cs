@@ -1,6 +1,7 @@
 ﻿using DAL.Interface;
 using DAL.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -64,13 +65,19 @@ namespace DAL.Repository
         private IQueryable<Comment> GetCommentsByFilmId(int filmId)
             => _context.Comment.Where(c => c.FilmId == filmId);
 
-        public IQueryable<Comment> GetCommentsByDateDescendingUserFirst(string userId, int filmId)
-            => GetCommentsByFilmId(filmId).Where(c => c.AuthorId == userId).OrderByDescending(c => c.CreatedAt)
-                .Union(GetCommentsByFilmId(filmId).Where(c => c.AuthorId != userId).OrderByDescending(c => c.CreatedAt));
+        public async Task<IEnumerable<Comment>> GetCommentsByDateDescendingUserFirst(string userId, int filmId)
+        {
+            var q1 = await _context.Comment.Where(c => c.FilmId == filmId).Where(c => c.AuthorId == userId).OrderByDescending(c => c.CreatedAt).ToListAsync();
+            var q2 = await _context.Comment.Where(c => c.FilmId == filmId).Where(c => c.AuthorId != userId).OrderByDescending(c => c.CreatedAt).ToListAsync();
+            return q1.Concat(q2);
+        }
 
-        public IQueryable<Comment> GetCommentsByDateUserFirst(string userId, int filmId)
-            => GetCommentsByFilmId(filmId).Where(c => c.AuthorId == userId).OrderBy(c => c.CreatedAt)
-                .Union(GetCommentsByFilmId(filmId).Where(c => c.AuthorId != userId).OrderBy(c => c.CreatedAt));
+        public async Task<IEnumerable<Comment>> GetCommentsByDateUserFirst(string userId, int filmId)
+        {
+            var q1 = await _context.Comment.Where(c => c.FilmId == filmId).Where(c => c.AuthorId == userId).OrderBy(c => c.CreatedAt).ToListAsync();
+            var q2 = await _context.Comment.Where(c => c.FilmId == filmId).Where(c => c.AuthorId != userId).OrderBy(c => c.CreatedAt).ToListAsync();
+            return q1.Concat(q2);
+        }
 
         public IQueryable<Comment> GetCommentsByDateDescendingOnly(int filmId)
             => GetCommentsByFilmId(filmId).OrderByDescending(c => c.CreatedAt);
