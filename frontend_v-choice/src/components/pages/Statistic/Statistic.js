@@ -83,7 +83,8 @@ function Statistic() {
 			.then(result => {
 				setGeneral(result);
 				setLoading(false);
-			});
+			})
+			.catch(_ => _);
 	}, [])
 
 	useEffect(() => {

@@ -57,9 +57,9 @@ const useStyles = makeStyles((theme) => ({
 
 export function SignIn() {
 	const classes = useStyles();
-	const { _, setUser } = useContext(UserContext);
+	const { user, setUser } = useContext(UserContext);
 
-	const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+	const emailRegExp = /^\S+@\S+\.\S+$/;
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -118,6 +118,7 @@ export function SignIn() {
 			},
 		});
 	}
+
 	return (
 		<>
 			<Container component="main" maxWidth="xs">
@@ -139,7 +140,7 @@ export function SignIn() {
 												{e}
 											</Alert>);
 									})
-									: logoutAction()
+									: user.userName !== null ? logoutAction() : null
 								: <Redirect to="/catalog" />
 						}
 					</Box>
