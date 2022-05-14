@@ -15,6 +15,7 @@ import AddIcon from '@material-ui/icons/Add'
 
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 import GenresSelector from '../../atoms/GenresSelector/GenresSelector'
+import VideoURLInput from '../../atoms/VideoURLInput/VideoURLInput'
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -49,6 +50,8 @@ export default function FormDialog(props) {
 		posterPath: "",
 	});
 	const [poster, setPoster] = useState(null);
+	const [videoToken, setVideoToken] = useState('');
+	const [isVideoTokenValid, setIsVideoTokenValid] = useState(true);
 
 	const handleOpenDialog = () => {
 		setOpen(true);
@@ -60,39 +63,47 @@ export default function FormDialog(props) {
 		setMsg(null);
 		setFilm({ title: '', description: '', year: '', genres: [] });
 		setPoster(null);
+		setVideoToken('');
+		setIsVideoTokenValid(true);
 	};
 
 	const handleSubmit = () => {
-		const formData = new FormData();
-		formData.append("title", film.title);
-		formData.append("year", film.year);
-		formData.append("description", film.description);
-		formData.append("poster", poster);
-		film.genres.forEach((genre, index) => {
-			for (const key in genre) {
-				formData.append(`genres[${index}][${key}]`, genre[key]);
-			}
-		});
-
-		fetch('https://localhost:5001/api/film', {
-			method: 'POST',
-			body: formData
-		})
-			.then(async (response) => {
-				if (response.status === 401) {
-					setError("Недостаточно прав для выполнения операции");
-				}
-				if (response.status === 400) {
-					setError("Проверьте корректность введенных данных");
-				}
-				if (response.status === 201) {
-					const data = await response.json();
-					poster === null || (data && poster !== null && data.posterPath !== null)
-						? setMsg("Фильм успешно создан")
-						: setMsg("Создан без постера. Попробуйте изменить постер позже");
-					props.onCreate();
+		if (isVideoTokenValid) {
+			const formData = new FormData();
+			formData.append("title", film.title);
+			formData.append("year", film.year);
+			formData.append("description", film.description);
+			formData.append("poster", poster);
+			formData.append("videoToken", videoToken);
+			film.genres.forEach((genre, index) => {
+				for (const key in genre) {
+					formData.append(`genres[${index}][${key}]`, genre[key]);
 				}
 			});
+
+			fetch('https://localhost:5001/api/film', {
+				method: 'POST',
+				body: formData
+			})
+				.then(async (response) => {
+					if (response.status === 401) {
+						setError("Недостаточно прав для выполнения операции");
+					}
+					if (response.status === 400) {
+						setError("Проверьте корректность введенных данных");
+					}
+					if (response.status === 201) {
+						const data = await response.json();
+						poster === null || (data && poster !== null && data.posterPath !== null)
+							? setMsg("Фильм успешно создан")
+							: setMsg("Создан без постера. Попробуйте изменить постер позже");
+						props.onCreate();
+					}
+				});
+		}
+		else {
+			setError("Ссылка на видео не соответствует ниодному формату");
+		}
 	};
 
 	const handleChangeTitle = (event) => {
@@ -159,6 +170,13 @@ export default function FormDialog(props) {
 						onChange={handleChangeDescription}
 						value={film.description}
 						fullWidth
+					/>
+					<VideoURLInput
+						className={classes.item}
+						token={videoToken}
+						setToken={setVideoToken}
+						isValid={isVideoTokenValid}
+						setIsValid={setIsVideoTokenValid}
 					/>
 					<input type="file" className={classes.item} onChange={handleChangeImage} />
 					<GenresSelector genres={props.genres} selected={[]} onChange={handleGenresUpdate} />

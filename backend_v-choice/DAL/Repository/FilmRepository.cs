@@ -72,6 +72,7 @@ namespace DAL.Repository
             }
 
             item.PosterPath = film.PosterPath;
+            item.VideoToken = film.VideoToken;
 
             _context.Film.Update(item);
             await _context.SaveChangesAsync();

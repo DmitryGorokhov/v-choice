@@ -9,6 +9,7 @@ import FilmCardWithoutControls from '../../card&tiles/FilmCardWithoutControls/Fi
 import CommentsList from '../../moleculas/CommentsList/CommentsList'
 import RateArea from '../../atoms/RateArea/RateArea'
 import UserContext from '../../../context'
+import FilmVideo from '../../atoms/FilmVideo/FilmVideo'
 
 const useStyles = makeStyles((theme) => createStyles({
 	container: {
@@ -69,8 +70,7 @@ function FilmPage() {
 			<Box className={classes.container}>
 				{
 					film !== null
-						?
-						<>
+						? <>
 							<FilmCardWithoutControls film={film} />
 							<RateArea
 								filmId={film.id}
@@ -101,6 +101,9 @@ function FilmPage() {
 							</Grid>
 						</Grid>
 						: null
+				}
+				{
+					film !== null ? <FilmVideo videoToken={film.videoToken} /> : null
 				}
 				<CommentsList filmId={slug} />
 			</Box>

@@ -15,6 +15,7 @@ import CreateIcon from '@material-ui/icons/Create'
 
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 import GenresSelector from '../../atoms/GenresSelector/GenresSelector'
+import VideoURLInput from '../../atoms/VideoURLInput/VideoURLInput'
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -54,6 +55,8 @@ export default function UpdateFilmDialog(props) {
 		error: null,
 		msg: null,
 	});
+	const [videoToken, setVideoToken] = useState(props.film.videoToken !== null ? props.film.videoToken : '');
+	const [isVideoTokenValid, setIsVideoTokenValid] = useState(true);
 
 	const handleOpenDialog = () => {
 		setOpen(true);
@@ -62,57 +65,66 @@ export default function UpdateFilmDialog(props) {
 	const handleCloseDialog = () => {
 		setOpen(false);
 		setPoster(null);
-		setState({ ...state, error: null, msg: null })
+		setState({ ...state, error: null, msg: null });
+		setVideoToken('');
+		setIsVideoTokenValid(true);
 	};
 
 	const handleSubmit = () => {
-		const film = { ...state.film };
-		film.genres = [...state.selectedGenres];
+		if (isVideoTokenValid) {
+			const film = { ...state.film };
+			film.genres = [...state.selectedGenres];
 
-		const formData = new FormData();
-		formData.append("title", film.title);
-		formData.append("year", film.year);
-		formData.append("description", film.description);
-		formData.append("posterPath", film.posterPath);
-		formData.append("poster", poster);
-		film.genres.forEach((genre, index) => {
-			for (const key in genre) {
-				formData.append(`genres[${index}][${key}]`, genre[key]);
-			}
-		});
+			const formData = new FormData();
+			formData.append("title", film.title);
+			formData.append("year", film.year);
+			formData.append("description", film.description);
+			formData.append("posterPath", film.posterPath);
+			formData.append("poster", poster);
+			formData.append("videoToken", videoToken);
+			film.genres.forEach((genre, index) => {
+				for (const key in genre) {
+					formData.append(`genres[${index}][${key}]`, genre[key]);
+				}
+			});
 
-		const postURL = `https://localhost:5001/api/film/${props.film.id}`;
-		fetch(postURL, {
-			method: 'PUT',
-			body: formData
-		})
-			.then(async (response) => {
-				if (response.status === 401) {
-					setState({ ...state, error: "Недостаточно прав для выполнения операции", msg: null });
-				}
-				if (response.status === 400) {
-					setState({ ...state, error: "Проверьте корректность введенных данных", msg: null });
-				}
-				if (response.status === 200) {
-					const data = await response.json();
-					let message = "";
-					if (poster === null) {
-						film.posterPath = state.film.posterPath;
-						message = "Фильм успешно изменён";
+			const postURL = `https://localhost:5001/api/film/${props.film.id}`;
+			fetch(postURL, {
+				method: 'PUT',
+				body: formData
+			})
+				.then(async (response) => {
+					if (response.status === 401) {
+						setState({ ...state, error: "Недостаточно прав для выполнения операции", msg: null });
 					}
-					else {
-						if (data && poster !== null && data.path !== null) {
-							film.posterPath = data.path;
+					if (response.status === 400) {
+						setState({ ...state, error: "Проверьте корректность введенных данных", msg: null });
+					}
+					if (response.status === 200) {
+						const data = await response.json();
+						let message = "";
+						film.videoToken = videoToken;
+						if (poster === null) {
+							film.posterPath = state.film.posterPath;
 							message = "Фильм успешно изменён";
 						}
 						else {
-							message = "Выполнено без изменения постера. Попробуйте изменить постер позже";
+							if (data && poster !== null && data.path !== null) {
+								film.posterPath = data.path;
+								message = "Фильм успешно изменён";
+							}
+							else {
+								message = "Выполнено без изменения постера. Попробуйте изменить постер позже";
+							}
 						}
+						setState({ ...state, film: { ...film }, error: null, msg: message });
 					}
-					setState({ ...state, film: { ...film }, error: null, msg: message });
-				}
-				props.onUpdate(film);
-			});
+					props.onUpdate(film);
+				});
+		}
+		else {
+			setState({ ...state, error: "Ссылка на видео не соответствует ниодному формату", msg: null });
+		}
 	};
 
 	const handleChangeTitle = (event) => {
@@ -179,6 +191,13 @@ export default function UpdateFilmDialog(props) {
 						className={classes.item}
 						onChange={handleChangeDescription}
 						fullWidth
+					/>
+					<VideoURLInput
+						className={classes.item}
+						token={videoToken}
+						setToken={setVideoToken}
+						isValid={isVideoTokenValid}
+						setIsValid={setIsVideoTokenValid}
 					/>
 					<input type="file" className={classes.item} onChange={handleChangeImage} />
 					<GenresSelector genres={props.genres} selected={state.selectedGenres} onChange={handleGenresUpdate} />

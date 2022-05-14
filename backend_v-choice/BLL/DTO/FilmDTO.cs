@@ -18,6 +18,7 @@ namespace BLL.DTO
         public float? AverageRate { get; set; }
         public string PosterPath { get; set; }
         public IFormFile Poster { get; set; }
+        public string VideoToken { get; set; }
 
         public ICollection<GenreDTO> Genres { get; set; }
     }

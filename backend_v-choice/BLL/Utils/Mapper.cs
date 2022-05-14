@@ -27,6 +27,7 @@ namespace BLL.Utils
                 Description = film.Description,
                 AverageRate = film.AverageRate ?? 0,
                 PosterPath = film.PosterPath,
+                VideoToken = film.VideoToken,
             };
 
             if (film.Genres != null)
@@ -142,6 +143,7 @@ namespace BLL.Utils
                 AverageRate = film.AverageRate,
                 PosterPath = film.PosterPath,
                 Poster = null,
+                VideoToken = film.VideoToken,
 
                 Genres = new HashSet<GenreDTO>(film.Genres.Select(e => GenreModelToDTO(e)).ToList()),
             };
