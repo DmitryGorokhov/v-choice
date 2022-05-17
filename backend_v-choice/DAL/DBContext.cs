@@ -17,6 +17,9 @@ namespace DAL
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Rate> Rate { get; set; }
         public virtual DbSet<Favorite> Favorite { get; set; }
+        public virtual DbSet<Person> Person { get; set; }
+        public virtual DbSet<Participation> Participation { get; set; }
+        public virtual DbSet<Studio> Studio { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +44,10 @@ namespace DAL
                 entity.HasMany(e => e.InFavorites)
                     .WithOne(e => e.Film)
                     .HasForeignKey(e => e.FilmId);
+
+                entity.HasMany(e => e.Persons)
+                    .WithOne(e => e.Film)
+                    .HasForeignKey(e => e.FilmId);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -56,6 +63,20 @@ namespace DAL
                 entity.HasMany(e => e.Favorites)
                     .WithOne(e => e.Author)
                     .HasForeignKey(e => e.AuthorId);
+            });
+
+            modelBuilder.Entity<Person>(entity =>
+            {
+                entity.HasMany(e => e.Participations)
+                    .WithOne(e => e.Person)
+                    .HasForeignKey(e => e.PersonId);
+            });
+
+            modelBuilder.Entity<Studio>(entity =>
+            {
+                entity.HasMany(e => e.Films)
+                    .WithOne(e => e.Studio)
+                    .HasForeignKey(e => e.StudioId);
             });
         }
     }

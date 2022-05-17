@@ -10,5 +10,6 @@ namespace BLL.Interface
         Task<PaginationDTO<FilmDTO>> GetFilmsPagination(PaginationQueryFilms query);
         Task<PaginationDTO<FilmDTO>> GetFavoriteFilmsPagination(PaginationQueryFavorites query, ClaimsPrincipal user);
         Task<PaginationDTO<CommentDTO>> GetCommentsPagination(PaginationQueryComments query, ClaimsPrincipal user);
+        Task<PaginationDTO<PersonDTO>> GetPersonsPaginationAsync(PaginationQueryBase query);
     }
 }

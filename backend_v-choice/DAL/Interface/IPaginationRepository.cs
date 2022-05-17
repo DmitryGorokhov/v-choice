@@ -24,5 +24,6 @@ namespace DAL.Interface
         Task<IEnumerable<Comment>> GetCommentsByDateUserFirst(string userId, int filmId);
         IQueryable<Comment> GetCommentsByDateDescendingOnly(int filmId);
         IQueryable<Comment> GetCommentsByDateOnly(int filmId);
+        IQueryable<Person> GetAllPersons();
     }
 }

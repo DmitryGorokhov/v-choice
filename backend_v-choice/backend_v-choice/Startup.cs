@@ -45,8 +45,10 @@ namespace backend_v_choice
             services.AddScoped<IFilmRepository, FilmRepository>();
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IPaginationRepository, PaginationRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IRateRepository, RateRepository>();
             services.AddScoped<IStatisticRepository, StatisticRepository>();
+            services.AddScoped<IStudioRepository, StudioRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAutorizationService, AutorizationService>();
             services.AddScoped<ICrudService, CrudService>();
@@ -55,8 +57,6 @@ namespace backend_v_choice
             services.AddScoped<IPaginationService, PaginationService>();
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DBContext>();
-
-
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

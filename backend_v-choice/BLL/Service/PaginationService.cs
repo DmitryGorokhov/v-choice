@@ -182,5 +182,30 @@ namespace BLL.Service
                 return null;
             }
         }
+
+        public async Task<PaginationDTO<PersonDTO>> GetPersonsPaginationAsync(PaginationQueryBase query)
+        {
+            _logger.LogInformation($"Starting get {query.OnPageCount} persons on {query.PageNumber} page.");
+            try
+            {
+                _logger.LogInformation("Call GetAllPersons");
+                IQueryable<Person> collection = _paginationRepository.GetAllPersons();
+
+                _logger.LogInformation($"Get {query.OnPageCount} persons on {query.PageNumber} page successfully. Pack result into object before return.");
+                (int total, var items) = await _paginationRepository.SplitByPagesAsync(collection, query.PageNumber, query.OnPageCount);
+
+                return new PaginationDTO<PersonDTO>(query)
+                {
+                    TotalCount = total,
+                    Items = items.Select(e => _mapper.PersonModelToDTO(e)).ToList(),
+                };
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Get {query.OnPageCount} persons on {query.PageNumber} page has thrown an exception: {e.Message}.");
+
+                return null;
+            }
+        }
     }
 }

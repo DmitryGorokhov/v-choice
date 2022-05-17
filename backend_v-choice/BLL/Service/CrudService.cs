@@ -21,10 +21,12 @@ namespace BLL.Service
         private readonly ICommentsRepository _commentsRepository;
         private readonly IRateRepository _rateRepository;
         private readonly IAutorizationService _autorizationService;
+        private readonly IPersonRepository _personRepository;
+        private readonly IStudioRepository _studioRepository;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
 
-        public CrudService(IFilmRepository fr, IGenreRepository gr, ICommentsRepository cr, ILogger<CrudService> logger, IRateRepository rr, IAutorizationService aus, IMapper mapper)
+        public CrudService(IFilmRepository fr, IGenreRepository gr, ICommentsRepository cr, ILogger<CrudService> logger, IRateRepository rr, IAutorizationService aus, IPersonRepository pr, IStudioRepository sr, IMapper mapper)
         {
             _filmRepository = fr;
             _genreRepository = gr;
@@ -32,6 +34,8 @@ namespace BLL.Service
             _logger = logger;
             _rateRepository = rr;
             _autorizationService = aus;
+            _personRepository = pr;
+            _studioRepository = sr;
             _mapper = mapper;
         }
 
@@ -71,7 +75,7 @@ namespace BLL.Service
 
                 _logger.LogInformation($"Create film: film with Id equal {f.Id} was created.");
 
-                string posterPath = await SavePosterAsync(film.Poster, _appEnvironment);
+                string posterPath = await SaveImageAsync(film.Poster, _appEnvironment);
 
                 if (posterPath != null)
                 {
@@ -283,35 +287,35 @@ namespace BLL.Service
             }
         }
 
-        private async Task<string> SavePosterAsync(IFormFile poster, IWebHostEnvironment _appEnvironment)
+        private async Task<string> SaveImageAsync(IFormFile image, IWebHostEnvironment _appEnvironment)
         {
-            _logger.LogInformation("Start saving poster.");
+            _logger.LogInformation("Start saving image.");
             try
             {
-                if (poster == null)
+                if (image == null)
                 {
-                    _logger.LogInformation("Save poster: poster is null.");
+                    _logger.LogInformation("Save image: image is null.");
 
                     return null;
                 }
 
-                string posterName = new string(Path.GetFileNameWithoutExtension(poster.FileName).Take(10).ToArray()).Replace(' ', '-');
-                posterName = posterName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(poster.FileName);
+                string imageName = new string(Path.GetFileNameWithoutExtension(image.FileName).Take(20).ToArray()).Replace(' ', '-');
+                imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(image.FileName);
 
-                string path = Path.Combine("img", posterName);
+                string path = Path.Combine("img", imageName);
 
                 using (var fileStream = new FileStream(Path.Combine(_appEnvironment.WebRootPath, path), FileMode.Create))
                 {
-                    await poster.CopyToAsync(fileStream);
+                    await image.CopyToAsync(fileStream);
                 }
 
-                _logger.LogInformation($"Save poster: Ok - path: {path}.");
+                _logger.LogInformation($"Save image: Ok - path: {path}.");
 
                 return path;
             }
             catch (Exception e)
             {
-                _logger.LogError($"Save poster has thrown an exception: {e.Message}.");
+                _logger.LogError($"Save image has thrown an exception: {e.Message}.");
 
                 return null;
             }
@@ -341,7 +345,7 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call SavePosterAsync.");
-                string newPath = await SavePosterAsync(film.Poster, _appEnvironment);
+                string newPath = await SaveImageAsync(film.Poster, _appEnvironment);
 
                 if (newPath != null)
                 {
@@ -398,6 +402,158 @@ namespace BLL.Service
             catch (Exception e)
             {
                 _logger.LogError($"Update rate with id={id} has thrown an exception: {e.Message}.");
+            }
+        }
+
+        public async Task<PersonDTO> CreatePersonAsync(PersonDTO person, IWebHostEnvironment appEnvironment)
+        {
+            _logger.LogInformation("Start creating person.");
+            try
+            {
+                Person p = _mapper.PersonDTOtoModel(person);
+
+                _logger.LogInformation("Call CreatePersonAsync.");
+                p = await _personRepository.CreatePersonAsync(p);
+
+                _logger.LogInformation($"Create person: person with Id equal {p.Id} was created.");
+
+                string photoPath = await SaveImageAsync(person.Photo, appEnvironment);
+
+                if (photoPath != null)
+                {
+                    _logger.LogInformation("Call SetPhotoPathAsync.");
+                    p = await _personRepository.SetPhotoPathAsync(p.Id, photoPath);
+                }
+
+                return _mapper.PersonModelToDTO(p);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Create person has thrown an exception: {e.Message}.");
+
+                return null;
+            }
+        }
+
+        public async Task<string> UpdatePersonAsync(int id, PersonDTO person, IWebHostEnvironment appEnvironment)
+        {
+            _logger.LogInformation($"Start updating person with Id equal {id}.");
+            try
+            {
+                _logger.LogInformation("Call SavePosterAsync.");
+                string newPath = await SaveImageAsync(person.Photo, appEnvironment);
+
+                if (newPath != null)
+                {
+                    person.PhotoPath = newPath;
+                }
+
+                Person p = _mapper.PersonDTOtoModel(person);
+
+                _logger.LogInformation("Call UpdatePersonAsync.");
+                await _personRepository.UpdatePersonAsync(id, p);
+
+                _logger.LogInformation($"Update person: person with Id equal {id} was updated.");
+
+                return newPath;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Update person with id={id} has thrown an exception: {e.Message}.");
+
+                return null;
+            }
+        }
+
+        public async Task DeletePersonAsync(int id)
+        {
+            _logger.LogInformation($"Start deleting person with Id equal {id}.");
+            try
+            {
+                _logger.LogInformation("Call DeletePersonAsync.");
+                await _personRepository.DeletePersonAsync(id);
+
+                _logger.LogInformation($"Delete person: film with Id equal {id} was deleted.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Delete person with id={id} has thrown an exception: {e.Message}.");
+            }
+        }
+
+        public IEnumerable<StudioDTO> GetAllStudios()
+        {
+            _logger.LogInformation("Starting get all studios.");
+            try
+            {
+                _logger.LogInformation("Call GetAllStudios.");
+                IQueryable<Studio> studios = _studioRepository.GetAllStudios();
+
+                _logger.LogInformation("Get all studios successfull.");
+
+                return studios.Select(e => _mapper.StudioModelToDTO(e)).ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Get all studios has thrown an exception: {e.Message}.");
+
+                return new List<StudioDTO>();
+            }
+        }
+
+        public async Task<StudioDTO> CreateStudioAsync(StudioDTO studio)
+        {
+            _logger.LogInformation("Start creating studio.");
+            try
+            {
+                Studio s = _mapper.StudioDTOtoModel(studio);
+
+                _logger.LogInformation("Call CreateStudioAsync.");
+                s = await _studioRepository.CreateStudioAsync(s);
+
+                _logger.LogInformation($"Create studio: studio with Id equal {s.Id} was created.");
+
+                return _mapper.StudioModelToDTO(s);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Create studio has thrown an exception: {e.Message}.");
+
+                return null;
+            }
+        }
+
+        public async Task UpdateStudioAsync(int id, StudioDTO studio)
+        {
+            _logger.LogInformation($"Start updating studio with Id equal {id}.");
+            try
+            {
+                Studio s = _mapper.StudioDTOtoModel(studio);
+
+                _logger.LogInformation("Call UpdateStudioAsync.");
+                await _studioRepository.UpdateStudioAsync(id, s);
+
+                _logger.LogInformation($"Update studio: studio with Id equal {id} was updated.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Update studio with id={id} has thrown an exception: {e.Message}.");
+            }
+        }
+
+        public async Task DeleteStudioAsync(int id)
+        {
+            _logger.LogInformation($"Start deleting studio with Id equal {id}.");
+            try
+            {
+                _logger.LogInformation("Call DeleteStudioAsync.");
+                await _studioRepository.DeleteStudioAsync(id);
+
+                _logger.LogInformation($"Delete studio: studio with Id equal {id} was deleted.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Delete studio with id={id} has thrown an exception: {e.Message}.");
             }
         }
     }

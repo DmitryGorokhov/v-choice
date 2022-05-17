@@ -14,6 +14,7 @@ import { FilteringType } from '../../enums/FilteringType'
 import { QueryProps } from '../../enums/QueryProps'
 import OnPageCountSwitcher from '../../atoms/OnPageCountSwitcher/OnPageCountSwitcher'
 import UserContext from '../../../context';
+import StudioManager from '../../crud/StudioManager/StudioManager'
 
 const useStyles = makeStyles((theme) => createStyles({
 	filmListItem: {
@@ -44,7 +45,10 @@ const useStyles = makeStyles((theme) => createStyles({
 		display: 'flex',
 		justifyContent: 'space-around',
 		alignItems: 'center',
-	}
+	},
+	btn: {
+		margin: theme.spacing(1),
+	},
 }));
 
 function FilmList(props) {
@@ -242,13 +246,30 @@ function FilmList(props) {
 								{
 									user.isAdmin
 										? <Box className={classes.tools}>
-											<AddFilmDialog genres={props.genres} onCreate={handleCreateFilm} />
-											<GenreManager
+											<AddFilmDialog
+												className={classes.btn}
 												genres={props.genres}
-												onCreate={props.onGenreCreate}
-												onUpdate={props.onGenreUpdate}
-												onDelete={props.onGenreDelete}
+												onCreate={handleCreateFilm}
 											/>
+											<GenreManager
+												className={classes.btn}
+												genres={props.genres}
+												{...props.genreMethods}
+											/>
+											<StudioManager
+												className={classes.btn}
+												studios={props.studios}
+												{...props.studioMethods}
+											/>
+											<Button
+												className={classes.btn}
+												variant="outlined"
+												color="primary"
+												size='small'
+												onClick={() => { history.push({ pathname: '/persons-management' }); }}
+											>
+												Знаменитости
+											</Button>
 										</Box>
 										: null
 								}
@@ -284,7 +305,8 @@ function FilmList(props) {
 													film={film}
 													onUpdate={handleUpdateFilm}
 													onDelete={handleDeleteFilm}
-													genres={props.genres} />
+													genres={props.genres}
+												/>
 											</ListItem>
 										)
 									})

@@ -8,6 +8,7 @@ import { QueryProps } from '../../enums/QueryProps'
 
 function Films() {
 	const [genres, setGenres] = useState([]);
+	const [studios, setStudios] = useState([]);
 	const { slug } = useParams();
 
 	const recognizeQuery = () => {
@@ -79,7 +80,27 @@ function Films() {
 		fetch('https://localhost:5001/api/genre')
 			.then(response => response.json())
 			.then(result => setGenres(result));
+		fetch('https://localhost:5001/api/studio')
+			.then(response => response.json())
+			.then(result => setStudios(result));
 	}, [])
+
+	const handleCreateStudio = (studio) => {
+		setStudios([...studios, studio]);
+	}
+
+	const handleUpdateStudio = (studio) => {
+		let arr = [...studios];
+		let found = arr.find(s => s.id === studio.id);
+		if (found) {
+			found.value = studio.value;
+		}
+		setStudios([...arr]);
+	}
+
+	const handleDeleteStudio = (studio) => {
+		setStudios(studios.filter(s => s.id !== studio.id));
+	}
 
 	const handleCreateGenre = (genre) => {
 		setGenres([...genres, genre]);
@@ -97,14 +118,15 @@ function Films() {
 	const handleDeleteGenre = (genre) => {
 		setGenres(genres.filter(g => g.id !== genre.id));
 	}
+
 	return (
 		<>
 			<FilmList
 				{...params}
 				genres={genres}
-				onGenreCreate={handleCreateGenre}
-				onGenreUpdate={handleUpdateGenre}
-				onGenreDelete={handleDeleteGenre}
+				studios={studios}
+				genreMethods={{ onCreate: handleCreateGenre, onUpdate: handleUpdateGenre, onDelete: handleDeleteGenre }}
+				studioMethods={{ onCreate: handleCreateStudio, onUpdate: handleUpdateStudio, onDelete: handleDeleteStudio }}
 			/>
 		</>
 	)

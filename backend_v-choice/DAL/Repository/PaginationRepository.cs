@@ -62,9 +62,6 @@ namespace DAL.Repository
             => _context.Favorite.Where(c => c.AuthorId == userId).OrderBy(c => c.AddedAt)
                 .Select(fav => _context.Film.FirstOrDefault(f => f.Id == fav.FilmId));
 
-        private IQueryable<Comment> GetCommentsByFilmId(int filmId)
-            => _context.Comment.Where(c => c.FilmId == filmId);
-
         public async Task<IEnumerable<Comment>> GetCommentsByDateDescendingUserFirst(string userId, int filmId)
         {
             var q1 = await _context.Comment.Where(c => c.FilmId == filmId).Where(c => c.AuthorId == userId).OrderByDescending(c => c.CreatedAt).ToListAsync();
@@ -80,9 +77,12 @@ namespace DAL.Repository
         }
 
         public IQueryable<Comment> GetCommentsByDateDescendingOnly(int filmId)
-            => GetCommentsByFilmId(filmId).OrderByDescending(c => c.CreatedAt);
+            => _context.Comment.Where(c => c.FilmId == filmId).OrderByDescending(c => c.CreatedAt);
 
         public IQueryable<Comment> GetCommentsByDateOnly(int filmId)
-            => GetCommentsByFilmId(filmId).OrderBy(c => c.CreatedAt);
+            => _context.Comment.Where(c => c.FilmId == filmId).OrderBy(c => c.CreatedAt);
+
+        public IQueryable<Person> GetAllPersons()
+            => _context.Person;
     }
 }

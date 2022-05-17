@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
 	createStyles,
 	makeStyles,
@@ -35,15 +35,15 @@ const useStyles = makeStyles((theme) => createStyles({
 	},
 }));
 
-export default function FormDialog(props) {
+export default function StudioManager(props) {
 	const classes = useStyles();
 
-	const [open, setOpen] = React.useState(false);
-	const [managerState, setState] = React.useState(
+	const [open, setOpen] = useState(false);
+	const [managerState, setState] = useState(
 		{
-			genres: [...props.genres],
-			fieldTitle: "Название нового жанра",
-			currentGenreId: -1,
+			studios: [...props.studios],
+			fieldTitle: "Название новой студии",
+			currentStudioId: -1,
 			value: "",
 			error: null,
 			msg: null,
@@ -59,94 +59,94 @@ export default function FormDialog(props) {
 	};
 
 	const handleSubmit = () => {
-		managerState.currentGenreId === -1 ? createGenre() : updateGenre();
+		managerState.currentStudioId === -1 ? createStudio() : updateStudio();
 	};
 
 	const checkEmptyValue = () => {
-
 		if (!(managerState.value && managerState.value !== "")) {
 			setState({ ...managerState, error: "Введено пустое значение", msg: null });
+
 			return true;
 		}
 
 		return false;
 	}
 
-	const createGenre = () => {
+	const createStudio = () => {
 		if (checkEmptyValue()) {
 			return;
 		}
 
-		let genre = { value: managerState.value };
+		let studio = { name: managerState.value };
 
-		const postURL = "https://localhost:5001/api/genre";
+		const postURL = "https://localhost:5001/api/studio";
 		fetch(postURL, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json;charset=utf-8'
 			},
-			body: JSON.stringify(genre)
+			body: JSON.stringify(studio)
 		})
 			.then(response => response.json())
 			.then(data => {
 				setState({
 					...managerState,
-					currentGenreId: -1,
-					genres: [...managerState.genres, data],
+					currentStudioId: -1,
+					studios: [...managerState.studios, data],
 					value: "",
-					fieldTitle: "Название нового жанра",
+					fieldTitle: "Название новой студии",
 					error: null,
-					msg: "Жанр успешно создан",
+					msg: "Студия успешно создан",
 				});
 				props.onCreate(data);
 			})
 			.catch(_ => setState({ ...managerState, error: "Недостаточно прав для выполнения операции", msg: null }));
 	};
 
-	const updateGenre = () => {
+	const updateStudio = () => {
 		if (checkEmptyValue()) {
 			return;
 		}
 
-		let genre = { id: managerState.currentGenreId, value: managerState.value };
-		const postURL = `https://localhost:5001/api/genre/${genre.id}`;
+		let studio = { id: managerState.currentStudioId, name: managerState.value };
+		const postURL = `https://localhost:5001/api/studio/${studio.id}`;
 		fetch(postURL, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json;charset=utf-8'
 			},
-			body: JSON.stringify(genre)
+			body: JSON.stringify(studio)
 		})
 			.then(response => {
 				if (response.status === 401) {
 					setState({ ...managerState, error: "Недостаточно прав для выполнения операции", msg: null });
 				}
 				if (response.status === 204) {
-					let arr = [...managerState.genres];
-					let found = arr.find(g => g.id === genre.id);
+					let arr = [...managerState.studios];
+					let found = arr.find(s => s.id === studio.id);
 					if (found) {
-						found.value = genre.value;
+						found.name = studio.name;
 					}
 					setState({
 						...managerState,
-						currentGenreId: -1,
-						genres: [...arr],
+						currentStudioId: -1,
+						studios: [...arr],
 						value: "",
-						fieldTitle: "Название нового жанра",
+						fieldTitle: "Название новой студии",
 						error: null,
-						msg: "Жанр успешно изменен",
+						msg: "Студия успешно изменен",
 					});
-					props.onUpdate(genre);
+					props.onUpdate(studio);
 				}
 			});
 	};
 
 	const handlePrepareAdd = () => {
-		setState({ ...managerState, currentGenreId: -1, value: "", fieldTitle: "Название нового жанра" })
+		setState({ ...managerState, currentStudioId: -1, value: "", fieldTitle: "Название новой студии" })
 	};
 
 	const handlePrepareUpdate = (id, value) => {
-		setState({ ...managerState, currentGenreId: id, value: value, fieldTitle: "Редактирование названия" })
+		setState({ ...managerState, currentStudioId: id, value: value, fieldTitle: "Редактирование названия" })
 	};
 
 	const handleRemoveItem = (item) => {
@@ -160,9 +160,9 @@ export default function FormDialog(props) {
 				if (response.status === 204) {
 					setState({
 						...managerState,
-						genres: managerState.genres.filter(g => g.id !== item.id),
+						studios: managerState.studios.filter(s => s.id !== item.id),
 						error: null,
-						msg: "Жанр успешно удален",
+						msg: "Студия успешно удалена",
 					});
 					props.onDelete(item);
 				}
@@ -176,25 +176,25 @@ export default function FormDialog(props) {
 	return (
 		<>
 			<Button variant="outlined" color="primary" onClick={handleOpenDialog} className={props.className} size='small'>
-				Управление жанрами
+				Управление студиями
 			</Button>
 
 			<Dialog open={open} aria-labelledby="genres-form-dialog-title">
-				<DialogTitle id="genres-form-dialog-title" variant='h6'>Диалог управления жанрами</DialogTitle>
+				<DialogTitle id="genres-form-dialog-title" variant='h6'>Диалог управления студиями</DialogTitle>
 				<DialogContent>
 					<MyAlerter msg={managerState.msg} error={managerState.error} />
 					<Box className={classes.item}>
 						<List className={classes.list}>
 							{
-								managerState.genres.length !== 0
-									? managerState.genres.map(genre => {
+								managerState.studios.length !== 0
+									? managerState.studios.map(studio => {
 										return (
-											<ListItem key={genre.id}>
-												<Typography><b>{genre.value}</b></Typography>
+											<ListItem key={studio.id}>
+												<Typography><b>{studio.name}</b></Typography>
 												<Button
 													variant="primary"
 													onClick={() => {
-														return handlePrepareUpdate(genre.id, genre.value)
+														return handlePrepareUpdate(studio.id, studio.name)
 													}}
 												>
 													Ред
@@ -202,7 +202,7 @@ export default function FormDialog(props) {
 												<Button
 													variant="primary"
 													onClick={() => {
-														return handleRemoveItem(genre)
+														return handleRemoveItem(studio)
 													}}
 												>
 													<ClearIcon />
@@ -210,7 +210,7 @@ export default function FormDialog(props) {
 											</ListItem>
 										)
 									})
-									: <Typography>Список жанров пуст</Typography>
+									: <Typography>Список студий пуст</Typography>
 							}
 						</List>
 					</Box>

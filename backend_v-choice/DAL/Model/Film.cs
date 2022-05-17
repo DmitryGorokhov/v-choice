@@ -11,6 +11,7 @@ namespace DAL.Model
             InFavorites = new HashSet<Favorite>();
             Genres = new HashSet<Genre>();
             RateCollection = new HashSet<Rate>();
+            Persons = new HashSet<Participation>();
         }
 
         public int Id { get; set; }
@@ -24,10 +25,13 @@ namespace DAL.Model
         public string PosterPath { get; set; }
         public int Requested { get; set; }
         public string VideoToken { get; set; }
+        public int? StudioId { get; set; }
+        public Studio Studio { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Favorite> InFavorites { get; set; }
         public virtual ICollection<Genre> Genres { get; set; }
         public virtual ICollection<Rate> RateCollection { get; set; }
+        public virtual ICollection<Participation> Persons { get; set; }
     }
 }

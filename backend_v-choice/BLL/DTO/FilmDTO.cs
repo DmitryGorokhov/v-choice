@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BLL.DTO
 {
@@ -19,7 +17,10 @@ namespace BLL.DTO
         public string PosterPath { get; set; }
         public IFormFile Poster { get; set; }
         public string VideoToken { get; set; }
+        public StudioDTO Studio { get; set; }
 
         public ICollection<GenreDTO> Genres { get; set; }
+        public ICollection<ParticipationDTO> Directors { get; set; }
+        public ICollection<ParticipationDTO> Cast { get; set; }
     }
 }

@@ -118,8 +118,8 @@ export default function UpdateFilmDialog(props) {
 							}
 						}
 						setState({ ...state, film: { ...film }, error: null, msg: message });
+						props.onUpdate(film);
 					}
-					props.onUpdate(film);
 				});
 		}
 		else {

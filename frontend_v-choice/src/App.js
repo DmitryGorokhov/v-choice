@@ -12,6 +12,7 @@ import UserPage from './components/pages/UserPage/UserPage'
 import Statistic from './components/pages/Statistic/Statistic'
 import UserContext from './context'
 import { NavMenu } from './components/atoms/NavMenu/NavMenu'
+import PersonManagement from './components/pages/PersonManagement/PersonManagement'
 
 export default function App() {
   const [user, setUser] = useState({
@@ -46,6 +47,7 @@ export default function App() {
         <Route path='/film/:slug' component={FilmPage} />
         <Route path='/user' component={UserPage} />
         <Route path='/stat' component={Statistic} />
+        <Route path='/persons-management' component={PersonManagement} />
       </Layout>
     </UserContext.Provider>
   );
