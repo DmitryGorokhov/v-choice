@@ -30,6 +30,17 @@ namespace DAL.Repository
                     }
                 }
 
+            if (film.Persons.Count != 0)
+                foreach (var item in film.Persons)
+                {
+                    Person p = _context.Person.FirstOrDefault(e => e.Id == item.PersonId);
+                    if (p != null)
+                    {
+                        p.Participations.Add(item);
+                        _context.Person.Update(p);
+                    }
+                }
+
             film.Genres = new HashSet<Genre>();
             film.CreatedAt = DateTime.Now;
             film.Requested = 0;
@@ -47,11 +58,12 @@ namespace DAL.Repository
         }
 
         public async Task<Film> GetFilmAsync(int id)
-            => await _context.Film.Include(e => e.Genres).SingleOrDefaultAsync(m => m.Id == id);
+            => await _context.Film.Include(e => e.Genres).Include(e => e.Studio).Include(e => e.Persons).ThenInclude(e => e.Person)
+                        .SingleOrDefaultAsync(m => m.Id == id);
 
         public async Task UpdateFilmAsync(int id, Film film)
         {
-            Film item = _context.Film.Include(e => e.Genres).First(e => e.Id == id);
+            Film item = _context.Film.Include(e => e.Genres).Include(e => e.Persons).First(e => e.Id == id);
             item.Title = film.Title;
             item.Year = film.Year;
             item.Description = film.Description;
@@ -68,6 +80,21 @@ namespace DAL.Repository
                 if (item.Genres.FirstOrDefault(e => e.Id == g.Id) == null)
                 {
                     item.Genres.Add(g);
+                }
+            }
+
+            foreach (var p in item.Persons)
+            {
+                if (film.Persons.FirstOrDefault(e => e.PersonId == p.PersonId && e.Role == p.Role) == null)
+                {
+                    item.Persons.Remove(p);
+                }
+            }
+            foreach (var p in film.Persons)
+            {
+                if (item.Persons.FirstOrDefault(e => e.PersonId == p.PersonId && e.Role == p.Role) == null)
+                {
+                    item.Persons.Add(p);
                 }
             }
 

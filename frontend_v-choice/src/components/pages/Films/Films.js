@@ -9,6 +9,7 @@ import { QueryProps } from '../../enums/QueryProps'
 function Films() {
 	const [genres, setGenres] = useState([]);
 	const [studios, setStudios] = useState([]);
+	const [persons, setPersons] = useState([]);
 	const { slug } = useParams();
 
 	const recognizeQuery = () => {
@@ -83,6 +84,9 @@ function Films() {
 		fetch('https://localhost:5001/api/studio')
 			.then(response => response.json())
 			.then(result => setStudios(result));
+		fetch('https://localhost:5001/api/person/all')
+			.then(response => response.json())
+			.then(result => setPersons(result));
 	}, [])
 
 	const handleCreateStudio = (studio) => {
@@ -125,6 +129,7 @@ function Films() {
 				{...params}
 				genres={genres}
 				studios={studios}
+				persons={persons}
 				genreMethods={{ onCreate: handleCreateGenre, onUpdate: handleUpdateGenre, onDelete: handleDeleteGenre }}
 				studioMethods={{ onCreate: handleCreateStudio, onUpdate: handleUpdateStudio, onDelete: handleDeleteStudio }}
 			/>

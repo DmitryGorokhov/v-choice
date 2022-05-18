@@ -9,6 +9,12 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
+	FormControl,
+	InputLabel,
+	ListItemText,
+	MenuItem,
+	OutlinedInput,
+	Select,
 	TextField,
 } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create'
@@ -16,6 +22,7 @@ import CreateIcon from '@material-ui/icons/Create'
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 import GenresSelector from '../../atoms/GenresSelector/GenresSelector'
 import VideoURLInput from '../../atoms/VideoURLInput/VideoURLInput'
+import PersonMultipleSelector from '../../atoms/PersonMultipleSelector/PersonMultipleSelector'
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -31,6 +38,9 @@ const useStyles = makeStyles((theme) => createStyles({
 	item: {
 		margin: theme.spacing(2, 0)
 	},
+	select: {
+		width: '250px',
+	},
 }));
 
 export default function UpdateFilmDialog(props) {
@@ -38,10 +48,10 @@ export default function UpdateFilmDialog(props) {
 	const [open, setOpen] = useState(false);
 	const [poster, setPoster] = useState(null);
 
-	const getSelectedGenres = () => {
+	const getSelected = (items, list) => {
 		const arr = [];
-		props.film.genres.map(g => {
-			const found = props.genres.find(i => i.id === g.id);
+		items.map(item => {
+			const found = list.find(i => i.id === item.id);
 			if (found) {
 				arr.push(found);
 			}
@@ -49,9 +59,20 @@ export default function UpdateFilmDialog(props) {
 		return arr;
 	}
 
+	const getSelectedStudio = (item) => {
+		if (item === null) {
+			return null;
+		}
+
+		const found = props.studios.find(i => i.id === item.id);
+		return found ? found : null;
+	}
+
 	const [state, setState] = useState({
-		film: { ...props.film },
-		selectedGenres: getSelectedGenres(),
+		film: { ...props.film, studio: getSelectedStudio(props.film.studio) },
+		selectedGenres: getSelected(props.film.genres, props.genres),
+		selectedDirectors: getSelected(props.film.directors, props.persons),
+		selectedCast: getSelected(props.film.cast, props.persons),
 		error: null,
 		msg: null,
 	});
@@ -74,6 +95,8 @@ export default function UpdateFilmDialog(props) {
 		if (isVideoTokenValid) {
 			const film = { ...state.film };
 			film.genres = [...state.selectedGenres];
+			film.directors = [...state.selectedDirectors];
+			film.cast = [...state.selectedCast];
 
 			const formData = new FormData();
 			formData.append("title", film.title);
@@ -82,10 +105,24 @@ export default function UpdateFilmDialog(props) {
 			formData.append("posterPath", film.posterPath);
 			formData.append("poster", poster);
 			formData.append("videoToken", videoToken);
+
+			if (film.studio != null) {
+				formData.append("studio.id", film.studio.id);
+				formData.append("studio.name", film.studio.name);
+			}
+
 			film.genres.forEach((genre, index) => {
 				for (const key in genre) {
 					formData.append(`genres[${index}][${key}]`, genre[key]);
 				}
+			});
+
+			film.directors.forEach((item, index) => {
+				formData.append(`directors[${index}][id]`, item.id);
+			});
+
+			film.cast.forEach((item, index) => {
+				formData.append(`cast[${index}][id]`, item.id);
 			});
 
 			const postURL = `https://localhost:5001/api/film/${props.film.id}`;
@@ -123,7 +160,7 @@ export default function UpdateFilmDialog(props) {
 				});
 		}
 		else {
-			setState({ ...state, error: "Ссылка на видео не соответствует ниодному формату", msg: null });
+			setState({ ...state, error: "Ссылка на видео не соответствует формату", msg: null });
 		}
 	};
 
@@ -145,6 +182,18 @@ export default function UpdateFilmDialog(props) {
 
 	const handleChangeImage = (event) => {
 		setPoster(event.target.files[0]);
+	}
+
+	const handleDirectorsChange = (list) => {
+		setState({ ...state, selectedDirectors: [...list] });
+	}
+
+	const handleCastChange = (list) => {
+		setState({ ...state, selectedCast: [...list] });
+	}
+
+	const handleStudioChange = (event) => {
+		setState({ ...state, film: { ...state.film, studio: event.target.value } });
 	}
 
 	return (
@@ -199,7 +248,45 @@ export default function UpdateFilmDialog(props) {
 						isValid={isVideoTokenValid}
 						setIsValid={setIsVideoTokenValid}
 					/>
-					<input type="file" className={classes.item} onChange={handleChangeImage} />
+					<Box className={classes.item && classes.flex}>
+						<input type="file" className={classes.item} onChange={handleChangeImage} />
+						<FormControl>
+							<InputLabel id="studio-select-label">Студия</InputLabel>
+							<Select
+								labelId="studio-select-label"
+								id="studio-select"
+								value={state.film.studio}
+								onChange={handleStudioChange}
+								input={<OutlinedInput label="Студия" />}
+								className={classes.select}
+							>
+								<MenuItem key={0} value={null}>
+									<ListItemText primary="Не выбрано" />
+								</MenuItem>
+								{props.studios.map((studio) => (
+									<MenuItem key={studio.Id} value={studio}>
+										<ListItemText primary={studio.name} />
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
+					</Box>
+					<Box className={classes.item && classes.flex}>
+						<PersonMultipleSelector
+							className={classes.select}
+							list={props.persons}
+							selected={state.selectedDirectors}
+							label="Режиссёр"
+							onChange={handleDirectorsChange}
+						/>
+						<PersonMultipleSelector
+							className={classes.select}
+							list={props.persons}
+							selected={state.selectedCast}
+							label="Актёры"
+							onChange={handleCastChange}
+						/>
+					</Box>
 					<GenresSelector genres={props.genres} selected={state.selectedGenres} onChange={handleGenresUpdate} />
 				</DialogContent>
 				<DialogActions>

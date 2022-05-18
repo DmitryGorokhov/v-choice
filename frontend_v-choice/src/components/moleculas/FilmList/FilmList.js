@@ -249,6 +249,8 @@ function FilmList(props) {
 											<AddFilmDialog
 												className={classes.btn}
 												genres={props.genres}
+												studios={props.studios}
+												persons={props.persons}
 												onCreate={handleCreateFilm}
 											/>
 											<GenreManager
@@ -306,6 +308,8 @@ function FilmList(props) {
 													onUpdate={handleUpdateFilm}
 													onDelete={handleDeleteFilm}
 													genres={props.genres}
+													studios={props.studios}
+													persons={props.persons}
 												/>
 											</ListItem>
 										)

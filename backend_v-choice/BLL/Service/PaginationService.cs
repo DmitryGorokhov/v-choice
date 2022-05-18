@@ -17,14 +17,16 @@ namespace BLL.Service
     {
         private readonly IGenreRepository _genreRepository;
         private readonly IPaginationRepository _paginationRepository;
+        private readonly IPersonRepository _personRepository;
         private readonly IAutorizationService _autorizationService;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
-        public PaginationService(IPaginationRepository pr, IGenreRepository gr, IAutorizationService aus, ILogger<PaginationService> logger, IMapper mapper)
+        public PaginationService(IPaginationRepository pagr, IGenreRepository gr, IPersonRepository pr, IAutorizationService aus, ILogger<PaginationService> logger, IMapper mapper)
         {
-            _paginationRepository = pr;
+            _paginationRepository = pagr;
             _genreRepository = gr;
+            _personRepository = pr;
             _autorizationService = aus;
             _logger = logger;
             _mapper = mapper;
@@ -189,7 +191,7 @@ namespace BLL.Service
             try
             {
                 _logger.LogInformation("Call GetAllPersons");
-                IQueryable<Person> collection = _paginationRepository.GetAllPersons();
+                IQueryable<Person> collection = _personRepository.GetAllPersons();
 
                 _logger.LogInformation($"Get {query.OnPageCount} persons on {query.PageNumber} page successfully. Pack result into object before return.");
                 (int total, var items) = await _paginationRepository.SplitByPagesAsync(collection, query.PageNumber, query.OnPageCount);

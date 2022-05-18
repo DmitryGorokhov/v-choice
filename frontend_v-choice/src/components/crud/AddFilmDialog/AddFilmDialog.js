@@ -9,6 +9,12 @@ import {
 	DialogContent,
 	DialogTitle,
 	DialogContentText,
+	FormControl,
+	InputLabel,
+	ListItemText,
+	MenuItem,
+	OutlinedInput,
+	Select,
 	TextField,
 } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
@@ -16,6 +22,7 @@ import AddIcon from '@material-ui/icons/Add'
 import MyAlerter from '../../atoms/MyAlerter/MyAlerter'
 import GenresSelector from '../../atoms/GenresSelector/GenresSelector'
 import VideoURLInput from '../../atoms/VideoURLInput/VideoURLInput'
+import PersonMultipleSelector from '../../atoms/PersonMultipleSelector/PersonMultipleSelector'
 
 const useStyles = makeStyles((theme) => createStyles({
 	flex: {
@@ -31,6 +38,9 @@ const useStyles = makeStyles((theme) => createStyles({
 	item: {
 		margin: theme.spacing(2, 0)
 	},
+	select: {
+		width: '250px',
+	},
 }));
 
 export default function FormDialog(props) {
@@ -44,7 +54,10 @@ export default function FormDialog(props) {
 		description: '',
 		year: '',
 		genres: [],
+		directors: [],
+		cast: [],
 		posterPath: "",
+		studio: null,
 	});
 	const [poster, setPoster] = useState(null);
 	const [videoToken, setVideoToken] = useState('');
@@ -72,10 +85,24 @@ export default function FormDialog(props) {
 			formData.append("description", film.description);
 			formData.append("poster", poster);
 			formData.append("videoToken", videoToken);
+
+			if (film.studio != null) {
+				formData.append("studio.id", film.studio.id);
+				formData.append("studio.name", film.studio.name);
+			}
+
 			film.genres.forEach((genre, index) => {
 				for (const key in genre) {
 					formData.append(`genres[${index}][${key}]`, genre[key]);
 				}
+			});
+
+			film.directors.forEach((item, index) => {
+				formData.append(`directors[${index}][id]`, item.id);
+			});
+
+			film.cast.forEach((item, index) => {
+				formData.append(`cast[${index}][id]`, item.id);
 			});
 
 			fetch('https://localhost:5001/api/film', {
@@ -121,6 +148,18 @@ export default function FormDialog(props) {
 
 	const handleChangeImage = (event) => {
 		setPoster(event.target.files[0]);
+	}
+
+	const handleDirectorsChange = (list) => {
+		setFilm({ ...film, directors: [...list] });
+	}
+
+	const handleCastChange = (list) => {
+		setFilm({ ...film, cast: [...list] });
+	}
+
+	const handleStudioChange = (event) => {
+		setFilm({ ...film, studio: event.target.value });
 	}
 
 	return (
@@ -175,7 +214,45 @@ export default function FormDialog(props) {
 						isValid={isVideoTokenValid}
 						setIsValid={setIsVideoTokenValid}
 					/>
-					<input type="file" className={classes.item} onChange={handleChangeImage} />
+					<Box className={classes.item && classes.flex}>
+						<input type="file" className={classes.item} onChange={handleChangeImage} />
+						<FormControl>
+							<InputLabel id="studio-select-label">Студия</InputLabel>
+							<Select
+								labelId="studio-select-label"
+								id="studio-select"
+								value={film.studio}
+								onChange={handleStudioChange}
+								input={<OutlinedInput label="Студия" />}
+								className={classes.select}
+							>
+								<MenuItem key={0} value={null}>
+									<ListItemText primary="Не выбрано" />
+								</MenuItem>
+								{props.studios.map((studio) => (
+									<MenuItem key={studio.Id} value={studio}>
+										<ListItemText primary={studio.name} />
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
+					</Box>
+					<Box className={classes.item && classes.flex}>
+						<PersonMultipleSelector
+							className={classes.select}
+							list={props.persons}
+							selected={[]}
+							label="Режиссёр"
+							onChange={handleDirectorsChange}
+						/>
+						<PersonMultipleSelector
+							className={classes.select}
+							list={props.persons}
+							selected={[]}
+							label="Актёры"
+							onChange={handleCastChange}
+						/>
+					</Box>
 					<GenresSelector genres={props.genres} selected={[]} onChange={handleGenresUpdate} />
 				</DialogContent>
 				<DialogActions>

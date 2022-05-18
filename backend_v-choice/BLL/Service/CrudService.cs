@@ -556,5 +556,25 @@ namespace BLL.Service
                 _logger.LogError($"Delete studio with id={id} has thrown an exception: {e.Message}.");
             }
         }
+
+        public IEnumerable<PersonDTO> GetAllPersons()
+        {
+            _logger.LogInformation("Starting get all persons.");
+            try
+            {
+                _logger.LogInformation("Call GetAllPersons.");
+                IQueryable<Person> persons = _personRepository.GetAllPersons();
+
+                _logger.LogInformation("Get all persons successfull.");
+
+                return persons.Select(e => _mapper.PersonModelToDTO(e)).ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Get all persons has thrown an exception: {e.Message}.");
+
+                return new List<PersonDTO>();
+            }
+        }
     }
 }

@@ -129,7 +129,13 @@ function FilmCard(props) {
 				user.isAdmin
 					?
 					<Box className={classes.controlsContainer}>
-						<UpdateFilmDialog film={film} onUpdate={handleOnUpdateFilm} genres={props.genres} />
+						<UpdateFilmDialog
+							film={film}
+							onUpdate={handleOnUpdateFilm}
+							genres={props.genres}
+							studios={props.studios}
+							persons={props.persons}
+						/>
 						<DeleteFilm film={film} btnStyle={classes.btnDelete} onDelete={props.onDelete} />
 					</Box>
 					: null

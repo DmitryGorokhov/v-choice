@@ -29,13 +29,30 @@ namespace BLL.Utils
                 AverageRate = film.AverageRate ?? 0,
                 PosterPath = film.PosterPath,
                 VideoToken = film.VideoToken,
+                Persons = new HashSet<Participation>(),
             };
 
             if (film.Genres != null)
             {
                 model.Genres = new HashSet<Genre>(film.Genres
-                .Select(e => GenreDTOtoModel(e))
-                .ToList());
+                .Select(e => GenreDTOtoModel(e)).ToList());
+            }
+
+            if (film.Studio != null)
+            {
+                model.StudioId = film.Studio.Id;
+            }
+
+            if (film.Cast != null)
+            {
+                foreach (var person in film.Cast)
+                    model.Persons.Add(new Participation() { Role = RoleEnum.Actor, PersonId = (int)person.Id });
+            }
+
+            if (film.Directors != null)
+            {
+                foreach (var person in film.Directors)
+                    model.Persons.Add(new Participation() { Role = RoleEnum.Director, PersonId = (int)person.Id });
             }
 
             _logger.LogInformation("Finish mapping FilmDTO to Model.");
@@ -67,6 +84,11 @@ namespace BLL.Utils
                 VideoToken = film.VideoToken,
 
                 Genres = new HashSet<GenreDTO>(film.Genres.Select(e => GenreModelToDTO(e)).ToList()),
+                Cast = new HashSet<PersonDTO>(film.Persons.Where(e => e.Role == RoleEnum.Actor)
+                    .Select(e => PersonModelToDTO(e.Person)).ToList()),
+                Directors = new HashSet<PersonDTO>(film.Persons.Where(e => e.Role == RoleEnum.Director)
+                    .Select(e => PersonModelToDTO(e.Person)).ToList()),
+                Studio = StudioModelToDTO(film.Studio),
             };
         }
         #endregion
@@ -315,17 +337,18 @@ namespace BLL.Utils
         #region Participation <-> ParticipationDTO
         public Participation ParticipationDTOtoModel(ParticipationDTO participation)
         {
-            //_logger.LogInformation("Start mapping ParticipationDTO to Model.");
-            //Participation model = new Participation()
-            //{
-            //    Id = participation.Id ?? 0,
-            //    FilmId = participation.
-            //};
+            _logger.LogInformation("Start mapping ParticipationDTO to Model.");
+            Participation model = new Participation()
+            {
+                Id = participation.Id ?? 0,
+                FilmId = participation.FilmId,
+                Role = participation.RoleId,
+                PersonId = participation.PersonId,
+            };
 
-            //_logger.LogInformation("Finish mapping ParticipationDTOs to Model.");
+            _logger.LogInformation("Finish mapping ParticipationDTO to Model.");
 
-            //return model;
-            return null;
+            return model;
         }
 
         public ParticipationDTO ParticipationModelToDTO(Participation participation)
@@ -341,7 +364,7 @@ namespace BLL.Utils
             return new ParticipationDTO()
             {
                 Id = participation.Id,
-                Person = PersonModelToDTO(participation.Person ?? null),
+                Person = PersonModelToDTO(participation.Person),
                 RoleId = participation.Role,
                 Role = participation.Role switch
                 {

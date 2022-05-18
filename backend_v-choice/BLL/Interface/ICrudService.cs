@@ -30,5 +30,6 @@ namespace BLL.Interface
         Task DeletePersonAsync(int id);
         Task UpdateStudioAsync(int id, StudioDTO studio);
         Task DeleteStudioAsync(int id);
+        IEnumerable<PersonDTO> GetAllPersons();
     }
 }

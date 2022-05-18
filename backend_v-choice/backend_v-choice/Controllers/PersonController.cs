@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace backend_v_choice.Controllers
@@ -42,6 +43,15 @@ namespace backend_v_choice.Controllers
             if (res == null) return StatusCode(500);
 
             return Ok(res);
+        }
+
+        [Route("all")]
+        [HttpGet]
+        public IEnumerable<PersonDTO> GetAll()
+        {
+            _logger.LogInformation("Get all persons");
+
+            return _crudService.GetAllPersons();
         }
 
         [Authorize(Roles = "admin")]

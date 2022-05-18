@@ -1,5 +1,6 @@
 ﻿using DAL.Interface;
 using DAL.Model;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DAL.Repository
@@ -27,6 +28,9 @@ namespace DAL.Repository
             _context.Person.Remove(person);
             await _context.SaveChangesAsync();
         }
+
+        public IQueryable<Person> GetAllPersons()
+            => _context.Person.OrderBy(e => e.FullName);
 
         public async Task<Person> SetPhotoPathAsync(int id, string photoPath)
         {

@@ -20,7 +20,7 @@ namespace BLL.DTO
         public StudioDTO Studio { get; set; }
 
         public ICollection<GenreDTO> Genres { get; set; }
-        public ICollection<ParticipationDTO> Directors { get; set; }
-        public ICollection<ParticipationDTO> Cast { get; set; }
+        public ICollection<PersonDTO> Directors { get; set; }
+        public ICollection<PersonDTO> Cast { get; set; }
     }
 }

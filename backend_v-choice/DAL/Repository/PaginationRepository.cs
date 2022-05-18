@@ -34,7 +34,7 @@ namespace DAL.Repository
            => collection.Where(e => e.CountRate != 0);
 
         public IQueryable<Film> GetAllFilms() 
-            => _context.Film.Include(e => e.Genres);
+            => _context.Film.Include(e => e.Genres).Include(e => e.Studio).Include(e => e.Persons).ThenInclude(e => e.Person);
 
         public IQueryable<Film> GetFilmsByCreated(IQueryable<Film> collection)
             => collection.OrderBy(e => e.CreatedAt);
@@ -81,8 +81,5 @@ namespace DAL.Repository
 
         public IQueryable<Comment> GetCommentsByDateOnly(int filmId)
             => _context.Comment.Where(c => c.FilmId == filmId).OrderBy(c => c.CreatedAt);
-
-        public IQueryable<Person> GetAllPersons()
-            => _context.Person;
     }
 }
