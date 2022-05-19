@@ -14,5 +14,6 @@ namespace DAL.Interface
         IQueryable<Film> GetFilmStatisticByCountRate();
         IQueryable<Film> GetFilmStatisticByRate();
         GeneralStatistic GetGeneralStatistic();
+        object GetDataForCatalogFilters();
     }
 }

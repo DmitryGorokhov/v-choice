@@ -15,6 +15,24 @@ namespace DAL.Repository
             _context = dbc;
         }
 
+        public object GetDataForCatalogFilters()
+        {
+            var sortedByYear = _context.Film.OrderBy(e => e.Year);
+            int yMin = sortedByYear.First().Year;
+            int yMax = sortedByYear.Last().Year;
+
+            var sortedByRate = _context.Film.OrderBy(e => e.AverageRate);
+            float rMin = sortedByRate.First().AverageRate;
+            float rMax = sortedByRate.Last().AverageRate;
+
+            return new {
+                YearMin = yMin,
+                YearMax = yMax,
+                RateMin = rMin,
+                RateMax = rMax,
+            };
+        }
+
         public GeneralStatistic GetGeneralStatistic()
         {
             GeneralStatistic obj = new GeneralStatistic();

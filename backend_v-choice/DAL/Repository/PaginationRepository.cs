@@ -81,5 +81,23 @@ namespace DAL.Repository
 
         public IQueryable<Comment> GetCommentsByDateOnly(int filmId)
             => _context.Comment.Where(c => c.FilmId == filmId).OrderBy(c => c.CreatedAt);
+
+        public IQueryable<Film> GetFilmsByActorId(IQueryable<Film> collection, int actorId)
+            => collection.Where(e => e.Persons.FirstOrDefault(p => p.PersonId == actorId && p.Role == RoleEnum.Actor) != null);
+
+        public IQueryable<Film> GetFilmsByDirectorId(IQueryable<Film> collection, int directorId)
+            => collection.Where(e => e.Persons.FirstOrDefault(p => p.PersonId == directorId && p.Role == RoleEnum.Director) != null);
+
+        public IQueryable<Film> GetFilmsByStudioId(IQueryable<Film> collection, int studioId)
+            => collection.Where(e => e.StudioId == studioId);
+
+        public IQueryable<Film> GetFilmsBySearch(IQueryable<Film> collection, string search)
+            => collection.Where(e => e.Title.Contains(search) || e.Description.Contains(search));
+
+        public IQueryable<Film> GetFilmsByRateRange(IQueryable<Film> collection, float min, float max)
+            => collection.Where(e => min <= e.AverageRate && e.AverageRate <= max);
+
+        public IQueryable<Film> GetFilmsByYearRange(IQueryable<Film> collection, int min, int max)
+            => collection.Where(e => min <= e.Year && e.Year <= max);
     }
 }

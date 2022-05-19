@@ -158,6 +158,26 @@ namespace BLL.Service
             return path;
         }
 
+        public object GetDataForCatalogFilters()
+        {
+            _logger.LogInformation("Starting get data for catalog filters");
+            try
+            {
+                _logger.LogInformation("Call GetGeneralStatisticAsync");
+                var res = _statisticRepository.GetDataForCatalogFilters();
+
+                _logger.LogInformation("Get data for catalog filters has been done.");
+
+                return res;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Get data for catalog filters has thrown an exception: {e.Message}.");
+
+                return null;
+            }
+        }
+
         public async Task<PaginationDTO<FilmStatisticDTO>> GetFilmStatisticAsync(FilmStaticticQuery query)
         {
             _logger.LogInformation("Starting get film statistic");

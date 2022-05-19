@@ -125,19 +125,40 @@ namespace BLL.Service
             {
                 _logger.LogInformation("Call GetFilmsByPageAsync.");
 
-                if (query.GenreId != null && query.GenreId > 0)
-                {
-                    _logger.LogInformation($"Write genre with Id={query.GenreId} was requested by catalog filter. Call GenreRequestedCounter.");
-                    await _genreRepository.GenreRequestedCounter((int)query.GenreId);
-                }
-
                 _logger.LogInformation("Call GetAllFilms.");
                 IQueryable<Film> collection = _paginationRepository.GetAllFilms();
 
+                if ((query.Search ?? string.Empty) != string.Empty)
+                {
+                    _logger.LogInformation("Call GetFilmsBySearch.");
+                    collection = _paginationRepository.GetFilmsBySearch(collection, query.Search);
+                }
+
                 if ((query.GenreId ?? 0) != 0)
                 {
+                    _logger.LogInformation($"Write genre with Id={query.GenreId} was requested by catalog filter. Call GenreRequestedCounter.");
+                    await _genreRepository.GenreRequestedCounter((int)query.GenreId);
+
                     _logger.LogInformation("Call GetFilmsByGenreId.");
                     collection = _paginationRepository.GetFilmsByGenreId(collection, (int)query.GenreId);
+                }
+
+                if ((query.ActorId ?? 0) != 0)
+                {
+                    _logger.LogInformation("Call GetFilmsByActorId.");
+                    collection = _paginationRepository.GetFilmsByActorId(collection, (int)query.ActorId);
+                }
+
+                if ((query.DirectorId ?? 0) != 0)
+                {
+                    _logger.LogInformation("Call GetFilmsByDirectorId.");
+                    collection = _paginationRepository.GetFilmsByDirectorId(collection, (int)query.DirectorId);
+                }
+
+                if ((query.StudioId ?? 0) != 0)
+                {
+                    _logger.LogInformation("Call GetFilmsByStudioId.");
+                    collection = _paginationRepository.GetFilmsByStudioId(collection, (int)query.StudioId);
                 }
 
                 if (query.HasCommentsOnly ?? false)
@@ -150,6 +171,18 @@ namespace BLL.Service
                 {
                     _logger.LogInformation("Call GetFilmsWithRateOnly.");
                     collection = _paginationRepository.GetFilmsWithRateOnly(collection);
+                }
+
+                if (query.RateMax != null || query.RateMin != null)
+                {
+                    _logger.LogInformation("Call GetFilmsByRateRange.");
+                    collection = _paginationRepository.GetFilmsByRateRange(collection, query.RateMin ?? 0, query.RateMax ?? 10);
+                }
+
+                if (query.YearMax != null || query.YearMin != null)
+                {
+                    _logger.LogInformation("Call GetFilmsByRateRange.");
+                    collection = _paginationRepository.GetFilmsByYearRange(collection, query.YearMin ?? 0, query.YearMax ?? int.MaxValue);
                 }
 
                 _logger.LogInformation($"Film pagination: sort collection by {query.SortBy}.");

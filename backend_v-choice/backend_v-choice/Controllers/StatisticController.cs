@@ -83,5 +83,15 @@ namespace backend_v_choice.Controllers
 
             return Ok(new { link = link });
         }
+
+        [Route("catalog-filters")]
+        [HttpGet]
+        public IActionResult GetDataForCatalogFilters()
+        {
+            _logger.LogInformation("Get data for filters");
+            var res = _statisticService.GetDataForCatalogFilters();
+
+            return Ok(res);
+        }
     }
 }

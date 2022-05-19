@@ -13,5 +13,6 @@ namespace BLL.Interface
         Task<PaginationDTO<FilmStatisticDTO>> GetFilmStatisticAsync(FilmStaticticQuery query);
         Task<PaginationDTO<GenreStatisticDTO>> GetGenreStatisticAsync(GenreStaticticQuery query);
         string ExportStatisticAsync(ExportStatisticQuery exportStatisticQuery, IWebHostEnvironment _appEnvironment);
+        object GetDataForCatalogFilters();
     }
 }
