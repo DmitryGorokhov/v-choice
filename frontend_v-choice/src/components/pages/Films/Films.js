@@ -10,6 +10,12 @@ function Films() {
 	const [genres, setGenres] = useState([]);
 	const [studios, setStudios] = useState([]);
 	const [persons, setPersons] = useState([]);
+	const [filterData, setFilterData] = useState({
+		yearMin: 0,
+		yearMax: new Date().getFullYear(),
+		rateMin: 0,
+		rateMax: 10,
+	});
 	const { slug } = useParams();
 
 	const recognizeQuery = () => {
@@ -23,6 +29,13 @@ function Films() {
 					case QueryProps.Page:
 					case QueryProps.Count:
 					case QueryProps.GenreId:
+					case QueryProps.ActorId:
+					case QueryProps.DirectorId:
+					case QueryProps.StudioId:
+					case QueryProps.YearMin:
+					case QueryProps.YearMax:
+					case QueryProps.RateMin:
+					case QueryProps.RateMax:
 						!isNaN(Number(pair[1]))
 							? params[pair[0]] = Number(pair[1])
 							: failedValues.push(pair[1]);
@@ -58,6 +71,10 @@ function Films() {
 						}
 						break;
 
+					case QueryProps.Search:
+						params[pair[0]] = pair[1];
+						break;
+
 					default:
 						failedKeys.push(pair[0]);
 						break;
@@ -73,6 +90,14 @@ function Films() {
 		"sort-by": SortingType['not-set'],
 		withCommentsOnly: false,
 		withRateOnly: false,
+		"y-min": 0,
+		"y-max": new Date().getFullYear(),
+		"r-min": 0,
+		"r-max": 10,
+		dir: 0,
+		act: 0,
+		st: 0,
+		search: "",
 	}
 
 	recognizeQuery();
@@ -80,13 +105,20 @@ function Films() {
 	useEffect(() => {
 		fetch('https://localhost:5001/api/genre')
 			.then(response => response.json())
-			.then(result => setGenres(result));
+			.then(result => setGenres(result))
+			.catch(_ => _);
 		fetch('https://localhost:5001/api/studio')
 			.then(response => response.json())
-			.then(result => setStudios(result));
+			.then(result => setStudios(result))
+			.catch(_ => _);
 		fetch('https://localhost:5001/api/person/all')
 			.then(response => response.json())
-			.then(result => setPersons(result));
+			.then(result => setPersons(result))
+			.catch(_ => _);
+		fetch('https://localhost:5001/api/statistic/catalog-filters')
+			.then(response => response.json())
+			.then(result => setFilterData(result))
+			.catch(_ => _);
 	}, [])
 
 	const handleCreateStudio = (studio) => {
@@ -132,6 +164,7 @@ function Films() {
 				persons={persons}
 				genreMethods={{ onCreate: handleCreateGenre, onUpdate: handleUpdateGenre, onDelete: handleDeleteGenre }}
 				studioMethods={{ onCreate: handleCreateStudio, onUpdate: handleUpdateStudio, onDelete: handleDeleteStudio }}
+				filterData={filterData}
 			/>
 		</>
 	)

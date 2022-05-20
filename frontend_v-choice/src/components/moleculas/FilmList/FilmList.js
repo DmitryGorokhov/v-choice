@@ -67,6 +67,12 @@ function FilmList(props) {
 		sortingType: props['sort-by'],
 		withCommentsOnly: props.withCommentsOnly,
 		withRateOnly: props.withRateOnly,
+		byYear: { min: props['y-min'], max: props['y-max'] },
+		byRate: { min: props['r-min'], max: props['r-max'] },
+		byActorId: props.act,
+		byDirectorId: props.dir,
+		byStudioId: props.st,
+		search: props.search,
 	});
 
 	const [reload, setReload] = useState(false);
@@ -89,7 +95,15 @@ function FilmList(props) {
 			`&GenreId=${state.byGenreId}` +
 			`&SortBy=${state.sortingType}` +
 			`&HasCommentsOnly=${state.withCommentsOnly}` +
-			`&HasRateOnly=${state.withRateOnly}`
+			`&HasRateOnly=${state.withRateOnly}` +
+			`&YearMin=${state.byYear.min}` +
+			`&YearMax=${state.byYear.max}` +
+			`&RateMin=${state.byRate.min}` +
+			`&RateMax=${state.byRate.max}` +
+			`&Search=${state.search}` +
+			`&ActorId=${state.byActorId}` +
+			`&DirectorId=${state.byDirectorId}` +
+			`&StudioId=${state.byStudioId}`
 		)
 			.then(response => response.json())
 			.then(result => {
@@ -103,28 +117,55 @@ function FilmList(props) {
 				setReload(false);
 			});
 	}, [
-		state.currentPage,
-		state.onPage,
-		state.byGenreId,
-		state.sortingType,
-		state.commonOrder,
-		state.withCommentsOnly,
-		state.withRateOnly,
+		state.currentPage, state.onPage,
+		state.byGenreId, state.byStudioId,
+		state.byActorId, state.byDirectorId,
+		state.sortingType, state.commonOrder,
+		state.withCommentsOnly, state.withRateOnly,
+		state.byYear, state.byRate,
+		state.search,
 		reload
 	])
 
 	const createCatalogURL = (
-		p,
-		c,
-		g = 0,
+		p, c, g = 0, a = 0, d = 0, s = 0,
 		sort = SortingType['not-set'],
-		withCommentsOnly = false,
-		withRateOnly = false
+		withCommentsOnly = false, withRateOnly = false,
+		y_min = null, y_max = null, r_min = null, r_max = null,
+		search = ""
 	) => {
 		let url = `/catalog/${QueryProps.Page}=${p}&${QueryProps.Count}=${c}`;
 
 		if (g && g !== 0) {
 			url += `&${QueryProps.GenreId}=${g}`;
+		}
+
+		if (a && a !== 0) {
+			url += `&${QueryProps.ActorId}=${a}`;
+		}
+
+		if (d && d !== 0) {
+			url += `&${QueryProps.GenreId}=${d}`;
+		}
+
+		if (s && s !== 0) {
+			url += `&${QueryProps.StudioId}=${s}`;
+		}
+
+		if (y_min && y_min !== null) {
+			url += `&${QueryProps.YearMin}=${y_min}`;
+		}
+
+		if (y_max && y_max !== null) {
+			url += `&${QueryProps.YearMax}=${y_max}`;
+		}
+
+		if (r_min && r_min !== null) {
+			url += `&${QueryProps.RateMin}=${r_min}`;
+		}
+
+		if (r_max && r_max !== null) {
+			url += `&${QueryProps.RateMax}=${r_max}`;
 		}
 
 		if (sort && sort !== SortingType['not-set']) {
@@ -145,18 +186,28 @@ function FilmList(props) {
 			url += `&${QueryProps.Filter}=${filter}`;
 		}
 
+		if (search && search !== "") {
+			url += `&${QueryProps.Search}=${search}`;
+		}
+
 		return url;
 	}
 
-	const handleFiltersChanged = (g, s, cf, rf) => {
-		history.replace({ pathname: createCatalogURL(1, state.onPage, g, s, cf, rf) })
+	const handleFiltersChanged = (g, st, cf, rf, y, r, a, d, s, search) => {
+		history.replace({ pathname: createCatalogURL(1, state.onPage, g, a, d, s, st, cf, rf, y.min, y.max, r.min, r.max, search) })
 		setState({
 			...state,
 			currentPage: 1,
 			byGenreId: g,
-			sortingType: s,
+			sortingType: st,
 			withCommentsOnly: cf,
 			withRateOnly: rf,
+			byYear: y,
+			byRate: r,
+			byActorId: a,
+			byDirectorId: d,
+			byStudioId: s,
+			search: search,
 			loading: true
 		});
 	}
@@ -237,10 +288,23 @@ function FilmList(props) {
 									<FilmsFilter
 										onSubmit={handleFiltersChanged}
 										genres={props.genres}
-										selectedGenre={state.byGenreId}
-										selectedSortType={state.sortingType}
-										selectedCF={state.withCommentsOnly}
-										selectedRF={state.withRateOnly}
+										persons={props.persons}
+										studios={props.studios}
+										selected={
+											{
+												genre: state.byGenreId,
+												sortType: state.sortingType,
+												cF: state.withCommentsOnly,
+												rF: state.withRateOnly,
+												yearRange: state.byYear,
+												rateRange: state.byRate,
+												a: state.byActorId,
+												d: state.byDirectorId,
+												s: state.byStudioId,
+												search: state.search,
+											}
+										}
+										filterData={props.filterData}
 									/>
 								</Box>
 								{
