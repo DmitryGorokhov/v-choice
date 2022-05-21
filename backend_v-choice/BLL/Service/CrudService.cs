@@ -63,7 +63,7 @@ namespace BLL.Service
             }
         }
 
-        public async Task<FilmDTO> CreateFilmAsync(FilmDTO film, IWebHostEnvironment _appEnvironment)
+        public async Task<FilmDTO> CreateFilmAsync(FilmDTO film, IWebHostEnvironment appEnvironment)
         {
             _logger.LogInformation("Start creating film.");
             try
@@ -75,7 +75,7 @@ namespace BLL.Service
 
                 _logger.LogInformation($"Create film: film with Id equal {f.Id} was created.");
 
-                string posterPath = await SaveImageAsync(film.Poster, _appEnvironment);
+                string posterPath = await SaveImageAsync(film.Poster, appEnvironment);
 
                 if (posterPath != null)
                 {
@@ -154,11 +154,18 @@ namespace BLL.Service
             }
         }
 
-        public async Task DeleteFilmAsync(int id)
+        public async Task DeleteFilmAsync(int id, IWebHostEnvironment appEnvironment)
         {
             _logger.LogInformation($"Start deleting film with Id equal {id}.");
             try
             {
+                _logger.LogInformation("Call GetPosterPathByuFilmId.");
+                string previosPath = _filmRepository.GetPosterPathByFilmId(id);
+                if (previosPath != null)
+                {
+                    RemoveFile(previosPath, appEnvironment);
+                }
+                
                 _logger.LogInformation("Call DeleteFilmAsync.");
                 await _filmRepository.DeleteFilmAsync(id);
 
@@ -287,7 +294,7 @@ namespace BLL.Service
             }
         }
 
-        private async Task<string> SaveImageAsync(IFormFile image, IWebHostEnvironment _appEnvironment)
+        private async Task<string> SaveImageAsync(IFormFile image, IWebHostEnvironment appEnvironment)
         {
             _logger.LogInformation("Start saving image.");
             try
@@ -304,7 +311,7 @@ namespace BLL.Service
 
                 string path = Path.Combine("img", imageName);
 
-                using (var fileStream = new FileStream(Path.Combine(_appEnvironment.WebRootPath, path), FileMode.Create))
+                using (var fileStream = new FileStream(Path.Combine(appEnvironment.WebRootPath, path), FileMode.Create))
                 {
                     await image.CopyToAsync(fileStream);
                 }
@@ -319,6 +326,12 @@ namespace BLL.Service
 
                 return null;
             }
+        }
+
+        private void RemoveFile(string path, IWebHostEnvironment appEnvironment)
+        {
+            _logger.LogInformation("Start deleting image file.");
+            File.Delete(Path.Combine(appEnvironment.WebRootPath, path));
         }
 
         public async Task UpdateCommentAsync(int id, CommentDTO comment)
@@ -339,16 +352,23 @@ namespace BLL.Service
             }
         }
 
-        public async Task<string> UpdateFilmAsync(int id, FilmDTO film, IWebHostEnvironment _appEnvironment)
+        public async Task<string> UpdateFilmAsync(int id, FilmDTO film, IWebHostEnvironment appEnvironment)
         {
             _logger.LogInformation($"Start updating film with Id equal {id}.");
             try
             {
                 _logger.LogInformation("Call SavePosterAsync.");
-                string newPath = await SaveImageAsync(film.Poster, _appEnvironment);
+                string newPath = await SaveImageAsync(film.Poster, appEnvironment);
 
                 if (newPath != null)
                 {
+                    _logger.LogInformation("Call GetPosterPathByuFilmId.");
+                    string previosPath = _filmRepository.GetPosterPathByFilmId(id);
+                    if (previosPath != null)
+                    {
+                        RemoveFile(previosPath, appEnvironment);
+                    }
+
                     film.PosterPath = newPath;
                 }
 
@@ -445,6 +465,13 @@ namespace BLL.Service
 
                 if (newPath != null)
                 {
+                    _logger.LogInformation("Call GetPhotoPathByPersonId.");
+                    string previosPath = _personRepository.GetPhotoPathByPersonId(id);
+                    if (previosPath != null)
+                    {
+                        RemoveFile(previosPath, appEnvironment);
+                    }
+
                     person.PhotoPath = newPath;
                 }
 
@@ -465,11 +492,18 @@ namespace BLL.Service
             }
         }
 
-        public async Task DeletePersonAsync(int id)
+        public async Task DeletePersonAsync(int id, IWebHostEnvironment appEnvironment)
         {
             _logger.LogInformation($"Start deleting person with Id equal {id}.");
             try
             {
+                _logger.LogInformation("Call GetPhotoPathByPersonId.");
+                string previosPath = _personRepository.GetPhotoPathByPersonId(id);
+                if (previosPath != null) 
+                {
+                    RemoveFile(previosPath, appEnvironment);
+                }
+
                 _logger.LogInformation("Call DeletePersonAsync.");
                 await _personRepository.DeletePersonAsync(id);
 

@@ -11,5 +11,6 @@ namespace DAL.Interface
         Task DeleteFilmAsync(int id);
         Task<Film> SetPosterPathAsync(int id, string posterPath);
         Task FilmRequestedCounter(int id);
+        string GetPosterPathByFilmId(int id);
     }
 }

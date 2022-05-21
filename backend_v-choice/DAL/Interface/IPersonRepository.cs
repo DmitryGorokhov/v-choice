@@ -11,5 +11,6 @@ namespace DAL.Interface
         Task DeletePersonAsync(int id);
         Task UpdatePersonAsync(int id, Person p);
         IQueryable<Person> GetAllPersons();
+        string GetPhotoPathByPersonId(int id);
     }
 }

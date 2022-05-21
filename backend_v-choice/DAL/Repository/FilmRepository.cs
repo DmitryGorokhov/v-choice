@@ -120,5 +120,8 @@ namespace DAL.Repository
             film.Requested++;
             await _context.SaveChangesAsync();
         }
+
+        public string GetPosterPathByFilmId(int id)
+        => _context.Film.Find(id)?.PosterPath;
     }
 }

@@ -104,7 +104,7 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _crudService.DeleteFilmAsync(id);
+            await _crudService.DeleteFilmAsync(id, _appEnvironment);
             
             return NoContent();
         }

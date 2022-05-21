@@ -32,6 +32,9 @@ namespace DAL.Repository
         public IQueryable<Person> GetAllPersons()
             => _context.Person.OrderBy(e => e.FullName);
 
+        public string GetPhotoPathByPersonId(int id)
+            => _context.Person.Find(id).PhotoPath;
+
         public async Task<Person> SetPhotoPathAsync(int id, string photoPath)
         {
             Person item = _context.Person.Find(id);

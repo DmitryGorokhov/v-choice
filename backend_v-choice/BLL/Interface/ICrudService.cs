@@ -9,9 +9,9 @@ namespace BLL.Interface
     public interface ICrudService
     {
         Task<FilmDTO> GetFilmAsync(int id);
-        Task<FilmDTO> CreateFilmAsync(FilmDTO film, IWebHostEnvironment _appEnvironment);
-        Task<string> UpdateFilmAsync(int id, FilmDTO film, IWebHostEnvironment _appEnvironment);
-        Task DeleteFilmAsync(int id);
+        Task<FilmDTO> CreateFilmAsync(FilmDTO film, IWebHostEnvironment appEnvironment);
+        Task<string> UpdateFilmAsync(int id, FilmDTO film, IWebHostEnvironment appEnvironment);
+        Task DeleteFilmAsync(int id, IWebHostEnvironment appEnvironment);
         Task<CommentDTO> CreateCommentAsync(CommentDTO comment, ClaimsPrincipal user);
         Task UpdateCommentAsync(int id, CommentDTO comment);
         Task DeleteCommentAsync(int id);
@@ -27,7 +27,7 @@ namespace BLL.Interface
         Task<PersonDTO> CreatePersonAsync(PersonDTO person, IWebHostEnvironment appEnvironment);
         Task<string> UpdatePersonAsync(int id, PersonDTO person, IWebHostEnvironment appEnvironment);
         Task<StudioDTO> CreateStudioAsync(StudioDTO studio);
-        Task DeletePersonAsync(int id);
+        Task DeletePersonAsync(int id, IWebHostEnvironment appEnvironment);
         Task UpdateStudioAsync(int id, StudioDTO studio);
         Task DeleteStudioAsync(int id);
         IEnumerable<PersonDTO> GetAllPersons();

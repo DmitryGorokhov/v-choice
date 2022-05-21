@@ -46,8 +46,7 @@ namespace BLL.Service
 
             _logger.LogInformation("Starting write statistic into pdf");
 
-            string fileName = "Statistic_" + DateTime.Now.ToString("yymmssfff") + ".pdf";
-            string path = Path.Combine("files", fileName);
+            string path = Path.Combine("files", "Statistic.pdf");
 
             var doc = new Document();
             PdfWriter.GetInstance(doc, new FileStream(Path.Combine(_appEnvironment.WebRootPath, path), FileMode.Create));

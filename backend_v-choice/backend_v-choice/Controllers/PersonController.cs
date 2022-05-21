@@ -95,7 +95,7 @@ namespace backend_v_choice.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _crudService.DeletePersonAsync(id);
+            await _crudService.DeletePersonAsync(id, _appEnvironment);
 
             return NoContent();
         }
