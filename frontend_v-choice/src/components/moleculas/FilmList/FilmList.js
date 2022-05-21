@@ -145,7 +145,7 @@ function FilmList(props) {
 		}
 
 		if (d && d !== 0) {
-			url += `&${QueryProps.GenreId}=${d}`;
+			url += `&${QueryProps.DirectorId}=${d}`;
 		}
 
 		if (s && s !== 0) {
@@ -156,7 +156,7 @@ function FilmList(props) {
 			url += `&${QueryProps.YearMin}=${y_min}`;
 		}
 
-		if (y_max && y_max !== null) {
+		if (y_max && y_max !== null && y_max !== new Date().getFullYear()) {
 			url += `&${QueryProps.YearMax}=${y_max}`;
 		}
 
@@ -164,7 +164,7 @@ function FilmList(props) {
 			url += `&${QueryProps.RateMin}=${r_min}`;
 		}
 
-		if (r_max && r_max !== null) {
+		if (r_max && r_max !== null && r_max !== 10) {
 			url += `&${QueryProps.RateMax}=${r_max}`;
 		}
 

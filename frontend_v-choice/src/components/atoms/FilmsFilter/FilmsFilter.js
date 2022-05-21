@@ -231,7 +231,7 @@ function FilmsFilter(props) {
 					>
 						<MenuItem value={0}>Не выбран</MenuItem>
 						{
-							props.persons.map(p => <MenuItem value={p.Id}>{p.fullName}</MenuItem>)
+							props.persons.map(p => <MenuItem value={p.id}>{p.fullName}</MenuItem>)
 						}
 					</Select>
 				</FormControl>
@@ -245,7 +245,7 @@ function FilmsFilter(props) {
 					>
 						<MenuItem value={0}>Не выбран</MenuItem>
 						{
-							props.persons.map(p => <MenuItem value={p.Id}>{p.fullName}</MenuItem>)
+							props.persons.map(p => <MenuItem value={p.id}>{p.fullName}</MenuItem>)
 						}
 					</Select>
 				</FormControl>
@@ -259,7 +259,7 @@ function FilmsFilter(props) {
 					>
 						<MenuItem value={0}>Не выбран</MenuItem>
 						{
-							props.studios.map(s => <MenuItem value={s.Id}>{s.name}</MenuItem>)
+							props.studios.map(s => <MenuItem value={s.id}>{s.name}</MenuItem>)
 						}
 					</Select>
 				</FormControl>
