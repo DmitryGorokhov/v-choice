@@ -22,26 +22,16 @@ const useStyles = makeStyles((theme) => createStyles({
 export default function ExportStatistic(props) {
 	const classes = useStyles();
 
-	const showLink = (link) => {
+	const createAlertBody = (msg) => {
 		return (
 			<Typography>
-				Файл подготовлен. Вы можете получить его по <Link to={`/${link}`} target="_blank">ссылке</Link>.
+				{msg} Вы можете получить его по <Link to={"/files/Statistic.pdf"} target="_blank">ссылке</Link>.
 			</Typography >
 		)
 	}
 
-	const showChanged = (link) => {
-		return (
-			<Typography>
-				Столбцы для сортировок изменены. Вы можете выгрузить новый отчет <br />
-				Прошлый отчет всё ещё доступен по <Link to={`/${link}`} target="_blank">ссылке</Link>
-			</Typography >
-		)
-	}
-
-	const [msg, setMsg] = useState(props.link && props.link !== undefined ? () => showLink(props.link) : null);
+	const [msg, setMsg] = useState(props.isExist !== undefined && props.isExist ? () => createAlertBody("Файл уже существует.") : null);
 	const [error, setError] = useState(null);
-	const [changed, setChanged] = useState(false);
 
 	const [filmSortingType, setFilmSortingType] = useState(0);
 	const [genreSortingType, setGenreSortingType] = useState(0);
@@ -57,9 +47,10 @@ export default function ExportStatistic(props) {
 			.then(response => response.json())
 			.then(data => {
 				if (data && data.link !== undefined) {
-					setMsg(showLink(data.link));
-					setChanged(false);
-					props.saveLink(data.link);
+					setMsg(createAlertBody("Файл подготовлен."));
+					if (!props.isExist) {
+						props.setExist(true);
+					}
 				}
 				else {
 					setError("Произошла ошибка. Попробуйте снова позже.");
@@ -70,24 +61,10 @@ export default function ExportStatistic(props) {
 
 	const handleChangeFilmSortingType = (event) => {
 		setFilmSortingType(event.target.value);
-		if (!changed) {
-			setChanged(true);
-
-			if (props.link && props.link !== undefined) {
-				setMsg(() => showChanged(props.link));
-			}
-		}
 	};
 
 	const handleChangeGenreSortingType = (event) => {
 		setGenreSortingType(event.target.value);
-		if (!changed) {
-			setChanged(true);
-
-			if (props.link && props.link !== undefined) {
-				setMsg(() => showChanged(props.link));
-			}
-		}
 	};
 
 	return (
@@ -124,9 +101,7 @@ export default function ExportStatistic(props) {
 					<MenuItem value={1}>Количество запросов для фильтрации</MenuItem>
 				</Select>
 			</FormControl>
-			<Button onClick={handleSubmit} color="primary" disabled={msg !== null && !changed}>
-				Выгрузить
-			</Button>
+			<Button onClick={handleSubmit} color="primary">Выгрузить</Button>
 		</>
 	);
 }

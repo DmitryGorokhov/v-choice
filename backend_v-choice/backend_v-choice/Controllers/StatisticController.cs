@@ -93,5 +93,16 @@ namespace backend_v_choice.Controllers
 
             return Ok(res);
         }
+
+        [Authorize(Roles = "admin")]
+        [Route("file-exist")]
+        [HttpGet]
+        public IActionResult CheckIsStatisticFileExist()
+        {
+            _logger.LogInformation("Check is statistic file exist");
+            bool res = _statisticService.CheckIsStatisticFileExist(_appEnvironment);
+
+            return Ok(res);
+        }
     }
 }

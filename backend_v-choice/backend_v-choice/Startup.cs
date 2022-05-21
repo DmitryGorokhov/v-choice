@@ -16,6 +16,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace backend_v_choice
@@ -108,7 +110,23 @@ namespace backend_v_choice
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    if (ctx.Context.Request.Path.StartsWithSegments("/files"))
+                    {
+                        ctx.Context.Response.Headers.Add("Cache-Control", "no-store");
+
+                        if (!ctx.Context.User.IsInRole("admin"))
+                        {
+                            ctx.Context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                            ctx.Context.Response.ContentLength = 0;
+                            ctx.Context.Response.Body = Stream.Null;
+                        }
+                    }
+                }
+            });
             app.UseSpaStaticFiles();
             app.UseEndpoints(endpoints =>
             {

@@ -30,7 +30,10 @@ namespace BLL.Service
             _mapper = mapper;
         }
 
-        public string ExportStatisticAsync(ExportStatisticQuery query, IWebHostEnvironment _appEnvironment)
+        public bool CheckIsStatisticFileExist(IWebHostEnvironment appEnvironment)
+            => File.Exists(Path.Combine(appEnvironment.WebRootPath, "files", "Statistic.pdf"));
+
+        public string ExportStatisticAsync(ExportStatisticQuery query, IWebHostEnvironment appEnvironment)
         {
             _logger.LogInformation("Starting export statistic");
 
@@ -49,7 +52,7 @@ namespace BLL.Service
             string path = Path.Combine("files", "Statistic.pdf");
 
             var doc = new Document();
-            PdfWriter.GetInstance(doc, new FileStream(Path.Combine(_appEnvironment.WebRootPath, path), FileMode.Create));
+            PdfWriter.GetInstance(doc, new FileStream(Path.Combine(appEnvironment.WebRootPath, path), FileMode.Create));
             doc.Open();
 
             BaseFont baseFont = BaseFont.CreateFont(@"C:\Windows\Fonts\arial.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);

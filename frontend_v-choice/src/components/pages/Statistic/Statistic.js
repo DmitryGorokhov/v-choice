@@ -71,13 +71,17 @@ function Statistic() {
 		page: 1, onPage: 10, filter: 0
 	});
 
-	const [statLink, setStatLink] = useState(null);
+	const [isFileExist, setIsFileExist] = useState(false);
 
 	const handleChangeTab = (_, newValue) => {
 		setTab(newValue);
 	};
 
 	useEffect(() => {
+		fetch(`${statURL}/file-exist`)
+			.then(response => response.json())
+			.then(result => setIsFileExist(result))
+			.catch(_ => _);
 		fetch(statURL)
 			.then(response => response.json())
 			.then(result => {
@@ -168,7 +172,7 @@ function Statistic() {
 						</TabPanel>
 						<TabPanel value={tab} index={3}>
 							<Typography variant='h4' className={classes.header}>Выгрузить статистику</Typography>
-							<ExportStatistic link={statLink} saveLink={setStatLink} />
+							<ExportStatistic isExist={isFileExist} setExist={setIsFileExist} />
 						</TabPanel>
 					</>
 					: <Typography variant='subtitle1'>Для просмотра страницы необходимо войти как администратор</Typography>
