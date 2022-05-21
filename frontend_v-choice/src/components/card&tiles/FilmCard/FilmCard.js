@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect } from 'react'
-import { createStyles, makeStyles, Box, Card, CardActionArea, CardContent, Grid, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Avatar, Box, Card, CardActionArea, CardContent, Grid, Typography } from '@material-ui/core'
+import { AvatarGroup } from "@mui/material"
 import { useHistory } from 'react-router-dom'
 
 import UpdateFilmDialog from './../../crud/UpdateFilmDialog/UpdateFilmDialog'
@@ -57,7 +58,14 @@ const useStyles = makeStyles((theme) => createStyles({
 		width: 180,
 		height: 220,
 		objectFit: 'cover',
-	}
+	},
+	avatarContainer: {
+		display: 'flex',
+		alignItems: 'center',
+	},
+	personText: {
+		marginRight: theme.spacing(1),
+	},
 }));
 
 function FilmCard(props) {
@@ -103,6 +111,36 @@ function FilmCard(props) {
 							<Typography className={classes.cardItem && classes.filmDescription}>
 								{film.description}
 							</Typography>
+							<Grid container spacing={2}>
+								<Grid item xs={6}>
+									<Box className={classes.avatarContainer}>
+										<Typography className={classes.personText}>Режиссёры: </Typography>
+										{
+											film.directors.length !== 0
+												? <AvatarGroup max={4}>
+													{
+														film.directors.map(p => <Avatar alt={p.fullName} src={`${baseURL}${p.photoPath}`} />)
+													}
+												</AvatarGroup>
+												: <Typography> не выбраны</Typography>
+										}
+									</Box>
+								</Grid>
+								<Grid item xs={6}>
+									<Box className={classes.avatarContainer}>
+										<Typography className={classes.personText}>Актёры: </Typography>
+										{
+											film.cast.length !== 0
+												? <AvatarGroup max={4}>
+													{
+														film.cast.map(p => <Avatar alt={p.fullName} src={`${baseURL}${p.photoPath}`} />)
+													}
+												</AvatarGroup>
+												: <Typography> не выбраны</Typography>
+										}
+									</Box>
+								</Grid>
+							</Grid>
 							<Box className={classes.cardItem && classes.cardVerticalSection}>
 								<Box className={classes.genresBox}>
 									{
@@ -115,6 +153,11 @@ function FilmCard(props) {
 												)
 											})
 											: <Typography className={classes.filmGenre}>Жанры не выбраны</Typography>
+									}
+									{
+										film.studio !== null
+											? <Typography variant='subtitle2'>Студия: {film.studio.name}</Typography>
+											: null
 									}
 								</Box>
 							</Box>
