@@ -10,6 +10,7 @@ import CommentsList from '../../moleculas/CommentsList/CommentsList'
 import RateArea from '../../atoms/RateArea/RateArea'
 import UserContext from '../../../context'
 import FilmVideo from '../../atoms/FilmVideo/FilmVideo'
+import PersonsCarousel from '../../atoms/PersonsCarousel/PersonsCarousel'
 
 const useStyles = makeStyles((theme) => createStyles({
 	container: {
@@ -100,6 +101,11 @@ function FilmPage() {
 								</Box>
 							</Grid>
 						</Grid>
+						: null
+				}
+				{
+					film !== null && film.directors.length + film.cast.length !== 0
+						? <PersonsCarousel directors={film.directors} cast={film.cast} />
 						: null
 				}
 				{

@@ -88,6 +88,11 @@ function FilmCardWithoutControls(props) {
 									})
 									: <Typography className={classes.filmGenre}>Жанры не выбраны</Typography>
 							}
+							{
+								film.studio !== null
+									? <Typography variant='subtitle2'>Студия: {film.studio.name}</Typography>
+									: null
+							}
 						</Box>
 					</Box>
 				</Grid>
