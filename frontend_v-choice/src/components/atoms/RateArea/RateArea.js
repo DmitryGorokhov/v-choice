@@ -130,7 +130,7 @@ function RateArea(props) {
 										<HighlightOffIcon />
 									</IconButton>
 								</>
-								: <Typography><Link to="/sign-in">Авторизируйтесь</Link>, чтобы оценить фильм</Typography>
+								: <Typography><Link to="/sign-in">Войдите</Link>, чтобы оценить фильм</Typography>
 						}
 					</Box>
 				</Grid>

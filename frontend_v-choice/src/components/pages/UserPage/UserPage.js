@@ -28,7 +28,7 @@ function UserPage() {
 						<FavoritesList />
 					</>
 					: <Typography variant='subtitle1'>
-						<Link to="/sign-in">Авторизируйтесь</Link>, чтобы просматривать свой профиль
+						<Link to="/sign-in">Войдите</Link>, чтобы просматривать свой профиль
 					</Typography>
 			}
 		</Box>

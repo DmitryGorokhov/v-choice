@@ -33,6 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="..\..\frontend_v-choice%2a%2a" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\img\" />
   </ItemGroup>
 

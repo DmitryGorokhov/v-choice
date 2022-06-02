@@ -1,4 +1,4 @@
-﻿using DAL.Enum;
+﻿using BLL.Enum;
 
 namespace BLL.Query
 {

@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.Interface;
+using DAL.Enum;
 using DAL.Model;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

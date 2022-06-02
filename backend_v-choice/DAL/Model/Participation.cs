@@ -1,4 +1,6 @@
-﻿namespace DAL.Model
+﻿using DAL.Enum;
+
+namespace DAL.Model
 {
     public class Participation
     {

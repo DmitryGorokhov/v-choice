@@ -1,4 +1,5 @@
-﻿using DAL.Interface;
+﻿using DAL.Enum;
+using DAL.Interface;
 using DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 ﻿using BLL.DTO;
+using BLL.Enum;
 using BLL.Interface;
 using BLL.Query;
-using DAL.Enum;
 using DAL.Interface;
 using DAL.Model;
 using iTextSharp.text;

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace DAL.Model
+namespace DAL
 {
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DBContext>
     {

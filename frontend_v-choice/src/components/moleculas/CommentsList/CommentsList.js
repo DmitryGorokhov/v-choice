@@ -218,7 +218,7 @@ function CommentsList(props) {
 				user.userName
 					? <CommentArea filmId={props.filmId} onAdd={handleCreateComment} />
 					: <Typography variant='subtitle1'>
-						<Link to="/sign-in">Авторизируйтесь</Link>, чтобы оставить свой комментарий
+						<Link to="/sign-in">Войдите</Link>, чтобы оставить свой комментарий
 					</Typography>
 			}
 		</>

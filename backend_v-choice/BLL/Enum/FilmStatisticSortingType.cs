@@ -1,4 +1,4 @@
-﻿namespace DAL.Enum
+﻿namespace BLL.Enum
 {
     public enum FilmStatisticSortingType
     {
