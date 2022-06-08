@@ -97,13 +97,17 @@ export default function FormDialog(props) {
 				}
 			});
 
-			film.directors.forEach((item, index) => {
-				formData.append(`directors[${index}][id]`, item.id);
-			});
+			if (film.directors != undefined) {
+				film.directors.forEach((item, index) => {
+					formData.append(`directors[${index}][id]`, item.id);
+				});
+			}
 
-			film.cast.forEach((item, index) => {
-				formData.append(`cast[${index}][id]`, item.id);
-			});
+			if (film.cast != undefined) {
+				film.cast.forEach((item, index) => {
+					formData.append(`cast[${index}][id]`, item.id);
+				});
+			}
 
 			fetch('https://localhost:5001/api/film', {
 				method: 'POST',
